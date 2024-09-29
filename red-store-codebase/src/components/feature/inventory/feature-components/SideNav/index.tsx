@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import SideNavLayout from "../../layouts/SideNavLayout";
 import { SideNavItemType } from "./types";

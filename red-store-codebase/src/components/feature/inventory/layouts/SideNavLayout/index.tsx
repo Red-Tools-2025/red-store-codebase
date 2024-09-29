@@ -10,7 +10,7 @@ const SideNavLayout: React.FC<SideNavLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="flex flex-col gap-5">
+    <div className="bg-green-100 border-2 p-5 w-[300px] flex flex-col gap-5">
       <h1 className="font-bold">{sideNavTitle}</h1>
       <div>{children}</div>
     </div>
