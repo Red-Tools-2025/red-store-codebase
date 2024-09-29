@@ -1,17 +1,12 @@
 "use client";
+
+import { SidNavItems } from "@/components/feature/inventory/feature-components/SideNav/constants";
+
+import SideNavActions from "../hooks/inventory/StaticHooks/SideNavActions";
 import SideNav from "@/components/feature/inventory/feature-components/SideNav";
-import { SideNavItemType } from "@/components/feature/inventory/feature-components/SideNav/types";
 
 const AnalyticsPage = () => {
-  const handleSideNavCloseFn = () => {
-    console.log("Closed Side Nav");
-  };
-  const SidNavItems: SideNavItemType[] = [
-    {
-      ItemHref: "/",
-      ItemTitle: "Home",
-    },
-  ];
+  const { handleSideNavCloseFn } = SideNavActions();
   return (
     <main>
       <h2>Analytics Dashboard</h2>
