@@ -1,6 +1,7 @@
 "use client";
 
 import { SidNavItems } from "@/components/feature/inventory/feature-components/SideNav/constants";
+import { SideNavProvider } from "../contexts/inventory/SideNavContexts";
 
 import SideNavActions from "../hooks/inventory/StaticHooks/SideNavActions";
 import SideNav from "@/components/feature/inventory/feature-components/SideNav";
@@ -10,10 +11,12 @@ const AnalyticsPage = () => {
   return (
     <main>
       <h2>Analytics Dashboard</h2>
-      <SideNav
-        SideNavItems={SidNavItems}
-        SideNavCloseFn={handleSideNavCloseFn}
-      />
+      <SideNavProvider>
+        <SideNav
+          SideNavItems={SidNavItems}
+          SideNavCloseFn={handleSideNavCloseFn}
+        />
+      </SideNavProvider>
     </main>
   );
 };
