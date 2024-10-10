@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Role {
+  role_id   BigInt  @id @default(autoincrement())
+  role_type String
+  employees Employee? // one to one
+}
+
+model Users {
+  user_id        BigInt  @id @default(autoincrement())
+  user_name      String
+  user_email     String
+  user_role      String
+  user_password  String
+  user_phone     String
+  created_at     DateTime
+  session_token  String
+  stores         Stores[]
+}
+
+model Inventory {
+  inv_id          BigInt  @id @default(autoincrement())
+  store_id        BigInt @unique 
+  inv_item        String
+  inv_item_brand  String
+  inv_item_stock  Int
+  inv_item_price  Int
+  inv_item_type   String
+  inv_created_date DateTime
+  inv_item_barcode Int
+  inv_item_size   Int
+  inv_additional  Json?
+  Stores         Stores @relation(fields: [store_id], references: [store_id])
+  Sales           Sales[]
+}
+
+model Stores {
+  store_id        BigInt  @id @default(autoincrement())
+  store_name      String
+  store_location  String
+  store_manager_id BigInt
+  store_status    Boolean
+  created_at      DateTime
+  manager         Users  @relation(fields: [store_manager_id], references: [user_id])
+  employees       Employee[] 
+  inventories     Inventory? // one to one 
+  sales           Sales[]
+}
+
+model Sales {
+  sales_id      BigInt   @id @default(autoincrement())
+  store_id      BigInt
+  sale_date     DateTime
+  inv_id        BigInt
+  sale_quantity BigInt
+  sale_price    BigInt
+  Store         Stores   @relation(fields: [store_id], references: [store_id])
+  Inventory     Inventory @relation(fields: [inv_id], references: [inv_id])
+}
+
+model Employee {
+  emp_id     BigInt  @id @default(autoincrement())
+  store_id   BigInt
+  role_id    BigInt @unique
+  created_at DateTime
+  emp_name   String
+  emp_phone  String
+  emp_status Boolean
+  Store      Stores   @relation(fields: [store_id], references: [store_id])
+  Role       Role    @relation(fields: [role_id], references: [role_id])
+}
