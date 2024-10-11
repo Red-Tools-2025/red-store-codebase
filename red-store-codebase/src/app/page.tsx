@@ -1,3 +1,4 @@
+"use client";
 import TestLoginForm from "@/components/testing/TestLogin";
 
 const Home = () => {
