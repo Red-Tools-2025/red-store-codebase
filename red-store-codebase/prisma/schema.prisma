@@ -50,10 +50,11 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  role          String    @default("MANAGER")
+  roleId        BigInt
   phone         String?
   createdAt     DateTime  @default(now())
   stores        Store[]
+  role          Role @relation(fields: [roleId], references: [roleId])
 }
 
 model VerificationToken {
@@ -68,6 +69,8 @@ model Role {
   roleId   BigInt    @id @default(autoincrement())
   roleType RoleType
   employee Employee[] // Many employees of the same role type
+
+  User User[]
 }
 
 model Inventory {
