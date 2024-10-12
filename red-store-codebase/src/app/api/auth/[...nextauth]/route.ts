@@ -27,11 +27,32 @@ const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user
+          user.password
         );
+
+        // Invalid password enterd, hash comparison failed
+        if (!isPasswordValid) return null;
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
       },
     }),
   ],
+  // Using webtokens for generating sessions, rather than storing session values in database
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+      }
+    },
+  },
 };
 
 export default authOptions;

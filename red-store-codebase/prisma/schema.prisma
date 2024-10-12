@@ -43,7 +43,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  role          String    @default("USER")
+  role          String    @default("MANAGER")
   phone         String?
   createdAt     DateTime  @default(now())
   stores        Store[]
