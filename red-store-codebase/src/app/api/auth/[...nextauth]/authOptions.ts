@@ -50,6 +50,9 @@ const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: "/",
+  },
   callbacks: {
     // modied the toke call back to return the email and user name via the generated jwt token
     async jwt({ token, user }) {
