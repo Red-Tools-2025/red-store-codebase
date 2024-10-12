@@ -1,5 +1,6 @@
-import dbClient from "@/lib/prisma";
-import { RoleType } from "@prisma/client";
+import { RoleType, PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 async function main() {
   const roles = [
@@ -9,7 +10,7 @@ async function main() {
     { roleType: RoleType.STORE_MANAGER },
   ];
 
-  await dbClient.role.createMany({
+  await prisma.role.createMany({
     data: roles,
     skipDuplicates: true,
   });
@@ -23,5 +24,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await dbClient.$disconnect();
+    await prisma.$disconnect();
   });
