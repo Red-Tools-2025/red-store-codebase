@@ -1,13 +1,17 @@
-import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
+
+import { type NextAuthOptions } from "next-auth";
+import { type Adapter } from "next-auth/adapters";
+
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     Credentials({
       name: "Credentials",
@@ -37,7 +41,7 @@ const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role,
+          roleId: user.roleId,
         };
       },
     }),
@@ -47,15 +51,24 @@ const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    // modied the toke call back to return the email and user name via the generated jwt token
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        token.email = user.email;
+        token.name = user.name;
       }
       return token;
     },
-    async session({ session, token }) {
-      if (session?.user) {
-        session.user.role = token.role;
+    // modified the session call back to return the session string along with the user object, for validating, and a normal session if no user found
+    async session({ session, token, user }) {
+      if (user) {
+        return {
+          ...session,
+          user: {
+            ...token,
+            id: user.id,
+          },
+        };
       }
       return session;
     },
