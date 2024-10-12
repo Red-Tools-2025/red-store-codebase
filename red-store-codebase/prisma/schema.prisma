@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RoleType {
+  SALES
+  MANAGER
+  INVENTORY_STAFF
+  STORE_MANAGER
+} // declared an enum for type safety of roles
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -59,8 +66,8 @@ model VerificationToken {
 
 model Role {
   roleId   BigInt    @id @default(autoincrement())
-  roleType String
-  employee Employee?
+  roleType RoleType
+  employee Employee[] // Many employees of the same role type
 }
 
 model Inventory {
