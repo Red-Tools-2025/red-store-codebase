@@ -6,8 +6,8 @@ const ComponentTestingPage = () => {
     <div className="p-5">
       <p className="text-bold">Run all components for testing here</p>
       <div className="mt-5 flex items-start gap-10">
-        {/* <TestLoginForm /> */}
-        <TestRegisterForm />
+        <TestLoginForm />
+        {/* <TestRegisterForm /> */}
       </div>
     </div>
   );
