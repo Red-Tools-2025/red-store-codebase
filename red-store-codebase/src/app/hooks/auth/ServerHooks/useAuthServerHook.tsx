@@ -4,7 +4,7 @@ import {
 } from "@/app/types/auth/register";
 import axios, { AxiosResponse } from "axios";
 
-const useLoginServerHook = () => {
+const useAuthServerHook = () => {
   const handleRegister = async (obj: HandleRegisterInputObject) => {
     const { email, name, password, phone, router, setError, setIsLoading } =
       obj;
@@ -52,4 +52,4 @@ const useLoginServerHook = () => {
   return { handleRegister };
 };
 
-export default useLoginServerHook;
+export default useAuthServerHook;

@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HandleRegisterInputObject } from "@/app/types/auth/register";
 
-import useLoginServerHook from "@/app/hooks/auth/ServerHooks/useLoginServerHook";
+import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
 
 export const description =
   "A registration form for new users with name, email, password, and phone number.";
@@ -23,7 +23,7 @@ interface TestRegisterFormProps {}
 
 const TestRegisterForm: React.FC<TestRegisterFormProps> = ({}) => {
   const router = useRouter();
-  const { handleRegister } = useLoginServerHook();
+  const { handleRegister } = useAuthServerHook();
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
