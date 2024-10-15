@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
+import useLoginServerHook from "@/app/hooks/auth/ServerHooks/useLoginServerHook";
+import { HandleRegisterInputObject } from "@/app/types/auth/register";
 
 export const description =
   "A registration form for new users with name, email, password, and phone number.";
@@ -20,60 +22,27 @@ export const description =
 interface TestRegisterFormProps {}
 
 const TestRegisterForm: React.FC<TestRegisterFormProps> = ({}) => {
+  const router = useRouter();
+  const { handleRegister } = useLoginServerHook();
+
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const router = useRouter();
 
-  interface RegisterResponse {
-    message: string;
-    user?: {
-      id: string;
-      name: string;
-      email: string;
+  const onRegister = () => {
+    const registerInput: HandleRegisterInputObject = {
+      name,
+      email,
+      password,
+      phone,
+      router,
+      setError,
+      setIsLoading,
     };
-  }
-
-  const handleRegister = async () => {
-    setError("");
-    setIsLoading(true);
-
-    try {
-      const response: AxiosResponse<RegisterResponse> = await axios.post(
-        "/api/register",
-        {
-          name,
-          email,
-          password,
-          phone,
-        }
-      );
-
-      console.log(response);
-
-      if (response.status === 201) {
-        // Registration successful
-        console.log(response.data.message);
-        // Redirect to login page or dashboard
-        router.push("/dashboard");
-      }
-      if (response.status === 400) {
-        setError(response.data.message);
-      }
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        setError(
-          err.response.data.error || "An error occurred during registration."
-        );
-      } else {
-        setError("An unexpected error occurred.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    handleRegister(registerInput);
   };
 
   return (
@@ -126,11 +95,7 @@ const TestRegisterForm: React.FC<TestRegisterFormProps> = ({}) => {
         {error && <p className="text-red-500 text-sm">{error}</p>}
       </CardContent>
       <CardFooter>
-        <Button
-          onClick={handleRegister}
-          className="w-full"
-          disabled={isLoading}
-        >
+        <Button onClick={onRegister} className="w-full" disabled={isLoading}>
           {isLoading ? "Registering..." : "Register"}
         </Button>
       </CardFooter>
