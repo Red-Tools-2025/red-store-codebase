@@ -12,43 +12,58 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { HandleLoginInputObject } from "@/app/types/auth/login";
+import { HandleRegisterInputObject } from "@/app/types/auth/register";
+
 import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
 
 export const description =
-  "A simple login form with email and password. The submit button says 'Sign in'.";
+  "A registration form for new users with name, email, password, and phone number.";
 
-interface TestLoginFormProps {}
+interface TestRegisterFormProps {}
 
-const TestLoginForm: React.FC<TestLoginFormProps> = ({}) => {
+const TestRegisterForm: React.FC<TestRegisterFormProps> = ({}) => {
   const router = useRouter();
-  const { handleLogin } = useAuthServerHook();
+  const { handleRegister } = useAuthServerHook();
 
+  const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const onLogin = () => {
-    const loginInput: HandleLoginInputObject = {
+  const onRegister = () => {
+    const registerInput: HandleRegisterInputObject = {
+      name,
       email,
       password,
+      phone,
       router,
       setError,
       setIsLoading,
     };
-    handleLogin(loginInput);
+    handleRegister(registerInput);
   };
 
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
+        <CardTitle className="text-2xl">Register</CardTitle>
         <CardDescription>
-          Enter your email below to login to your account.
+          Create a new account to access our services.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            onChange={(e) => setName(e.target.value)}
+            id="name"
+            type="text"
+            placeholder="John Doe"
+            required
+          />
+        </div>
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -68,15 +83,24 @@ const TestLoginForm: React.FC<TestLoginFormProps> = ({}) => {
             required
           />
         </div>
+        <div className="grid gap-2">
+          <Label htmlFor="phone">Phone (optional)</Label>
+          <Input
+            onChange={(e) => setPhone(e.target.value)}
+            id="phone"
+            type="tel"
+            placeholder="+1234567890"
+          />
+        </div>
         {error && <p className="text-red-500 text-sm">{error}</p>}
       </CardContent>
       <CardFooter>
-        <Button onClick={onLogin} className="w-full" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign in"}
+        <Button onClick={onRegister} className="w-full" disabled={isLoading}>
+          {isLoading ? "Registering..." : "Register"}
         </Button>
       </CardFooter>
     </Card>
   );
 };
 
-export default TestLoginForm;
+export default TestRegisterForm;
