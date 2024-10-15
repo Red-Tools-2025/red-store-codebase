@@ -14,7 +14,7 @@ const useLoginServerHook = () => {
     try {
       // remember to always declare types for any axis calls or server calls, as not doing so leads to production build errors
       const response: AxiosResponse<RegisterResponse> = await axios.post(
-        "/api/register",
+        "/api/auth/register",
         {
           name,
           email,
