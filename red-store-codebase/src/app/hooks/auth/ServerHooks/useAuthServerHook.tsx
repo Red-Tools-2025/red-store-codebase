@@ -1,8 +1,10 @@
+import { HandleLoginInputObject } from "@/app/types/auth/login";
 import {
   HandleRegisterInputObject,
   RegisterResponse,
 } from "@/app/types/auth/register";
 import axios, { AxiosResponse } from "axios";
+import { signIn } from "next-auth/react";
 
 const useAuthServerHook = () => {
   const handleRegister = async (obj: HandleRegisterInputObject) => {
@@ -49,7 +51,32 @@ const useAuthServerHook = () => {
     }
   };
 
-  return { handleRegister };
+  const handleLogin = async (obj: HandleLoginInputObject) => {
+    const { email, password, router, setError, setIsLoading } = obj;
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        // Login successful
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred during login.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { handleRegister, handleLogin };
 };
 
 export default useAuthServerHook;

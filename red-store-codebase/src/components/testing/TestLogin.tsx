@@ -11,6 +11,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { HandleLoginInputObject } from "@/app/types/auth/login";
+import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
 
 export const description =
   "A simple login form with email and password. The submit button says 'Sign in'.";
@@ -18,8 +21,24 @@ export const description =
 interface TestLoginFormProps {}
 
 const TestLoginForm: React.FC<TestLoginFormProps> = ({}) => {
+  const router = useRouter();
+  const { handleLogin } = useAuthServerHook();
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const onLogin = () => {
+    const loginInput: HandleLoginInputObject = {
+      email,
+      password,
+      router,
+      setError,
+      setIsLoading,
+    };
+    handleLogin(loginInput);
+  };
 
   return (
     <Card className="w-full max-w-sm">
@@ -49,13 +68,11 @@ const TestLoginForm: React.FC<TestLoginFormProps> = ({}) => {
             required
           />
         </div>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
       </CardContent>
       <CardFooter>
-        <Button
-          onClick={() => console.log({ email, password })}
-          className="w-full"
-        >
-          Sign in
+        <Button onClick={onLogin} className="w-full" disabled={isLoading}>
+          {isLoading ? "Signing in..." : "Sign in"}
         </Button>
       </CardFooter>
     </Card>
