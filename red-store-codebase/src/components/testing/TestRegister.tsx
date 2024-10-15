@@ -11,10 +11,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
-import useLoginServerHook from "@/app/hooks/auth/ServerHooks/useLoginServerHook";
 import { HandleRegisterInputObject } from "@/app/types/auth/register";
+
+import useLoginServerHook from "@/app/hooks/auth/ServerHooks/useLoginServerHook";
 
 export const description =
   "A registration form for new users with name, email, password, and phone number.";

@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma";
 
 import bcrypt from "bcryptjs";
 
+// Always declare a custom request Interface to have a custom request body pass through the API call
 interface RegisterRouteRequestType extends NextRequest {
   name: string;
   email: string;

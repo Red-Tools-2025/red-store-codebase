@@ -12,6 +12,7 @@ const useLoginServerHook = () => {
     setIsLoading(true);
 
     try {
+      // remember to always declare types for any axis calls or server calls, as not doing so leads to production build errors
       const response: AxiosResponse<RegisterResponse> = await axios.post(
         "/api/register",
         {
@@ -23,6 +24,8 @@ const useLoginServerHook = () => {
       );
 
       console.log(response);
+
+      // error handling on UI to always be done with respect to status codes
 
       if (response.status === 201) {
         // Registration successful
