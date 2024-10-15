@@ -110,7 +110,7 @@ const TestRegisterForm: React.FC<TestRegisterFormProps> = ({}) => {
       </CardContent>
       <CardFooter>
         <Button
-          onClick={handleRegister}
+          onClick={() => console.log({ name, email, password, phone })}
           className="w-full"
           disabled={isLoading}
         >
