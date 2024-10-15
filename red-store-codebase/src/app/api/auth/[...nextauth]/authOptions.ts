@@ -7,11 +7,10 @@ import { type NextAuthOptions } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 
 import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/prisma";
 
 const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter,
+  adapter: PrismaAdapter(db) as Adapter,
   providers: [
     Credentials({
       name: "Credentials",
@@ -22,7 +21,7 @@ const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         // Ensures that there is data in the form to check
         if (!credentials?.email || !credentials.password) return null;
-        const user = await prisma.user.findUnique({
+        const user = await db.user.findUnique({
           where: { email: credentials.email },
         });
 
@@ -54,6 +53,46 @@ const authOptions: NextAuthOptions = {
     signIn: "/",
   },
   callbacks: {
+    // following signIn callback only applicable for google account providers
+    signIn: async ({ user, account, profile }) => {
+      if (account && account.provider === "google") {
+        const existingUser = await db.user.findUnique({
+          where: { email: profile?.email ?? "" },
+        });
+
+        if (existingUser) {
+          const existingAccount = await db.account.findUnique({
+            where: {
+              provider_providerAccountId: {
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+              },
+            },
+          });
+
+          if (!existingAccount) {
+            await db.account.create({
+              data: {
+                userId: existingUser.id,
+                type: account.type,
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                refresh_token: account.refresh_token,
+                access_token: account.access_token,
+                expires_at: account.expires_at,
+                token_type: account.token_type,
+                scope: account.scope,
+                id_token: account.id_token,
+                session_state: account.session_state,
+              },
+            });
+          }
+
+          console.log("Account linked successfully");
+        }
+      }
+      return true;
+    },
     // modied the toke call back to return the email and user name via the generated jwt token
     async jwt({ token, user }) {
       if (user) {
