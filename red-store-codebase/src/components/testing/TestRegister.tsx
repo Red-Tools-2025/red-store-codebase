@@ -40,7 +40,7 @@ const TestRegisterForm: React.FC<TestRegisterFormProps> = ({}) => {
         phone,
       });
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         // Registration successful
         console.log(response.data.message);
         // Redirect to login page or dashboard
@@ -110,7 +110,7 @@ const TestRegisterForm: React.FC<TestRegisterFormProps> = ({}) => {
       </CardContent>
       <CardFooter>
         <Button
-          onClick={() => console.log({ name, email, password, phone })}
+          onClick={handleRegister}
           className="w-full"
           disabled={isLoading}
         >

@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-
-import dbClient from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { db } from "@/lib/prisma";
 
 interface RegisterRouteRequestType extends NextRequest {
   name: string;
@@ -11,8 +10,9 @@ interface RegisterRouteRequestType extends NextRequest {
 
 export async function POST(req: RegisterRouteRequestType) {
   try {
-    const { name, email, password } = req;
-    const existingUser = await dbClient.user.findUnique({
+    const body = await req.json();
+    const { name, email, password } = body;
+    const existingUser = await db.user.findUnique({
       where: { email: email },
     });
 
@@ -27,7 +27,7 @@ export async function POST(req: RegisterRouteRequestType) {
     const hashedPwd = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = await dbClient.user.create({
+    const user = await db.user.create({
       data: {
         password: hashedPwd,
         email: email,
@@ -42,8 +42,10 @@ export async function POST(req: RegisterRouteRequestType) {
     );
   } catch (err) {
     // response when internet correction weak, or error during dev
+    console.error("Error creating user:", err);
     return NextResponse.json({
-      error: "An error occured while creating account",
+      error: "An error occurred while creating account",
+      details: "Huge error here",
       status: 500,
     });
   }
