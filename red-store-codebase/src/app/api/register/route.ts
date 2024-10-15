@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
-import bcrypt from "bcryptjs";
 import { db } from "@/lib/prisma";
+
+import bcrypt from "bcryptjs";
 
 interface RegisterRouteRequestType extends NextRequest {
   name: string;
@@ -18,10 +19,12 @@ export async function POST(req: RegisterRouteRequestType) {
 
     // Initial check to see if user already exists
     if (existingUser)
-      return NextResponse.json({
-        error: "Account already exists",
-        status: 400,
-      });
+      return NextResponse.json(
+        {
+          error: "Account already exists",
+        },
+        { status: 400 }
+      );
 
     // Hashing password on 10 salt rounds
     const hashedPwd = await bcrypt.hash(password, 10);

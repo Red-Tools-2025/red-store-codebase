@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 
 export const description =
@@ -28,23 +28,40 @@ const TestRegisterForm: React.FC<TestRegisterFormProps> = ({}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
+  interface RegisterResponse {
+    message: string;
+    user?: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  }
+
   const handleRegister = async () => {
     setError("");
     setIsLoading(true);
 
     try {
-      const response = await axios.post("/api/register", {
-        name,
-        email,
-        password,
-        phone,
-      });
+      const response: AxiosResponse<RegisterResponse> = await axios.post(
+        "/api/register",
+        {
+          name,
+          email,
+          password,
+          phone,
+        }
+      );
+
+      console.log(response);
 
       if (response.status === 201) {
         // Registration successful
         console.log(response.data.message);
         // Redirect to login page or dashboard
         router.push("/dashboard");
+      }
+      if (response.status === 400) {
+        setError(response.data.message);
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
