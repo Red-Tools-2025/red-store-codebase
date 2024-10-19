@@ -1,0 +1,87 @@
+// function to create partition
+
+CREATE OR REPLACE FUNCTION create_store_partition_for_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    EXECUTE format('CREATE TABLE Store_%s PARTITION OF Store FOR VALUES IN (%L)', NEW.id, NEW.id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+// triiger that will create partition
+
+CREATE TRIGGER user_partition_trigger
+AFTER INSERT ON "User"
+FOR EACH ROW
+EXECUTE FUNCTION create_store_partition_for_user();
+
+
+
+
+CREATE TABLE Store (
+    storeId SERIAL,
+    storeName TEXT NOT NULL,
+    storeLocation TEXT,
+    storeManagerId TEXT NOT NULL, -- Partition key
+    storeStatus BOOLEAN NOT NULL,
+    createdAt TIMESTAMPTZ DEFAULT now(),
+    
+    -- Set storeId and storeManagerId as the composite primary key
+    PRIMARY KEY (storeId, storeManagerId),
+    
+    -- Foreign key to User
+    CONSTRAINT fk_user FOREIGN KEY (storeManagerId) REFERENCES "User"(id) ON DELETE CASCADE
+) PARTITION BY LIST (storeManagerId);
+
+
+//////////////////////
+
+
+
+
+CREATE TABLE Store (
+    storeId SERIAL,
+    storeName TEXT NOT NULL,
+    storeLocation TEXT,
+    storeManagerId TEXT NOT NULL, -- Partition key
+    storeStatus BOOLEAN NOT NULL,
+    createdAt TIMESTAMPTZ DEFAULT now(),
+    
+    -- Set storeId and storeManagerId as the composite primary key
+    PRIMARY KEY (storeId, storeManagerId),
+    
+    -- Foreign key to User
+    CONSTRAINT fk_user FOREIGN KEY (storeManagerId) REFERENCES "User"(id) ON DELETE CASCADE
+) PARTITION BY LIST (storeManagerId);
+
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION check_and_create_store_partition(manager_id TEXT)
+RETURNS VOID AS $$
+DECLARE
+    partition_name TEXT := format('store_manager_%s', manager_id);
+BEGIN
+    -- Check if the partition already exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_tables
+        WHERE schemaname = 'public' AND tablename = partition_name
+    ) THEN
+        -- Create the partition if it does not exist
+        EXECUTE format('CREATE TABLE %I PARTITION OF Store FOR VALUES IN (%L)', partition_name, manager_id);
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE TRIGGER store_partition_trigger
+BEFORE INSERT ON "store"
+FOR EACH ROW
+EXECUTE FUNCTION create_store_partition_for_manager();

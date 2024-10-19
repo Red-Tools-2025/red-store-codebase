@@ -50,7 +50,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  roleId        BigInt
+  roleId        Int
   phone         String?
   createdAt     DateTime  @default(now())
   stores        Store[]
@@ -66,7 +66,7 @@ model VerificationToken {
 }
 
 model Role {
-  roleId   BigInt    @id @default(autoincrement())
+  roleId   Int    @id @default(autoincrement())
   roleType RoleType
   employee Employee[] // Many employees of the same role type
 
@@ -74,8 +74,8 @@ model Role {
 }
 
 model Inventory {
-  invId          BigInt   @id @default(autoincrement())
-  storeId        BigInt   @unique
+  invId          Int   @id @default(autoincrement())
+  storeId        Int   @unique
   invItem        String
   invItemBrand   String
   invItemStock   Int
@@ -90,33 +90,36 @@ model Inventory {
 }
 
 model Store {
-  storeId       BigInt     @id @default(autoincrement())
-  storeName     String
-  storeLocation String
-  storeManagerId String
-  storeStatus   Boolean
-  createdAt     DateTime
+  storeId       Int     @id @default(autoincrement()) @map("storeid")
+  storeName     String  @map("storename")
+  storeLocation String  @map("storelocation")
+  storeManagerId String  @map("storemanagerid")
+  storeStatus   Boolean  @map("storestatus")
+  createdAt     DateTime @map("createdat")
+
   manager       User       @relation(fields: [storeManagerId], references: [id])
   employees     Employee[]
   inventory     Inventory?
   sales         Sale[]
+
+  @@map(name: "store") // Map Prisma model to the PostgreSQL table
 }
 
 model Sale {
-  saleId      BigInt    @id @default(autoincrement())
-  storeId     BigInt
+  saleId      Int    @id @default(autoincrement())
+  storeId     Int
   saleDate    DateTime
-  invId       BigInt
-  saleQuantity BigInt
-  salePrice   BigInt
+  invId       Int
+  saleQuantity Int
+  salePrice   Int
   store       Store     @relation(fields: [storeId], references: [storeId])
   inventory   Inventory @relation(fields: [invId], references: [invId])
 }
 
 model Employee {
-  empId     BigInt   @id @default(autoincrement())
-  storeId   BigInt
-  roleId    BigInt   @unique
+  empId     Int   @id @default(autoincrement())
+  storeId   Int
+  roleId    Int   
   createdAt DateTime
   empName   String
   empPhone  String
