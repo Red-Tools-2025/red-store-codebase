@@ -12,7 +12,8 @@ enum RoleType {
   MANAGER
   INVENTORY_STAFF
   STORE_MANAGER
-} // declared an enum for type safety of roles
+}
+// declared an enum for type safety of roles
 
 model Account {
   id                String  @id @default(cuid())
@@ -45,16 +46,16 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  password      String
+  password      String    
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  roleId        Int
+  roleId        Int       
   phone         String?
   createdAt     DateTime  @default(now())
   stores        Store[]
-  role          Role @relation(fields: [roleId], references: [roleId])
+  role          Role      @relation(fields: [roleId], references: [roleId])
 }
 
 model VerificationToken {
@@ -66,7 +67,7 @@ model VerificationToken {
 }
 
 model Role {
-  roleId   Int    @id @default(autoincrement())
+  roleId   Int        @id @default(autoincrement())
   roleType RoleType
   employee Employee[] // Many employees of the same role type
 
@@ -74,8 +75,8 @@ model Role {
 }
 
 model Inventory {
-  invId          Int   @id @default(autoincrement())
-  storeId        Int   @unique
+  invId          Int      @id @default(autoincrement())
+  storeId        Int      @unique
   invItem        String
   invItemBrand   String
   invItemStock   Int
@@ -90,40 +91,47 @@ model Inventory {
 }
 
 model Store {
-  storeId       Int     @id @default(autoincrement()) @map("storeid")
-  storeName     String  @map("storename")
-  storeLocation String  @map("storelocation")
-  storeManagerId String  @map("storemanagerid")
-  storeStatus   Boolean  @map("storestatus")
-  createdAt     DateTime @map("createdat")
+  storeId        Int      @id @default(autoincrement()) @map("storeid")
+  storeName      String   @map("storename")
+  storeLocation  String   @map("storelocation")
+  storeManagerId String   @map("storemanagerid")
+  storeStatus    Boolean  @map("storestatus")
+  createdAt      DateTime @map("createdat")
 
-  manager       User       @relation(fields: [storeManagerId], references: [id])
-  employees     Employee[]
-  inventory     Inventory?
-  sales         Sale[]
+  manager   User       @relation(fields: [storeManagerId], references: [id])
+  employees Employee[]
+  inventory Inventory?
+  sales     Sale[]
 
+  @@unique([storeId, storeManagerId]) // Composite unique constraint
   @@map(name: "store") // Map Prisma model to the PostgreSQL table
 }
 
 model Sale {
-  saleId      Int    @id @default(autoincrement())
-  storeId     Int
-  saleDate    DateTime
-  invId       Int
+  saleId       Int       @id @default(autoincrement())
+  storeId      Int
+  saleDate     DateTime
+  invId        Int
   saleQuantity Int
-  salePrice   Int
-  store       Store     @relation(fields: [storeId], references: [storeId])
-  inventory   Inventory @relation(fields: [invId], references: [invId])
+  salePrice    Int
+  store        Store     @relation(fields: [storeId], references: [storeId])
+  inventory    Inventory @relation(fields: [invId], references: [invId])
 }
 
 model Employee {
-  empId     Int   @id @default(autoincrement())
-  storeId   Int
-  roleId    Int   
-  createdAt DateTime
-  empName   String
-  empPhone  String
-  empStatus Boolean
-  store     Store    @relation(fields: [storeId], references: [storeId])
-  role      Role     @relation(fields: [roleId], references: [roleId])
+  empId          Int      @id @default(autoincrement()) @map("empid") // Automatically incrementing employee ID
+  storeId        Int      @map("storeid") // Foreign key to the Store table
+  roleId         Int      @map("roleid") // Foreign key to the Role table
+  createdAt      DateTime @default(now()) @map("createdat") // Default created timestamp
+  empName        String   @map("empname") // Employee name
+  empPhone       String   @map("empphone") // Employee phone number
+  empStatus      Boolean  @map("empstatus") // Status of the employee
+  storeManagerId String   @map("storemanagerid") // Manager ID for partitioning
+
+  // Relationships
+  store Store @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId]) // Composite foreign key
+  role  Role  @relation(fields: [roleId], references: [roleId]) // Foreign key to Role
+
+  @@unique([storeManagerId, empId]) // Composite unique constraint for primary key
+  @@map(name: "employee") // Map Prisma model to the PostgreSQL table
 }

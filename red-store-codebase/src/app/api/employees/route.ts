@@ -1,69 +1,50 @@
-import { NextResponse, NextRequest } from "next/server";
-import { db } from "@/lib/prisma"; // Adjust the import path as necessary
+import { NextResponse } from "next/server";
+import { db } from "@/lib/prisma"; // Adjust the import path based on your project structure
 
-// Interface for the incoming request
-interface AddEmployeeRequestType extends NextRequest {
+// Interface for the incoming request body
+interface AddEmployeeRequestBody {
+  storeId: number;
+  roleId: number;
   empName: string;
   empPhone: string;
-  storeId: number; // Adjust type based on your database schema
-  roleName: string; // Role name as string instead of ID
+  empStatus: boolean;
+  storeManagerId: string; // This is used for partitioning
 }
 
-export async function POST(req: AddEmployeeRequestType) {
+// Function to handle the POST request
+export async function POST(req: Request) {
   try {
     // Parse the body of the request
-    const body = await req.json();
-    const { empName, empPhone, storeId, roleName } = body;
+    const body: AddEmployeeRequestBody = await req.json();
+    const { storeId, roleId, empName, empPhone, empStatus, storeManagerId } = body;
 
-    // Check if the phone number already exists
-    const existingEmployee = await db.employee.findFirst({
-      where: { empPhone },
-    });
-
-    if (existingEmployee) {
+    // Validation (add your own logic as needed)
+    if (!storeId || !roleId || !empName || !empPhone || !storeManagerId) {
       return NextResponse.json(
-        { error: "Phone number already exists" },
+        { error: "All fields are required" },
         { status: 400 }
       );
     }
 
-    // Find the role by roleName
-    const role = await db.role.findFirst({
-      where: { roleType: roleName.toUpperCase() }, // Ensure matching case with enum
-    });
-
-    if (!role) {
-      return NextResponse.json(
-        { error: "Invalid role name provided" },
-        { status: 400 }
-      );
-    }
+    // Ensure the partition exists for the store manager in the Employee table
+    await db.$executeRaw`SELECT check_and_create_employee_partition(${storeManagerId});`;
 
     // Create a new employee record
     const employee = await db.employee.create({
       data: {
+        storeId,
+        roleId,
         empName,
         empPhone,
-        storeId,
-        roleId: role.roleId, // Use the found role's ID
-        createdAt: new Date(), // Add createdAt timestamp
-        empStatus: true, // Default to active
+        empStatus,
+        storeManagerId,
+        createdAt: new Date(), // Automatically set the created timestamp
       },
     });
 
-    // Prepare response data without BigInt serialization
-    const responseData = {
-      empId: employee.empId, // Assuming empId is a number or string
-      storeId: employee.storeId, // Assuming storeId is compatible
-      roleId: employee.roleId, // Assuming roleId is compatible
-      createdAt: employee.createdAt,
-      empName: employee.empName,
-      empPhone: employee.empPhone,
-      empStatus: employee.empStatus,
-    };
-
+    // Return the newly created employee data
     return NextResponse.json(
-      { message: `Employee ${employee.empName} added successfully`, employee: responseData },
+      { message: `Employee ${employee.empName} added successfully`, employee },
       { status: 201 }
     );
   } catch (err) {

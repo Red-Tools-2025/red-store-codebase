@@ -81,7 +81,252 @@ $$ LANGUAGE plpgsql;
 
 
 
+
 CREATE TRIGGER store_partition_trigger
 BEFORE INSERT ON "store"
 FOR EACH ROW
 EXECUTE FUNCTION create_store_partition_for_manager();
+
+
+
+//////////////////////////////////////
+
+CREATE TABLE Employee (
+  empId        SERIAL,            -- Automatically incrementing employee ID
+  storeId      INT NOT NULL,      -- Foreign key to the Store table
+  roleId       INT NOT NULL,      -- Foreign key to the Role table
+  createdAt    TIMESTAMP DEFAULT now(), -- Default created timestamp
+  empName      VARCHAR(255) NOT NULL,  -- Employee name
+  empPhone     VARCHAR(50) NOT NULL,   -- Employee phone number
+  empStatus    BOOLEAN NOT NULL,        -- Status of the employee
+  storeManagerId VARCHAR(255) NOT NULL, -- Manager ID for partitioning
+
+  -- Composite Foreign Key Constraint
+  CONSTRAINT fk_store_manager FOREIGN KEY (storeId, storeManagerId) 
+      REFERENCES Store (storeId, storeManagerId) 
+      ON DELETE CASCADE,
+
+  -- Composite Primary Key
+  PRIMARY KEY ( storeManagerId, empId) -- Composite primary key including storeId, storeManagerId, and empId
+) PARTITION BY LIST (storeManagerId);
+
+
+////////////////////////////////
+CREATE OR REPLACE FUNCTION check_and_create_employee_partition(manager_id TEXT)
+RETURNS VOID AS $$
+DECLARE
+    partition_name TEXT := format('employee_manager_%s', manager_id);
+BEGIN
+    -- Check if the partition already exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_tables
+        WHERE schemaname = 'public' AND tablename = partition_name
+    ) THEN
+        -- Create the partition if it does not exist
+        EXECUTE format('CREATE TABLE %I PARTITION OF Employee FOR VALUES IN (%L)', partition_name, manager_id);
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+/// Changes in schema 
+
+1) unique constainst  @@unique([storeId, storeManagerId]) in store table for referencing in employee table
+2) added storeManagerId in employee for partition 
+
+
+////////
+INSERT INTO "Role" ("roleType") VALUES
+('SALES'),
+('MANAGER'),
+('INVENTORY_STAFF'),
+('STORE_MANAGER');
+
+
+
+INSERT INTO "User" (id, name, email,  "roleId")
+VALUES ('manager1', 'Manager One', 'hashed', 1);
+SELECT check_and_create_store_partition('manager1');
+
+INSERT INTO "store" ("storename", "storelocation", "storemanagerid", "storestatus", "createdat")
+VALUES 
+  ('Downtown Store', '123 Main St', 'manager1', TRUE, NOW())
+
+
+
+SELECT check_and_create_employee_partition('manager1');
+
+
+INSERT INTO Employee (storeId, roleId, empName, empPhone, empStatus, storeManagerId)
+VALUES 
+(1, 2, 'John Doe', '123-456-7890', TRUE, 'manager1');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////
+
+
+OLD PRISMA SCHEMA
+
+
+
+
+
+
+
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleType {
+  SALES
+  MANAGER
+  INVENTORY_STAFF
+  STORE_MANAGER
+} // declared an enum for type safety of roles
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  roleId        Int
+  phone         String?
+  createdAt     DateTime  @default(now())
+  stores        Store[]
+  role          Role @relation(fields: [roleId], references: [roleId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Role {
+  roleId   Int    @id @default(autoincrement())
+  roleType RoleType
+  employee Employee[] // Many employees of the same role type
+
+  User User[]
+}
+
+model Inventory {
+  invId          Int   @id @default(autoincrement())
+  storeId        Int   @unique
+  invItem        String
+  invItemBrand   String
+  invItemStock   Int
+  invItemPrice   Int
+  invItemType    String
+  invCreatedDate DateTime
+  invItemBarcode Int
+  invItemSize    Int
+  invAdditional  Json?
+  store          Store    @relation(fields: [storeId], references: [storeId])
+  sales          Sale[]
+}
+
+model Store {
+  storeId       Int     @id @default(autoincrement()) @map("storeid")
+  storeName     String  @map("storename")
+  storeLocation String  @map("storelocation")
+  storeManagerId String  @map("storemanagerid")
+  storeStatus   Boolean  @map("storestatus")
+  createdAt     DateTime @map("createdat")
+
+  manager       User       @relation(fields: [storeManagerId], references: [id])
+  employees     Employee[]
+  inventory     Inventory?
+  sales         Sale[]
+
+  @@map(name: "store") // Map Prisma model to the PostgreSQL table
+}
+
+model Sale {
+  saleId      Int    @id @default(autoincrement())
+  storeId     Int
+  saleDate    DateTime
+  invId       Int
+  saleQuantity Int
+  salePrice   Int
+  store       Store     @relation(fields: [storeId], references: [storeId])
+  inventory   Inventory @relation(fields: [invId], references: [invId])
+}
+
+model Employee {
+  empId     Int   @id @default(autoincrement())
+  storeId   Int
+  roleId    Int   
+  createdAt DateTime
+  empName   String
+  empPhone  String
+  empStatus Boolean
+  store     Store    @relation(fields: [storeId], references: [storeId])
+  role      Role     @relation(fields: [roleId], references: [roleId])
+}

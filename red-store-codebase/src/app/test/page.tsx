@@ -386,7 +386,7 @@ const Register = () => {
 
 export default Register;
  */
-
+/* 
 "use client"
 
 
@@ -488,3 +488,148 @@ const AddStoreForm: FC = () => {
 };
 
 export default AddStoreForm;
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// components/AddEmployeeForm.tsx
+"use client";
+
+import { useState } from "react";
+
+export default function AddEmployeeForm() {
+  const [formData, setFormData] = useState({
+    storeId: "",
+    roleId: "",
+    empName: "",
+    empPhone: "",
+    empStatus: true,
+    storeManagerId: "",
+  });
+  const [message, setMessage] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/employees", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          storeId: Number(formData.storeId),
+          roleId: Number(formData.roleId),
+          empName: formData.empName,
+          empPhone: formData.empPhone,
+          empStatus: formData.empStatus === true,
+          storeManagerId: formData.storeManagerId,
+        }),
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        setMessage(result.message);
+        setFormData({
+          storeId: "",
+          roleId: "",
+          empName: "",
+          empPhone: "",
+          empStatus: true,
+          storeManagerId: "",
+        });
+      } else {
+        setMessage(result.error);
+      }
+    } catch (error) {
+      setMessage("An error occurred while adding the employee.");
+    }
+  };
+
+  return (
+    <div>
+      <h1>Add New Employee</h1>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Store ID:
+          <input
+            type="number"
+            name="storeId"
+            value={formData.storeId}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Role ID:
+          <input
+            type="number"
+            name="roleId"
+            value={formData.roleId}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Employee Name:
+          <input
+            type="text"
+            name="empName"
+            value={formData.empName}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Employee Phone:
+          <input
+            type="text"
+            name="empPhone"
+            value={formData.empPhone}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Employee Status:
+          <select name="empStatus" value={formData.empStatus ? "true" : "false"} onChange={handleChange}>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </label>
+        <label>
+          Store Manager ID:
+          <input
+            type="text"
+            name="storeManagerId"
+            value={formData.storeManagerId}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <button type="submit">Add Employee</button>
+      </form>
+      {message && <p>{message}</p>}
+    </div>
+  );
+}
