@@ -3,7 +3,7 @@ import { db } from "@/lib/prisma"; // Adjust the import path based on your proje
 
 // Interface for the incoming request body
 interface AddEmployeeRequestBody {
-  storeId: number;
+  storeId: number | string; // Allow both number and string to handle conversion
   roleId: number;
   empName: string;
   empPhone: string;
@@ -16,7 +16,10 @@ export async function POST(req: Request) {
   try {
     // Parse the body of the request
     const body: AddEmployeeRequestBody = await req.json();
-    const { storeId, roleId, empName, empPhone, empStatus, storeManagerId } = body;
+    
+    // Convert storeId to an integer if it’s a string
+    const storeId = Number(body.storeId);
+    const { roleId, empName, empPhone, empStatus, storeManagerId } = body;
 
     // Validation (add your own logic as needed)
     if (!storeId || !roleId || !empName || !empPhone || !storeManagerId) {
@@ -27,7 +30,8 @@ export async function POST(req: Request) {
     }
 
     // Ensure the partition exists for the store manager in the Employee table
-    await db.$executeRaw`SELECT check_and_create_employee_partition(${storeManagerId});`;
+await db.$executeRaw`SELECT check_and_create_employee_partition(${storeId}::integer);`;
+
 
     // Create a new employee record
     const employee = await db.employee.create({

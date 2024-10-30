@@ -111,6 +111,28 @@ CREATE TABLE Employee (
 ) PARTITION BY LIST (storeManagerId);
 
 
+///////////////
+CREATE TABLE Employee (
+  empId           SERIAL,                -- Automatically incrementing employee ID
+  storeId         INT NOT NULL,          -- Foreign key to the Store table, now used for partitioning
+  roleId          INT NOT NULL,          -- Foreign key to the Role table
+  createdAt       TIMESTAMP DEFAULT now(), -- Default created timestamp
+  empName         VARCHAR(255) NOT NULL, -- Employee name
+  empPhone        VARCHAR(50) NOT NULL,  -- Employee phone number
+  empStatus       BOOLEAN NOT NULL,      -- Status of the employee
+  storeManagerId  VARCHAR(255) NOT NULL, -- Manager ID for reference
+  
+  -- Composite Foreign Key Constraint using storeId and storeManagerId
+  CONSTRAINT fk_store_manager FOREIGN KEY (storeId, storeManagerId)
+      REFERENCES Store (storeId, storeManagerId)
+      ON DELETE CASCADE,
+  
+  -- Composite Primary Key with storeId for partitioning
+  PRIMARY KEY (storeId, empId)
+) PARTITION BY LIST (storeId);
+
+
+
 ////////////////////////////////
 CREATE OR REPLACE FUNCTION check_and_create_employee_partition(manager_id TEXT)
 RETURNS VOID AS $$
@@ -128,6 +150,24 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+///////////////////////
+CREATE OR REPLACE FUNCTION check_and_create_employee_partition(store_id INT)
+RETURNS VOID AS $$
+DECLARE
+    partition_name TEXT := format('employee_store_%s', store_id);
+BEGIN
+    -- Check if the partition already exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_tables
+        WHERE schemaname = 'public' AND tablename = partition_name
+    ) THEN
+        -- Create the partition if it does not exist
+        EXECUTE format('CREATE TABLE %I PARTITION OF Employee FOR VALUES IN (%s)', partition_name, store_id);
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 
 
 /// Changes in schema 
