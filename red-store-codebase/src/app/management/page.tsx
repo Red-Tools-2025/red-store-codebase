@@ -4,8 +4,15 @@ import React from "react";
 
 const ManagementPage: React.FC = () => {
   const { data: session } = useSession();
-  console.log(session);
-  return <main>Management page content goes here</main>;
+  return (
+    <>
+      {session ? (
+        <main>Management page content goes here</main>
+      ) : (
+        <main>Session expired please login again</main>
+      )}
+    </>
+  );
 };
 
 export default ManagementPage;
