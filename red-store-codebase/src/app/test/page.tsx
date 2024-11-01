@@ -1,4 +1,4 @@
-/*  "use client";
+"use client";
 import TestLoginForm from "@/components/testing/TestLogin";
 import TestRegisterForm from "@/components/testing/TestRegister";
 import { useState } from "react";
@@ -21,7 +21,7 @@ const ComponentTestingPage = () => {
   );
 };
 
-export default ComponentTestingPage; */
+export default ComponentTestingPage;
 
 /*   // form to test out add employee api
   "use client"
@@ -487,106 +487,106 @@ export default AddStoreForm;
  */
 
 // components/AddEmployeeForm.tsx
-"use client";
+// "use client";
 
-import { useState } from "react";
-import { employeeType } from "../types/management/employee";
+// import { useState } from "react";
+// import { employeeType } from "../types/management/employee";
 
-import useStoreServerActions from "../hooks/management/ServerHooks/useStoreServerActions";
+// import useStoreServerActions from "../hooks/management/ServerHooks/useStoreServerActions";
 
-export default function AddEmployeeForm() {
-  const { handleSubmit } = useStoreServerActions();
+// export default function AddEmployeeForm() {
+//   const { handleSubmit } = useStoreServerActions();
 
-  const [formData, setFormData] = useState<employeeType>({
-    storeId: "",
-    roleId: "",
-    empName: "",
-    empPhone: "",
-    empStatus: true,
-    storeManagerId: "",
-  });
-  const [message, setMessage] = useState("");
+//   const [formData, setFormData] = useState<employeeType>({
+//     storeId: "",
+//     roleId: "",
+//     empName: "",
+//     empPhone: "",
+//     empStatus: true,
+//     storeManagerId: "",
+//   });
+//   const [message, setMessage] = useState("");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "empStatus" ? value === "false" : value,
-    }));
-  };
+//   const handleChange = (
+//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+//   ) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: name === "empStatus" ? value === "false" : value,
+//     }));
+//   };
 
-  return (
-    <div>
-      <h1>Add New Employee</h1>
-      <form
-        onSubmit={(e) => handleSubmit(formData, setMessage, setFormData, e)}
-      >
-        <label>
-          Store ID:
-          <input
-            type="number"
-            name="storeId"
-            value={formData.storeId}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <label>
-          Role ID:
-          <input
-            type="number"
-            name="roleId"
-            value={formData.roleId}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <label>
-          Employee Name:
-          <input
-            type="text"
-            name="empName"
-            value={formData.empName}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <label>
-          Employee Phone:
-          <input
-            type="text"
-            name="empPhone"
-            value={formData.empPhone}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <label>
-          Employee Status:
-          <select
-            name="empStatus"
-            value={formData.empStatus ? "true" : "false"}
-            onChange={handleChange}
-          >
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
-          </select>
-        </label>
-        <label>
-          Store Manager ID:
-          <input
-            type="text"
-            name="storeManagerId"
-            value={formData.storeManagerId}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <button type="submit">Add Employee</button>
-      </form>
-      {message && <p>{message}</p>}
-    </div>
-  );
-}
+//   return (
+//     <div>
+//       <h1>Add New Employee</h1>
+//       <form
+//         onSubmit={(e) => handleSubmit(formData, setMessage, setFormData, e)}
+//       >
+//         <label>
+//           Store ID:
+//           <input
+//             type="number"
+//             name="storeId"
+//             value={formData.storeId}
+//             onChange={handleChange}
+//             required
+//           />
+//         </label>
+//         <label>
+//           Role ID:
+//           <input
+//             type="number"
+//             name="roleId"
+//             value={formData.roleId}
+//             onChange={handleChange}
+//             required
+//           />
+//         </label>
+//         <label>
+//           Employee Name:
+//           <input
+//             type="text"
+//             name="empName"
+//             value={formData.empName}
+//             onChange={handleChange}
+//             required
+//           />
+//         </label>
+//         <label>
+//           Employee Phone:
+//           <input
+//             type="text"
+//             name="empPhone"
+//             value={formData.empPhone}
+//             onChange={handleChange}
+//             required
+//           />
+//         </label>
+//         <label>
+//           Employee Status:
+//           <select
+//             name="empStatus"
+//             value={formData.empStatus ? "true" : "false"}
+//             onChange={handleChange}
+//           >
+//             <option value="true">Active</option>
+//             <option value="false">Inactive</option>
+//           </select>
+//         </label>
+//         <label>
+//           Store Manager ID:
+//           <input
+//             type="text"
+//             name="storeManagerId"
+//             value={formData.storeManagerId}
+//             onChange={handleChange}
+//             required
+//           />
+//         </label>
+//         <button type="submit">Add Employee</button>
+//       </form>
+//       {message && <p>{message}</p>}
+//     </div>
+//   );
+// }
