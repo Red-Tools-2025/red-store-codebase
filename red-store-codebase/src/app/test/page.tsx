@@ -23,8 +23,6 @@ const ComponentTestingPage = () => {
 
 export default ComponentTestingPage; */
 
-
-
 /*   // form to test out add employee api
   "use client"
 
@@ -157,11 +155,9 @@ export default ComponentTestingPage; */
  export default AddEmployeeForm;
  */
 
+// pages/add-store.tsx
 
-
- // pages/add-store.tsx
-
- /* "use client"
+/* "use client"
 
 import { useState } from "react";
 
@@ -490,24 +486,6 @@ const AddStoreForm: FC = () => {
 export default AddStoreForm;
  */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // components/AddEmployeeForm.tsx
 "use client";
 
@@ -524,7 +502,9 @@ export default function AddEmployeeForm() {
   });
   const [message, setMessage] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -532,7 +512,7 @@ export default function AddEmployeeForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/employees", {
+      const res = await fetch("/api/management/employees", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -612,7 +592,11 @@ export default function AddEmployeeForm() {
         </label>
         <label>
           Employee Status:
-          <select name="empStatus" value={formData.empStatus ? "true" : "false"} onChange={handleChange}>
+          <select
+            name="empStatus"
+            value={formData.empStatus ? "true" : "false"}
+            onChange={handleChange}
+          >
             <option value="true">Active</option>
             <option value="false">Inactive</option>
           </select>
