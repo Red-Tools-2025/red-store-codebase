@@ -57,18 +57,41 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+// fetching stores for specific manager only
+// endpoint -- http://localhost:3000/api/management/stores?storeManagerID=${IDhere}
+export async function GET(req: Request) {
   try {
-    // const body: FetchStoresRequestBody = await req.json();
-    // const { storeManagerID } = body;
+    const { searchParams } = new URL(req.url);
+    const storeManagerID = searchParams.get("storeManagerID");
 
-    const stores_for_manager = await db.store.findMany();
+    if (!storeManagerID) {
+      return NextResponse.json(
+        { error: "storeManagerID is required" },
+        { status: 400 }
+      );
+    }
+
+    const stores_for_manager = await db.store.findMany({
+      where: {
+        storeManagerId: storeManagerID,
+      },
+    });
     if (stores_for_manager.length > 0) {
       return NextResponse.json(
         {
+          message: "Data retrieved",
           stores_for_manager,
         },
         { status: 200 }
+      );
+    } else {
+      NextResponse.json(
+        {
+          message: "No stores available for manager",
+        },
+        {
+          status: 204, // no data found
+        }
       );
     }
   } catch (err: unknown) {
