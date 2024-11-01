@@ -490,9 +490,14 @@ export default AddStoreForm;
 "use client";
 
 import { useState } from "react";
+import { employeeType } from "../types/management/employee";
+
+import useStoreServerActions from "../hooks/management/ServerHooks/useStoreServerActions";
 
 export default function AddEmployeeForm() {
-  const [formData, setFormData] = useState({
+  const { handleSubmit } = useStoreServerActions();
+
+  const [formData, setFormData] = useState<employeeType>({
     storeId: "",
     roleId: "",
     empName: "",
@@ -506,50 +511,18 @@ export default function AddEmployeeForm() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("/api/management/employees", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          storeId: Number(formData.storeId),
-          roleId: Number(formData.roleId),
-          empName: formData.empName,
-          empPhone: formData.empPhone,
-          empStatus: formData.empStatus === true,
-          storeManagerId: formData.storeManagerId,
-        }),
-      });
-
-      const result = await res.json();
-      if (res.ok) {
-        setMessage(result.message);
-        setFormData({
-          storeId: "",
-          roleId: "",
-          empName: "",
-          empPhone: "",
-          empStatus: true,
-          storeManagerId: "",
-        });
-      } else {
-        setMessage(result.error);
-      }
-    } catch (error) {
-      setMessage("An error occurred while adding the employee.");
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "empStatus" ? value === "false" : value,
+    }));
   };
 
   return (
     <div>
       <h1>Add New Employee</h1>
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={(e) => handleSubmit(formData, setMessage, setFormData, e)}
+      >
         <label>
           Store ID:
           <input
