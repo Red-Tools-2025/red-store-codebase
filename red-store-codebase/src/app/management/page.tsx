@@ -1,18 +1,10 @@
 "use client";
-import { useSession } from "next-auth/react";
 import React from "react";
+import { useManagement } from "../contexts/management/ManagementContext";
 
 const ManagementPage: React.FC = () => {
-  const { data: session } = useSession();
-  return (
-    <>
-      {session ? (
-        <main>Management page content goes here</main>
-      ) : (
-        <main>Session expired please login again</main>
-      )}
-    </>
-  );
+  const { sessionData } = useManagement();
+  return <main>Management page content goes here</main>;
 };
 
 export default ManagementPage;

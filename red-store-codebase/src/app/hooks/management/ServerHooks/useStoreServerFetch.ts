@@ -1,12 +1,5 @@
+import { Store } from "@prisma/client";
 import { useState, useEffect } from "react";
-
-interface Store {
-  storeName: string;
-  storeLocation: string;
-  storeManagerId: string;
-  storeStatus: boolean;
-  createdAt: string;
-}
 
 interface FetchStoresResult {
   data: Store[] | null;
