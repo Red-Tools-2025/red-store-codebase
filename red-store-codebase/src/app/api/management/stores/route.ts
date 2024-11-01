@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma"; // Adjust the import path based on your project structure
+import { error } from "console";
 
 // Interface for the incoming request body
 interface AddStoreRequestBody {
@@ -7,6 +8,10 @@ interface AddStoreRequestBody {
   storeLocation: string;
   storeManagerId: string; // Assuming this is a user ID
   storeStatus: boolean;
+}
+
+interface FetchStoresRequestBody {
+  storeManagerID: string;
 }
 
 // Function to handle the POST request
@@ -47,6 +52,33 @@ export async function POST(req: Request) {
     console.error("Error adding store:", err);
     return NextResponse.json(
       { error: "An error occurred while adding the store" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    // const body: FetchStoresRequestBody = await req.json();
+    // const { storeManagerID } = body;
+
+    const stores_for_manager = await db.store.findMany();
+    if (stores_for_manager.length > 0) {
+      return NextResponse.json(
+        {
+          stores_for_manager,
+        },
+        { status: 200 }
+      );
+    }
+  } catch (err: unknown) {
+    console.log("Error fetching stores for manager");
+    const errMessage =
+      err instanceof Error ? err.message : "An unknown error occured";
+    return NextResponse.json(
+      {
+        error: `An error occured while fetching store_data for manager: ${errMessage}`,
+      },
       { status: 500 }
     );
   }
