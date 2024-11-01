@@ -401,7 +401,7 @@ const AddStoreForm: FC = () => {
     setMessage(""); // Clear previous messages
 
     try {
-      const response = await axios.post("/api/stores", {
+      const response = await axios.post("/api/management/stores", {
         storeName,
         storeLocation,
         storeManagerId,
