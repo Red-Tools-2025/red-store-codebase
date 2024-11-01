@@ -2,7 +2,10 @@ import { Button } from "@/components/ui/button";
 import { IoMdPersonAdd } from "react-icons/io";
 import { IoStorefront } from "react-icons/io5";
 import { MdOutlineAssignment } from "react-icons/md";
+import { IoMdArrowDropdownCircle } from "react-icons/io";
+
 import React from "react";
+import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -16,7 +19,7 @@ const ManagementPageLayout: React.FC<ManagementPageLayoutProps> = ({
       <div className="flex justify-between">
         <h1 className="text-2xl font-semibold">User and Store Management</h1>
         <div className="flex gap-2">
-          <Button>Choose Outlet</Button>
+          <DropDownStoreSelect />
           <Button variant={"icon-left"}>
             <MdOutlineAssignment className="mr-2" />
             Assign Employee
