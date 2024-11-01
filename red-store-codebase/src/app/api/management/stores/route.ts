@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma"; // Adjust the import path based on your project structure
-import { error } from "console";
 
 // Interface for the incoming request body
 interface AddStoreRequestBody {
@@ -8,10 +7,6 @@ interface AddStoreRequestBody {
   storeLocation: string;
   storeManagerId: string; // Assuming this is a user ID
   storeStatus: boolean;
-}
-
-interface FetchStoresRequestBody {
-  storeManagerID: string;
 }
 
 // Function to handle the POST request
