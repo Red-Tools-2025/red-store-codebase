@@ -38,17 +38,14 @@ const useStoreServerFetch = (
           }
         );
 
+        const result = await res.json(); // Parse the response once
+
         if (res.ok) {
-          if (res.status === 204) {
-            setData([]);
-            setError("No stores available for the specified manager.");
-          } else {
-            const result = await res.json();
-            setData(result.stores);
+          if (result.store_data) {
+            setData(result.store_data); // Use the correct property from the response
           }
         } else {
-          const errorResponse = await res.json();
-          setError(errorResponse.error || "An unknown error occurred.");
+          setError(result.error || "An unknown error occurred.");
         }
       } catch (err) {
         setError("Network error: Failed to fetch stores.");
