@@ -71,24 +71,26 @@ export async function GET(req: Request) {
         storeManagerId: storeManagerID,
       },
     });
-    if (stores_for_manager.length > 0) {
+
+    if (stores_for_manager.length === 0) {
       return NextResponse.json(
         {
-          message: "Data retrieved",
-          stores_for_manager,
-        },
-        { status: 200 }
-      );
-    } else {
-      NextResponse.json(
-        {
-          message: "No stores available for manager",
+          message: "No stores available for this manager.",
         },
         {
-          status: 204, // no data found
+          status: 200, // Change this to 200 to allow a body
         }
       );
     }
+
+    // Return the stores if found
+    return NextResponse.json(
+      {
+        message: "Data retrieved successfully",
+        stores_for_manager,
+      },
+      { status: 200 }
+    );
   } catch (err: unknown) {
     console.log("Error fetching stores for manager");
     const errMessage =
