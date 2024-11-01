@@ -76,6 +76,7 @@ export async function GET(req: Request) {
       return NextResponse.json(
         {
           message: "No stores available for this manager.",
+          store_data: stores_for_manager,
         },
         {
           status: 200, // Change this to 200 to allow a body
