@@ -16,13 +16,15 @@ export async function POST(req: Request) {
     const body: AddStoreRequestBody = await req.json();
     const { storeName, storeLocation, storeManagerId, storeStatus } = body;
 
-    // Validation (add your own logic as needed)
-    if (!storeName || !storeLocation || !storeManagerId) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
-      );
-    }
+    console.log({ body });
+
+    // Validation done on frontend
+    // if (!storeName || !storeLocation || !storeManagerId) {
+    //   return NextResponse.json(
+    //     { error: "All fields are required" },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Ensure the partition exists for the store manager
     await db.$executeRaw`SELECT check_and_create_store_partition(${storeManagerId});`;

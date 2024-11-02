@@ -7,9 +7,10 @@ import { SessionUserType } from "../types/management/context";
 import { MdOutlineAssignment } from "react-icons/md";
 import { ManagementProvider } from "../contexts/management/ManagementContext";
 
-import React from "react";
+import React, { useState } from "react";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
+import AddStoreModal from "@/components/feature/management/feature-component/FormModals/AddStoreModal";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -22,11 +23,25 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
 
   const { data, error, isLoading } = useStoreServerFetch(sessionUser?.id ?? "");
 
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleStoreAdded = () => {
+    console.log("Store Added");
+  };
+
   return (
     <ManagementProvider storeData={data} sessionData={sessionUser ?? null}>
       <div className="p-5">
         {session ? (
-          <div>
+          <>
             {isLoading && !data?.length ? (
               <>Loading</>
             ) : (
@@ -45,16 +60,21 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                       <IoMdPersonAdd className="mr-2" />
                       Add Employee
                     </Button>
-                    <Button variant={"icon-left"}>
+                    <Button onClick={handleOpenModal} variant={"icon-left"}>
                       <IoStorefront className="mr-2" />
                       Add Store
                     </Button>
+                    <AddStoreModal
+                      isOpen={isModalOpen}
+                      onClose={handleCloseModal}
+                      onStoreAdded={handleStoreAdded}
+                    />
                   </div>
                 </div>
                 {children}
               </>
             )}
-          </div>
+          </>
         ) : (
           <main>Session not found please login again</main>
         )}

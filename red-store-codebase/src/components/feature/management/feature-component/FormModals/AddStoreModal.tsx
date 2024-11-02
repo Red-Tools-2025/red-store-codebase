@@ -1,3 +1,4 @@
+import { useManagement } from "@/app/contexts/management/ManagementContext";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -6,7 +7,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,21 +14,27 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 interface AddStoreModalProps {
+  isOpen: boolean; // Whether the dialog is open
+  onClose: () => void; // Function to close the modal
   onStoreAdded: () => void; // Callback to refresh store data
 }
 
-const AddStoreModal: React.FC<AddStoreModalProps> = ({ onStoreAdded }) => {
+const AddStoreModal: React.FC<AddStoreModalProps> = ({
+  isOpen,
+  onClose,
+  onStoreAdded,
+}) => {
+  const { sessionData } = useManagement();
   const formik = useFormik({
     initialValues: {
       storeName: "",
       storeLocation: "",
-      storeManagerId: "",
+      storeManagerId: sessionData?.id,
       storeStatus: true, // Default status
     },
     validationSchema: Yup.object({
       storeName: Yup.string().required("Store name is required"),
       storeLocation: Yup.string().required("Store location is required"),
-      storeManagerId: Yup.string().required("Store manager ID is required"),
     }),
     onSubmit: async (values) => {
       try {
@@ -46,6 +52,8 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({ onStoreAdded }) => {
 
         await response.json();
         onStoreAdded(); // Refresh store data
+        formik.resetForm(); // Reset the form after submission
+        onClose(); // Close the modal after submission
       } catch (error) {
         console.error(error);
       }
@@ -53,10 +61,7 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({ onStoreAdded }) => {
   });
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Add Store</Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add New Store</DialogTitle>
@@ -65,7 +70,7 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({ onStoreAdded }) => {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={formik.handleSubmit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
+          <div className="flex-col">
             <Label htmlFor="storeName" className="text-right">
               Store Name
             </Label>
@@ -84,7 +89,7 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({ onStoreAdded }) => {
               </div>
             ) : null}
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
+          <div className="flex-col">
             <Label htmlFor="storeLocation" className="text-right">
               Store Location
             </Label>
@@ -103,25 +108,7 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({ onStoreAdded }) => {
               </div>
             ) : null}
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="storeManagerId" className="text-right">
-              Store Manager ID
-            </Label>
-            <Input
-              id="storeManagerId"
-              name="storeManagerId"
-              type="text"
-              onChange={formik.handleChange}
-              value={formik.values.storeManagerId}
-              onBlur={formik.handleBlur}
-              className="col-span-3"
-            />
-            {formik.touched.storeManagerId && formik.errors.storeManagerId ? (
-              <div className="text-red-500 col-span-4">
-                {formik.errors.storeManagerId}
-              </div>
-            ) : null}
-          </div>
+
           <DialogFooter>
             <Button type="submit">Add Store</Button>
           </DialogFooter>
