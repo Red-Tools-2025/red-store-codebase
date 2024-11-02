@@ -14,15 +14,15 @@ const AnalyticsPage = () => {
   console.log(session);
 
   return (
-    <main>
-      <h2>Analytics Dashboard</h2>
-      <SideNavProvider>
+    <div >
+     {/*  <h2>Analytics Dashboard</h2> */}
+      {/* <SideNavProvider>
         <SideNav
           SideNavItems={SidNavItems}
           SideNavCloseFn={handleSideNavCloseFn}
         />
-      </SideNavProvider>
-    </main>
+      </SideNavProvider> */}
+    </div>
   );
 };
 
