@@ -6,15 +6,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Store } from "@prisma/client";
 import { IoMdArrowDropdownCircle } from "react-icons/io";
 
 interface DropDownStoreSelectProps {
   isDisabled: boolean;
+  data: Store[];
 }
 
 const DropDownStoreSelect: React.FC<DropDownStoreSelectProps> = ({
   isDisabled,
+  data,
 }) => {
+  console.log(data);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -29,12 +33,16 @@ const DropDownStoreSelect: React.FC<DropDownStoreSelectProps> = ({
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Billing</DropdownMenuItem>
-        <DropdownMenuItem>Team</DropdownMenuItem>
-        <DropdownMenuItem>Subscription</DropdownMenuItem>
+        {data && data.length > 0 ? (
+          data.map((store) => (
+            <DropdownMenuItem key={store.storeId}>
+              {store.storeName}
+            </DropdownMenuItem>
+          ))
+        ) : (
+          <DropdownMenuLabel>No stores available</DropdownMenuLabel>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

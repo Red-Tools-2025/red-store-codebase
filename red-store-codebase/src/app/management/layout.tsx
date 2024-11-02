@@ -37,6 +37,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     console.log("Store Added");
   };
 
+  console.log(data);
   return (
     <ManagementProvider storeData={data} sessionData={sessionUser ?? null}>
       <div className="p-5">
@@ -51,7 +52,10 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                     User and Store Management
                   </h1>
                   <div className="flex gap-2">
-                    <DropDownStoreSelect isDisabled={data?.length === 0} />
+                    <DropDownStoreSelect
+                      data={data ?? []}
+                      isDisabled={data?.length === 0}
+                    />
                     <Button variant={"icon-left"}>
                       <MdOutlineAssignment className="mr-2" />
                       Assign Employee
