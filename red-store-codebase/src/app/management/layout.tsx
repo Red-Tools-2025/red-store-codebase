@@ -37,7 +37,6 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     console.log("Store Added");
   };
 
-  console.log(data);
   return (
     <ManagementProvider storeData={data} sessionData={sessionUser ?? null}>
       <div className="p-5">
