@@ -1,6 +1,5 @@
 "use client";
 import { useManagement } from "../contexts/management/ManagementContext";
-
 import React, { useState } from "react";
 import StoreDataTable from "@/components/feature/management/feature-component/Tables/StoreDataTable";
 import StoreTableController from "@/components/feature/management/feature-component/Tables/StoreTableController";

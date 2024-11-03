@@ -8,11 +8,12 @@ const StoreTableController: React.FC<StoreTableControllerProps> = ({
   setSearchValue,
 }) => {
   return (
-    <div className="flex">
+    <div className="flex justify-space">
       <Input
         placeholder="search store"
         onChange={(e) => setSearchValue(e.target.value)}
       />
+      <div className="flex gap-2"></div>
     </div>
   );
 };
