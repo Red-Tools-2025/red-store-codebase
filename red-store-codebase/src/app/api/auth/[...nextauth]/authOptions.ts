@@ -96,19 +96,21 @@ const authOptions: NextAuthOptions = {
     // modied the toke call back to return the email and user name via the generated jwt token
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.email = user.email;
         token.name = user.name;
       }
       return token;
     },
     // modified the session call back to return the session string along with the user object, for validating, and a normal session if no user found
-    async session({ session, token, user }) {
-      if (user) {
+    async session({ session, token }) {
+      if (token) {
         return {
           ...session,
           user: {
-            ...token,
-            id: user.id,
+            id: token.sub, // .sub a unique identifier for each data object created, hence .sub === user.id
+            name: token.name,
+            email: token.email,
           },
         };
       }
