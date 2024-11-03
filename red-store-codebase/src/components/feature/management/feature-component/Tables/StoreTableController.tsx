@@ -1,11 +1,13 @@
 "use client";
 import { Input } from "@/components/ui/input";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import FilterDropdown from "../Filter";
 import { Store } from "@prisma/client";
 
 interface StoreTableControllerProps {
   setSearchValue: Dispatch<SetStateAction<String>>;
+  setLocationFilterValue: Dispatch<SetStateAction<String>>;
+  setStatusFilterValue: Dispatch<SetStateAction<String>>;
   storeData: Store[] | null;
   locations: { value: string; label: string }[];
 }
@@ -14,11 +16,9 @@ const StoreTableController: React.FC<StoreTableControllerProps> = ({
   setSearchValue,
   storeData,
   locations,
+  setLocationFilterValue,
+  setStatusFilterValue,
 }) => {
-  //   const [locations, setLocations] = useState<
-  //     { value: string; label: string }[]
-  //   >([]);
-
   const statuses = [
     { value: "active", label: "Active" },
     { value: "inactive", label: "Inactive" },
@@ -34,19 +34,19 @@ const StoreTableController: React.FC<StoreTableControllerProps> = ({
           />
           <div className="flex gap-2">
             <FilterDropdown
-              label="Location"
+              label={`Locations`}
               options={locations}
-              onValueChange={(value) => console.log("Location:", value)}
+              onValueChange={(value) => setLocationFilterValue(value)}
             />
             <FilterDropdown
-              label="Status"
+              label={`Status`}
               options={statuses}
-              onValueChange={(value) => console.log("Status:", value)}
+              onValueChange={(value) => setStatusFilterValue(value)}
             />
           </div>
         </>
       ) : (
-        <div className="px-3 py-1 rounded-sm bg-red-200 text-red-600 ">
+        <div className="px-3 py-1 rounded-sm bg-red-200 text-red-600">
           No store data available to process
         </div>
       )}

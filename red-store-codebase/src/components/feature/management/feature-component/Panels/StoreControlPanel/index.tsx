@@ -1,18 +1,21 @@
 import { Store } from "@prisma/client";
 import StoreTableController from "../../Tables/StoreTableController";
 import StoreDataTable from "../../Tables/StoreDataTable";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface StoreControlPanelProps {
   storeData: Store[] | null;
 }
 
 const StoreControlPanel: React.FC<StoreControlPanelProps> = ({ storeData }) => {
-  const [searchTableController, setSearchTableController] =
-    useState<String>("");
+  const [searchValue, setSearchValue] = useState<String>("");
   const [locations, setLocations] = useState<
     { value: string; label: string }[]
   >([]);
+
+  // states to handle filters
+  const [locationFilterValue, setLocationFilterValue] = useState<String>("All");
+  const [statusFilterValue, setStatusFilterValue] = useState<String>("All");
 
   // Effect to watch for updates in storeData
   useEffect(() => {
@@ -32,6 +35,8 @@ const StoreControlPanel: React.FC<StoreControlPanelProps> = ({ storeData }) => {
         }
         return accumulator;
       }, []);
+
+      // adding all options for default filtering
       setLocations(uniqueLocations);
     } else {
       setLocations([]);
@@ -43,9 +48,16 @@ const StoreControlPanel: React.FC<StoreControlPanelProps> = ({ storeData }) => {
       <StoreTableController
         locations={locations}
         storeData={storeData}
-        setSearchValue={setSearchTableController}
+        setSearchValue={setSearchValue}
+        setLocationFilterValue={setLocationFilterValue}
+        setStatusFilterValue={setStatusFilterValue}
       />
-      <StoreDataTable storeData={storeData} />
+      <StoreDataTable
+        statusFilterValue={statusFilterValue}
+        locationFilterValue={locationFilterValue}
+        searchValue={searchValue}
+        storeData={storeData}
+      />
     </div>
   );
 };

@@ -27,6 +27,10 @@ const FilterDropdown = ({
   onValueChange,
   className = "",
 }: FilterDropdownProps) => {
+  // Include an "All" option
+  const allOption: FilterOption = { value: "All", label: "All" };
+  const extendedOptions = [allOption, ...options];
+
   // Early return with disabled state if no options
   if (!options || options.length === 0) {
     return (
@@ -41,13 +45,27 @@ const FilterDropdown = ({
     );
   }
 
+  // Determine if the filter is active
+  const isActive = value && value !== "all";
+
   return (
-    <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className={`w-[140px] h-9 ${className}`}>
+    <Select
+      value={value}
+      onValueChange={(selectedValue) => {
+        if (onValueChange) {
+          onValueChange(selectedValue);
+        }
+      }}
+    >
+      <SelectTrigger
+        className={`w-[140px] h-9 ${className} ${
+          isActive ? "location-filter-active" : ""
+        }`}
+      >
         <SelectValue placeholder={label} />
       </SelectTrigger>
       <SelectContent>
-        {options.map((option) => (
+        {extendedOptions.map((option) => (
           <SelectItem key={option.value} value={option.value}>
             {option.label}
           </SelectItem>
