@@ -45,34 +45,34 @@ const StoreDataTable: React.FC<StoreDataTableProps> = ({
       );
     }
 
-    // Apply status filter - only filter if not "All"
-    if (statusFilterValue !== "All") {
-      filtered = filtered.filter((store) => {
-        const isActive = statusFilterValue === "active";
-        return store.storeStatus === isActive;
-      });
-    }
-
     return filtered;
-  }, [storeData, searchValue, locationFilterValue, statusFilterValue]);
+  }, [storeData, searchValue, locationFilterValue]);
 
   // Map directly to table rows without additional filtering
-  const tableRows = filteredData?.map((store, index) => (
-    <TableRow key={index}>
-      <TableCell className="w-auto">{store.storeId}</TableCell>
-      <TableCell className="w-auto">{store.storeName}</TableCell>
-      <TableCell className="w-auto">{store.storeLocation}</TableCell>
-      <TableCell className="w-auto">
-        {store.storeStatus ? (
-          <p className="bg-green-100 text-green-600 font-semibold inline-block w-auto px-3 py-1 rounded-sm">
-            Active
-          </p>
-        ) : (
-          <p>Inactive</p>
-        )}
-      </TableCell>
-    </TableRow>
-  ));
+  const tableRows = filteredData
+    ?.filter((store) =>
+      statusFilterValue === "active"
+        ? store.storeStatus === true
+        : statusFilterValue === "inactive"
+        ? store.storeStatus === false
+        : store.storeStatus === true || false
+    )
+    .map((store, index) => (
+      <TableRow key={index}>
+        <TableCell className="w-auto">{store.storeId}</TableCell>
+        <TableCell className="w-auto">{store.storeName}</TableCell>
+        <TableCell className="w-auto">{store.storeLocation}</TableCell>
+        <TableCell className="w-auto">
+          {store.storeStatus ? (
+            <p className="bg-green-100 text-green-600 font-semibold inline-block w-auto px-3 py-1 rounded-sm">
+              Active
+            </p>
+          ) : (
+            <p>Inactive</p>
+          )}
+        </TableCell>
+      </TableRow>
+    ));
 
   return (
     <div className="flex flex-col mt-3">

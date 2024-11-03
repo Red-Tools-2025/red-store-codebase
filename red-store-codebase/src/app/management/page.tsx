@@ -1,13 +1,10 @@
 "use client";
 import { useManagement } from "../contexts/management/ManagementContext";
-import React, { useState } from "react";
-import StoreDataTable from "@/components/feature/management/feature-component/Tables/StoreDataTable";
-import StoreTableController from "@/components/feature/management/feature-component/Tables/StoreTableController";
+import React from "react";
 import StoreControlPanel from "@/components/feature/management/feature-component/Panels/StoreControlPanel";
 
 const ManagementPage: React.FC = () => {
   const { sessionData, storeData } = useManagement();
-
   return (
     <main>
       <div className="flex my-2 gap-2">
