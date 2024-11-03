@@ -1,3 +1,4 @@
+import axios, { AxiosError } from "axios";
 import { Store } from "@prisma/client";
 import { useState, useEffect } from "react";
 
@@ -5,6 +6,10 @@ interface FetchStoresResult {
   data: Store[] | null;
   isLoading: boolean;
   error: string | null;
+}
+
+interface StoresResponse {
+  stores_for_manager: Store[]; // Adjust this according to your actual response structure
 }
 
 const useStoreServerFetch = (
@@ -20,28 +25,19 @@ const useStoreServerFetch = (
     const fetchStores = async () => {
       setIsLoading(true);
       setError(null);
+
       try {
-        const res = await fetch(
-          `/api/management/stores?storeManagerID=${storeManagerID}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const res = await axios.get<StoresResponse>(`/api/management/stores`, {
+          params: { storeManagerID },
+          headers: { "Content-Type": "application/json" },
+        });
 
-        const result = await res.json(); // Parse the response once
-
-        if (res.ok) {
-          if (result.stores_for_manager) {
-            setData(result.stores_for_manager); // Use the correct property from the response
-          }
-        } else {
-          setError(result.error || "An unknown error occurred.");
+        if (res.data.stores_for_manager) {
+          setData(res.data.stores_for_manager);
         }
       } catch (err) {
-        setError("Network error: Failed to fetch stores.");
+        const axiosError = err as AxiosError;
+        setError(axiosError.message || "An unknown error occurred.");
       } finally {
         setIsLoading(false);
       }
