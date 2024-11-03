@@ -34,3 +34,5 @@ const TableLayout: React.FC<TableLayoutProps> = ({
     </Table>
   );
 };
+
+export default TableLayout;
