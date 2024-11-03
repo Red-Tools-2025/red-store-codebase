@@ -1,15 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma"; // Adjust the import path based on your project structure
-
-// Interface for the incoming request body
-interface AddEmployeeRequestBody {
-  storeId: number | string; // Allow both number and string to handle conversion
-  roleId: number;
-  empName: string;
-  empPhone: string;
-  empStatus: boolean;
-  storeManagerId: string; // This is used for partitioning
-}
+import { AddEmployeeRequestBody } from "@/app/types/management/employee";
 
 // Function to handle the POST request
 export async function POST(req: Request) {
