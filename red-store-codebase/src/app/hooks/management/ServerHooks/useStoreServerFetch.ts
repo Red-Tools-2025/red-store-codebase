@@ -34,8 +34,8 @@ const useStoreServerFetch = (
         const result = await res.json(); // Parse the response once
 
         if (res.ok) {
-          if (result.store_data) {
-            setData(result.store_data); // Use the correct property from the response
+          if (result.stores_for_manager) {
+            setData(result.stores_for_manager); // Use the correct property from the response
           }
         } else {
           setError(result.error || "An unknown error occurred.");
