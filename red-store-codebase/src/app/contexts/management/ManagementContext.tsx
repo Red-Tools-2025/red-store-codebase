@@ -5,6 +5,7 @@ import { createContext, useContext } from "react";
 interface ManagementContextType {
   storeData: Store[] | null;
   sessionData: SessionUserType | null;
+  selectedStore: Store | null;
 }
 
 const ManagementContext = createContext<ManagementContextType | undefined>(
@@ -16,13 +17,17 @@ export const ManagementProvider = ({
   children,
   storeData,
   sessionData,
+  selectedStore,
 }: {
   children: React.ReactNode;
   storeData: Store[] | null;
+  selectedStore: Store | null;
   sessionData: SessionUserType | null;
 }) => {
   return (
-    <ManagementContext.Provider value={{ storeData, sessionData }}>
+    <ManagementContext.Provider
+      value={{ selectedStore, storeData, sessionData }}
+    >
       {children}
     </ManagementContext.Provider>
   );

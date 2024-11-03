@@ -12,6 +12,7 @@ import DropDownStoreSelect from "@/components/feature/management/feature-compone
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import AddStoreModal from "@/components/feature/management/feature-component/FormModals/AddStoreModal";
 import AddEmployeeModal from "@/components/feature/management/feature-component/FormModals/AddEmployeeModal";
+import { Store } from "@prisma/client";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -27,6 +28,8 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   const [isStoreModalOpen, setisStoreModalOpen] = useState<boolean>(false);
   const [isEmpModalOpen, setIsEmpModalOpen] = useState<boolean>(false);
 
+  const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
+
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
   ) => {
@@ -40,7 +43,11 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   };
 
   return (
-    <ManagementProvider storeData={data} sessionData={sessionUser ?? null}>
+    <ManagementProvider
+      selectedStore={selectedStore}
+      storeData={data}
+      sessionData={sessionUser ?? null}
+    >
       <div className="p-5">
         {session ? (
           <>
@@ -56,12 +63,15 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                     <DropDownStoreSelect
                       data={data ?? []}
                       isDisabled={data?.length === 0}
+                      setSelectedStore={setIsSelectedStore}
+                      selectedStore={selectedStore}
                     />
                     <Button variant={"icon-left"}>
                       <MdOutlineAssignment className="mr-2" />
                       Assign Employee
                     </Button>
                     <Button
+                      disabled={selectedStore ? false : true}
                       onClick={() => handleOpenModal(setIsEmpModalOpen)}
                       variant={"icon-left"}
                     >

@@ -7,19 +7,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Store } from "@prisma/client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { IoMdArrowDropdownCircle } from "react-icons/io";
 
 interface DropDownStoreSelectProps {
   isDisabled: boolean;
+  setSelectedStore: Dispatch<SetStateAction<Store | null>>;
+  selectedStore: Store | null;
   data: Store[];
 }
 
 const DropDownStoreSelect: React.FC<DropDownStoreSelectProps> = ({
+  setSelectedStore,
   isDisabled,
+  selectedStore,
   data,
 }) => {
-  const [selectedOutlet, setSelectedOutLet] = useState<Store | null>(null);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -29,7 +32,7 @@ const DropDownStoreSelect: React.FC<DropDownStoreSelectProps> = ({
         }`}
       >
         <div className="flex items-center">
-          {`${selectedOutlet ? selectedOutlet.storeName : "Select Outlet"}`}
+          {`${selectedStore ? selectedStore.storeName : "Select Outlet"}`}
           <IoMdArrowDropdownCircle className="ml-2 text-lg color-white" />
         </div>
       </DropdownMenuTrigger>
@@ -38,7 +41,7 @@ const DropDownStoreSelect: React.FC<DropDownStoreSelectProps> = ({
         {data && data.length > 0 ? (
           data.map((store) => (
             <DropdownMenuItem
-              onClick={() => setSelectedOutLet(store)}
+              onClick={() => setSelectedStore(store)}
               className="cursor-pointer"
               key={store.storeId}
             >

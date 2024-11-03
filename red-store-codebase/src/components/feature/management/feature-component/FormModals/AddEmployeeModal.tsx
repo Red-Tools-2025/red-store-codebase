@@ -8,6 +8,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
@@ -44,12 +52,17 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   onClose,
 }) => {
   const { toast } = useToast();
-  const { sessionData } = useManagement();
+  const { sessionData, selectedStore } = useManagement();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const roleOptions = [
+    { id: 1, name: "SALES" },
+    { id: 3, name: "INVENTORY_STAFF" },
+  ];
 
   const formik = useFormik({
     initialValues: {
-      storeId: "",
+      storeId: selectedStore?.storeId,
       roleId: "",
       empName: "",
       empPhone: "",
@@ -57,7 +70,6 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
       storeManagerId: sessionData?.id || "",
     },
     validationSchema: Yup.object({
-      storeId: Yup.number().required("Store ID is required"),
       roleId: Yup.number().required("Please select employee role type"),
       empName: Yup.string().required("Employee name is required"),
       empPhone: Yup.string().required("Employee phone is required"),
@@ -126,37 +138,27 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
         </DialogHeader>
         <form onSubmit={formik.handleSubmit} className="grid gap-4 py-4">
           <div className="flex-col">
-            <Label htmlFor="storeId" className="text-right">
-              Store ID
-            </Label>
-            <Input
-              id="storeId"
-              name="storeId"
-              type="number"
-              onChange={formik.handleChange}
-              value={formik.values.storeId}
-              onBlur={formik.handleBlur}
-              className="col-span-3"
-            />
-            {formik.touched.storeId && formik.errors.storeId ? (
-              <div className="text-red-500 col-span-4">
-                {formik.errors.storeId}
-              </div>
-            ) : null}
-          </div>
-          <div className="flex-col">
             <Label htmlFor="roleId" className="text-right">
-              Role ID
+              Employee Role
             </Label>
-            <Input
-              id="roleId"
+            <Select
               name="roleId"
-              type="number"
-              onChange={formik.handleChange}
+              onValueChange={(value) => formik.setFieldValue("roleId", value)}
               value={formik.values.roleId}
-              onBlur={formik.handleBlur}
-              className="col-span-3"
-            />
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {roleOptions.map((role) => (
+                    <SelectItem key={role.id} value={role.id.toString()}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             {formik.touched.roleId && formik.errors.roleId ? (
               <div className="text-red-500 col-span-4">
                 {formik.errors.roleId}
