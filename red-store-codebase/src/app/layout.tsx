@@ -4,6 +4,7 @@ import "./globals.css";
 import ThemeProvider from "@/app/providers/theme-provider";
 import NextAuthProvider from "./providers/NextAuthProvider";
 import { getSession } from "next-auth/react";
+import StructureProvider from "./providers/StructureProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,8 +18,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Akshat Sabavat Portfolio Page",
-  description: "Welcome to my web portfolio !!",
+  title: "Red Store",
+  description: "POS/IM Tool",
 };
 
 export default async function RootLayout({
@@ -38,7 +39,9 @@ export default async function RootLayout({
           enableSystem
           defaultTheme="light"
         >
-          <NextAuthProvider session={session}>{children}</NextAuthProvider>
+          <NextAuthProvider session={session}>
+            <StructureProvider>{children}</StructureProvider>
+          </NextAuthProvider>
         </ThemeProvider>
       </body>
     </html>
