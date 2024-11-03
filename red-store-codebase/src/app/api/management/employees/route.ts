@@ -43,6 +43,7 @@ export async function POST(req: Request) {
 }
 
 //fetching employees for a given store
+// endpoint -- http://localhost:3000/api/management/employees?storeID=${IDhere}
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
