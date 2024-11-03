@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useToast } from "@/hooks/use-toast";
 import { AddEmployeeRequestBody } from "@/app/types/management/employee";
@@ -126,6 +126,12 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
       }
     },
   });
+
+  useEffect(() => {
+    if (selectedStore?.storeId) {
+      formik.setFieldValue("storeId", selectedStore.storeId);
+    }
+  }, [selectedStore]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
