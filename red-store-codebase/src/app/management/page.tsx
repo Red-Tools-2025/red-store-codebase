@@ -5,7 +5,7 @@ import StoreControlPanel from "@/components/feature/management/feature-component
 import EmployeeControlPanel from "@/components/feature/management/feature-component/Panels/EmployeeConrolPanel";
 
 const ManagementPage: React.FC = () => {
-  const { sessionData, storeData } = useManagement();
+  const { storeData } = useManagement();
   return (
     <main>
       <div className="flex my-2 gap-2">

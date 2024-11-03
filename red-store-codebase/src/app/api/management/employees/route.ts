@@ -16,22 +16,13 @@ export async function POST(req: Request) {
   try {
     // Parse the body of the request
     const body: AddEmployeeRequestBody = await req.json();
-    
+
     // Convert storeId to an integer if it’s a string
     const storeId = Number(body.storeId);
     const { roleId, empName, empPhone, empStatus, storeManagerId } = body;
 
-    // Validation (add your own logic as needed)
-    if (!storeId || !roleId || !empName || !empPhone || !storeManagerId) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
-      );
-    }
-
     // Ensure the partition exists for the store manager in the Employee table
-await db.$executeRaw`SELECT check_and_create_employee_partition(${storeId}::integer);`;
-
+    await db.$executeRaw`SELECT check_and_create_employee_partition(${storeId}::integer);`;
 
     // Create a new employee record
     const employee = await db.employee.create({
