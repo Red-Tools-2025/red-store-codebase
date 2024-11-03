@@ -7,10 +7,11 @@ import { SessionUserType } from "../types/management/context";
 import { MdOutlineAssignment } from "react-icons/md";
 import { ManagementProvider } from "../contexts/management/ManagementContext";
 
-import React, { useState } from "react";
+import React, { SetStateAction, useState } from "react";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import AddStoreModal from "@/components/feature/management/feature-component/FormModals/AddStoreModal";
+import AddEmployeeModal from "@/components/feature/management/feature-component/FormModals/AddEmployeeModal";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -23,18 +24,19 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
 
   const { data, error, isLoading } = useStoreServerFetch(sessionUser?.id ?? "");
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isStoreModalOpen, setisStoreModalOpen] = useState<boolean>(false);
+  const [isEmpModalOpen, setIsEmpModalOpen] = useState<boolean>(false);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const handleOpenModal = (
+    setModalType: React.Dispatch<SetStateAction<boolean>>
+  ) => {
+    setModalType(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleStoreAdded = () => {
-    console.log("Store Added");
+  const handleCloseModal = (
+    setModalType: React.Dispatch<SetStateAction<boolean>>
+  ) => {
+    setModalType(false);
   };
 
   return (
@@ -59,18 +61,27 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                       <MdOutlineAssignment className="mr-2" />
                       Assign Employee
                     </Button>
-                    <Button variant={"icon-left"}>
+                    <Button
+                      onClick={() => handleOpenModal(setIsEmpModalOpen)}
+                      variant={"icon-left"}
+                    >
                       <IoMdPersonAdd className="mr-2" />
                       Add Employee
                     </Button>
-                    <Button onClick={handleOpenModal} variant={"icon-left"}>
+                    <Button
+                      onClick={() => handleOpenModal(setisStoreModalOpen)}
+                      variant={"icon-left"}
+                    >
                       <IoStorefront className="mr-2" />
                       Add Store
                     </Button>
                     <AddStoreModal
-                      isOpen={isModalOpen}
-                      onClose={handleCloseModal}
-                      onStoreAdded={handleStoreAdded}
+                      isOpen={isStoreModalOpen}
+                      onClose={() => handleCloseModal(setisStoreModalOpen)}
+                    />
+                    <AddEmployeeModal
+                      isOpen={isEmpModalOpen}
+                      onClose={() => handleCloseModal(setIsEmpModalOpen)}
                     />
                   </div>
                 </div>

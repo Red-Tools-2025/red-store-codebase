@@ -16,13 +16,13 @@ import * as Yup from "yup";
 interface AddStoreModalProps {
   isOpen: boolean; // Whether the dialog is open
   onClose: () => void; // Function to close the modal
-  onStoreAdded: () => void; // Callback to refresh store data
+  // onStoreAdded: () => void; // Callback to refresh store data
 }
 
 const AddStoreModal: React.FC<AddStoreModalProps> = ({
   isOpen,
   onClose,
-  onStoreAdded,
+  // onStoreAdded,
 }) => {
   const { sessionData } = useManagement();
   const formik = useFormik({
@@ -51,7 +51,7 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({
         }
 
         await response.json();
-        onStoreAdded(); // Refresh store data
+        // onStoreAdded(); // Refresh store data
         formik.resetForm(); // Reset the form after submission
         onClose(); // Close the modal after submission
       } catch (error) {

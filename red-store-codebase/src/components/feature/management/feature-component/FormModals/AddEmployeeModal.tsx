@@ -37,13 +37,11 @@ interface AddEmployeeResponse {
 interface AddEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onStoreAdded: () => void;
 }
 
 const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   isOpen,
   onClose,
-  onStoreAdded,
 }) => {
   const { toast } = useToast();
   const { sessionData } = useManagement();
@@ -92,7 +90,6 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
           variant: "default",
         });
 
-        onStoreAdded();
         formik.resetForm();
         onClose();
       } catch (error) {
