@@ -34,8 +34,7 @@ const StoreDataTable: React.FC<StoreDataTableProps> = ({ storeData }) => {
   ));
 
   return (
-    <div className="flex w-1/2 p-4 flex-col">
-      <h1 className="text-lg font-semibold mb-2">Store Data</h1>
+    <div className="flex flex-col mt-3">
       {storeData && storeData.length > 0 ? (
         <TableLayout TableColumnValues={headers}>{tableRows}</TableLayout>
       ) : (

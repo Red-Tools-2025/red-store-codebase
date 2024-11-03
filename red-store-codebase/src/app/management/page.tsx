@@ -1,17 +1,23 @@
 "use client";
 import { useManagement } from "../contexts/management/ManagementContext";
 
-import React from "react";
+import React, { useState } from "react";
 import StoreDataTable from "@/components/feature/management/feature-component/Tables/StoreDataTable";
+import StoreTableController from "@/components/feature/management/feature-component/Tables/StoreTableController";
 
 const ManagementPage: React.FC = () => {
   const { sessionData, storeData } = useManagement();
+  const [searchTableController, setSearchTableController] =
+    useState<String>("");
 
   return (
     <main>
       <div className="flex my-2 gap-2">
-        {/* Table component for hosting store Data  */}
-        <StoreDataTable storeData={storeData} />
+        {/* Control panel for store data */}
+        <div className="flex-col w-1/2">
+          <StoreTableController setSearchValue={setSearchTableController} />
+          <StoreDataTable storeData={storeData} />
+        </div>
 
         <div className="bg-green-300 flex w-1/2 p-4 flex-col">
           <h1 className="text-lg font-semibold mb-2">User Data</h1>
