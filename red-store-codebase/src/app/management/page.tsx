@@ -14,7 +14,10 @@ const ManagementPage: React.FC = () => {
       <div className="flex my-2 gap-2">
         {/* Control panel for store data */}
         <div className="flex-col w-1/2">
-          <StoreTableController setSearchValue={setSearchTableController} />
+          <StoreTableController
+            storeData={storeData}
+            setSearchValue={setSearchTableController}
+          />
           <StoreDataTable storeData={storeData} />
         </div>
 
