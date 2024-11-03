@@ -3,24 +3,16 @@ import { useManagement } from "../contexts/management/ManagementContext";
 import React, { useState } from "react";
 import StoreDataTable from "@/components/feature/management/feature-component/Tables/StoreDataTable";
 import StoreTableController from "@/components/feature/management/feature-component/Tables/StoreTableController";
+import StoreControlPanel from "@/components/feature/management/feature-component/Panels/StoreControlPanel";
 
 const ManagementPage: React.FC = () => {
   const { sessionData, storeData } = useManagement();
-  const [searchTableController, setSearchTableController] =
-    useState<String>("");
 
   return (
     <main>
       <div className="flex my-2 gap-2">
         {/* Control panel for store data */}
-        <div className="flex-col w-1/2">
-          <StoreTableController
-            storeData={storeData}
-            setSearchValue={setSearchTableController}
-          />
-          <StoreDataTable storeData={storeData} />
-        </div>
-
+        <StoreControlPanel storeData={storeData} />
         <div className="bg-green-300 flex w-1/2 p-4 flex-col">
           <h1 className="text-lg font-semibold mb-2">User Data</h1>
           {/* Render user-related data here */}

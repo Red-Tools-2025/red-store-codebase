@@ -7,39 +7,17 @@ import { Store } from "@prisma/client";
 interface StoreTableControllerProps {
   setSearchValue: Dispatch<SetStateAction<String>>;
   storeData: Store[] | null;
+  locations: { value: string; label: string }[];
 }
 
 const StoreTableController: React.FC<StoreTableControllerProps> = ({
   setSearchValue,
   storeData,
+  locations,
 }) => {
-  const [locations, setLocations] = useState<
-    { value: string; label: string }[]
-  >([]);
-
-  // Effect to watch for updates in storeData
-  useEffect(() => {
-    if (storeData) {
-      // ensure only unique store values, hence relevant options for filtering data
-      const uniqueLocations = storeData.reduce<
-        { value: string; label: string }[]
-      >((accumulator, store) => {
-        if (
-          store.storeLocation &&
-          !accumulator.some((item) => item.value === store.storeLocation)
-        ) {
-          accumulator.push({
-            value: store.storeLocation,
-            label: store.storeLocation,
-          });
-        }
-        return accumulator;
-      }, []);
-      setLocations(uniqueLocations);
-    } else {
-      setLocations([]);
-    }
-  }, [storeData]);
+  //   const [locations, setLocations] = useState<
+  //     { value: string; label: string }[]
+  //   >([]);
 
   const statuses = [
     { value: "active", label: "Active" },
