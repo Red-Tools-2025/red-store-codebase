@@ -13,6 +13,7 @@ import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerF
 import AddStoreModal from "@/components/feature/management/feature-component/FormModals/AddStoreModal";
 import AddEmployeeModal from "@/components/feature/management/feature-component/FormModals/AddEmployeeModal";
 import { Store } from "@prisma/client";
+import useEmployeeServerFetch from "../hooks/management/ServerHooks/useEmployeeServerFetch";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -24,7 +25,11 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   console.log(sessionUser?.id);
 
   const { data, error, isLoading } = useStoreServerFetch(sessionUser?.id ?? "");
-
+  const {
+    data: employeeData,
+    error: employeeError,
+    isLoading: isEmployeeLoading,
+  } = useEmployeeServerFetch(sessionUser?.id ?? ""); // Fetch employee data
   const [isStoreModalOpen, setisStoreModalOpen] = useState<boolean>(false);
   const [isEmpModalOpen, setIsEmpModalOpen] = useState<boolean>(false);
 
@@ -47,6 +52,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
       selectedStore={selectedStore}
       storeData={data}
       sessionData={sessionUser ?? null}
+      employeeData={employeeData}
     >
       <div className="p-5">
         {session ? (

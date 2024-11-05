@@ -11,6 +11,8 @@ import {
   User,
   X,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
+
 import UserItem from "./UserItem";
 import {
   Command,
@@ -28,25 +30,28 @@ export default function Sidebar() {
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
-
+const { data: session } = useSession();
   const menuList = [
     {
       group: "General",
       items: [
-        { links: "/", text: "Profile", icon: <User /> },
-        { link: "/", text: "Inbox", icon: <Inbox /> },
-        { link: "/", text: "Billing", icon: <Receipt /> },
-        { link: "/", text: "Logs", icon: <Logs /> },
+        { links: "/", text: "DashBoard", icon: <User /> },
+        { link: "/", text: "Accounting", icon: <Inbox /> },
+        { link: "/", text: "Inventory", icon: <Receipt /> },
+        { link: "/", text: "Invoicing", icon: <Logs /> },
+        { link: "/", text: "Goods Sold", icon: <Logs /> },
+        { link: "/", text: "Users", icon: <Logs /> },
+        { link: "/", text: "Sales Report", icon: <Logs /> },
       ],
     },
-    {
+  /*   {
       group: "Settings",
       items: [
         { links: "/", text: "General Settings", icon: <Settings /> },
         { link: "/", text: "Privacy", icon: <GlobeLock /> },
         { link: "/", text: "Notification", icon: <Bell /> },
       ],
-    },
+    }, */
   ];
 
   return (
@@ -76,7 +81,7 @@ export default function Sidebar() {
         )}
 
         <div>
-          <UserItem />
+          <UserItem name={session?.user?.name} email={session?.user?.email} />
         </div>
         <div className="grow mt-8">
           <Command>
@@ -97,7 +102,6 @@ export default function Sidebar() {
             </CommandList>
           </Command>
         </div>
-        <div className="mt-4">Settings / Notifications</div>
       </div>
     </div>
   );

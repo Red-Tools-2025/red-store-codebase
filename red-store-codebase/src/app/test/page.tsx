@@ -590,3 +590,181 @@ export default AddStoreForm;
 //     </div>
 //   );
 // }
+
+
+
+////////////////////
+/* 
+"use client"
+import React, { useState } from "react";
+
+const InventoryForm = () => {
+  const [storeId, setStoreId] = useState<string>("");
+  const [storeManagerId, setStoreManagerId] = useState<string>("");
+  const [invItem, setInvItem] = useState<string>("");
+  const [invItemBrand, setInvItemBrand] = useState<string>("");
+  const [invItemStock, setInvItemStock] = useState<number>(0);
+  const [invItemPrice, setInvItemPrice] = useState<number>(0);
+  const [invItemType, setInvItemType] = useState<string>("");
+  const [invItemBarcode, setInvItemBarcode] = useState<number>(0);
+  const [invItemSize, setInvItemSize] = useState<number>(0);
+  const [invAdditional, setInvAdditional] = useState<any>(null);
+  const [message, setMessage] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const body = {
+      storeId,
+      storeManagerId,
+      invItem,
+      invItemBrand,
+      invItemStock,
+      invItemPrice,
+      invItemType,
+      invItemBarcode,
+      invItemSize,
+      invAdditional,
+    };
+
+    try {
+      const response = await fetch("/api/inventory/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(data.message);
+        setError("");
+        // Reset form fields if needed
+        setStoreId("");
+        setStoreManagerId("");
+        setInvItem("");
+        setInvItemBrand("");
+        setInvItemStock(0);
+        setInvItemPrice(0);
+        setInvItemType("");
+        setInvItemBarcode(0);
+        setInvItemSize(0);
+        setInvAdditional(null);
+      } else {
+        setMessage("");
+        setError(data.error || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setMessage("");
+      setError("An error occurred while adding the inventory item.");
+    }
+  };
+
+  return (
+    <div>
+      <h2>Add Inventory Item</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Store ID:</label>
+          <input
+            type="text"
+            value={storeId}
+            onChange={(e) => setStoreId(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Store Manager ID:</label>
+          <input
+            type="text"
+            value={storeManagerId}
+            onChange={(e) => setStoreManagerId(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Item Name:</label>
+          <input
+            type="text"
+            value={invItem}
+            onChange={(e) => setInvItem(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Item Brand:</label>
+          <input
+            type="text"
+            value={invItemBrand}
+            onChange={(e) => setInvItemBrand(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Stock Quantity:</label>
+          <input
+            type="number"
+            value={invItemStock}
+            onChange={(e) => setInvItemStock(Number(e.target.value))}
+            required
+          />
+        </div>
+        <div>
+          <label>Item Price:</label>
+          <input
+            type="number"
+            value={invItemPrice}
+            onChange={(e) => setInvItemPrice(Number(e.target.value))}
+            required
+          />
+        </div>
+        <div>
+          <label>Item Type:</label>
+          <input
+            type="text"
+            value={invItemType}
+            onChange={(e) => setInvItemType(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Item Barcode:</label>
+          <input
+            type="number"
+            value={invItemBarcode}
+            onChange={(e) => setInvItemBarcode(Number(e.target.value))}
+            required
+          />
+        </div>
+        <div>
+          <label>Item Size:</label>
+          <input
+            type="number"
+            value={invItemSize}
+            onChange={(e) => setInvItemSize(Number(e.target.value))}
+            required
+          />
+        </div>
+        <div>
+          <label>Additional Info:</label>
+          <input
+            type="text"
+            value={invAdditional}
+            onChange={(e) => setInvAdditional(e.target.value)}
+          />
+        </div>
+        <button type="submit">Add Inventory Item</button>
+      </form>
+
+      {message && <p style={{ color: "green" }}>{message}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+    </div>
+  );
+};
+
+export default InventoryForm;
+ */

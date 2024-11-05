@@ -75,20 +75,29 @@ model Role {
 }
 
 model Inventory {
-  invId          Int      @id @default(autoincrement())
-  storeId        Int      @unique
-  invItem        String
-  invItemBrand   String
-  invItemStock   Int
-  invItemPrice   Int
-  invItemType    String
-  invCreatedDate DateTime
-  invItemBarcode Int
-  invItemSize    Int
-  invAdditional  Json?
-  store          Store    @relation(fields: [storeId], references: [storeId])
-  sales          Sale[]
+  invId          Int      @id @default(autoincrement()) @map("invid")
+  storeId        Int      @map("storeid")
+  storeManagerId String   @map("storemanagerid")
+  invItem        String   @map("invitem")
+  invItemBrand   String?  @map("invitembrand")
+  invItemStock   Int      @map("invitemstock")
+  invItemPrice   Int      @map("invitemprice")
+  invItemType    String?  @map("invitemtype")
+  invCreatedDate DateTime @default(now()) @map("invcreateddate")
+  invItemBarcode Int?     @map("invitembarcode")
+  invItemSize    Int?     @map("invitemsize")
+  invAdditional  Json?    @map("invadditional")
+
+  // Composite foreign key to Store table
+  store Store @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId])
+
+  @@unique([storeId, storeManagerId, invId]) // Composite unique constraint
+  @@map(name: "inventory") // Map Prisma model to the PostgreSQL table
+  @@unique([storeId, storeManagerId])
+  Sale Sale[]
+  @@unique([invId, storeManagerId])
 }
+
 
 model Store {
   storeId        Int      @id @default(autoincrement()) @map("storeid")
@@ -110,12 +119,15 @@ model Store {
 model Sale {
   saleId       Int       @id @default(autoincrement())
   storeId      Int
+  storeManagerId String
   saleDate     DateTime
   invId        Int
   saleQuantity Int
   salePrice    Int
+  
+  // Foreign keys
   store        Store     @relation(fields: [storeId], references: [storeId])
-  inventory    Inventory @relation(fields: [invId], references: [invId])
+  inventory    Inventory @relation(fields: [invId, storeManagerId], references: [invId, storeManagerId]) // Update to include storeManagerId
 }
 
 model Employee {
