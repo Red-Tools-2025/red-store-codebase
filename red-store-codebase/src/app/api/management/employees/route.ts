@@ -62,13 +62,9 @@ export async function GET(req: Request) {
       where: {
         storeManagerId: storeManagerID,
       },
-      include: {
-        role: {
-          select: {
-            roleType: true, // Fetch only the roleType field from the Role model
-          },
-        },
-      },
+      // include: {
+
+      // },
     });
 
     if (emp_for_manager.length === 0) {
@@ -101,4 +97,3 @@ export async function GET(req: Request) {
     );
   }
 }
-

@@ -1,23 +1,14 @@
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Employee as PrismaEmployee } from "@prisma/client";
+import { Employee, Employee as PrismaEmployee } from "@prisma/client";
 import TableLayout from "../../layouts/TableLayout";
 import { useMemo } from "react";
-
-// Define the Role interface
-interface Role {
-  roleType: string; // Assuming roleType is the field you want to display
-}
-
-// Extend the existing Employee type to include role
-interface Employee extends PrismaEmployee {
-  role: Role; // Now Employee has a role field
-}
 
 interface EmployeeDataTableProps {
   employeeData: Employee[] | null;
   searchValue: String;
   roleFilterValue: String | "All";
   statusFilterValue: String;
+  roleValues: ("SALES" | "MANAGER" | "INVENTORY_STAFF" | "STORE_MANAGER")[];
 }
 
 const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
@@ -25,6 +16,7 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
   searchValue,
   roleFilterValue,
   statusFilterValue,
+  roleValues,
 }) => {
   const headers: string[] = ["Employee ID", "Employee Name", "Role", "Status"];
 
@@ -45,7 +37,7 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
     // Apply role filter - only filter if not "All"
     if (roleFilterValue !== "All") {
       filtered = filtered.filter(
-        (employee) => employee.role.roleType === roleFilterValue // Filter based on roleType
+        (employee) => employee.roleId.toString() === roleFilterValue // Filter based on roleType
       );
     }
 
@@ -66,8 +58,9 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
       <TableRow key={index}>
         <TableCell className="w-auto">{employee.empId}</TableCell>
         <TableCell className="w-auto">{employee.empName}</TableCell>
-        <TableCell className="w-auto">{employee.role.roleType}</TableCell>{" "}
-        {/* Display roleType */}
+        <TableCell className="w-auto">
+          {roleValues[employee.roleId]}
+        </TableCell>{" "}
         <TableCell className="w-auto">
           {employee.empStatus ? (
             <p className="bg-green-100 text-green-600 font-semibold inline-block w-auto px-3 py-1 rounded-sm">
@@ -81,6 +74,8 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
         </TableCell>
       </TableRow>
     ));
+
+  console.log(employeeData);
 
   return (
     <div className="flex flex-col mt-3">

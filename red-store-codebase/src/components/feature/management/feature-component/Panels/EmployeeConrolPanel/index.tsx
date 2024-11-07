@@ -1,20 +1,14 @@
-import { Employee as PrismaEmployee } from "@prisma/client";
+import { Employee } from "@prisma/client";
+import { RoleType } from "@prisma/client";
+
 import EmployeeTableController from "../../Tables/EmployeeTableController";
 import EmployeeDataTable from "../../Tables/EmployeeDataTable";
 import { useEffect, useState } from "react";
 
-interface Role {
-  roleType: string; // Adjust if you have more fields in the role
-}
-
-// Extend the existing Employee type to include role
-interface Employee extends PrismaEmployee {
-  role: Role; // Now Employee has a role field
-}
-
 interface EmployeeControlPanelProps {
   employeeData: Employee[] | null;
 }
+
 const EmployeeControlPanel: React.FC<EmployeeControlPanelProps> = ({
   employeeData,
 }) => {
@@ -22,8 +16,17 @@ const EmployeeControlPanel: React.FC<EmployeeControlPanelProps> = ({
   const [roles, setRoles] = useState<{ value: string; label: string }[]>([]);
 
   // States to handle filters
-  const [roleFilterValue, setRoleFilterValue] = useState<String >("All");
+  const [roleFilterValue, setRoleFilterValue] = useState<String>("All");
   const [statusFilterValue, setStatusFilterValue] = useState<String>("All");
+
+  // A role constant to map IDs to the right roles, // find more efficient way to update and parse in the futre
+  // Array positions correspond to the relevant role Ids to the role types
+  const roleValues = [
+    RoleType.SALES,
+    RoleType.MANAGER,
+    RoleType.INVENTORY_STAFF,
+    RoleType.STORE_MANAGER,
+  ];
 
   // Effect to watch for updates in employeeData
   useEffect(() => {
@@ -32,14 +35,16 @@ const EmployeeControlPanel: React.FC<EmployeeControlPanelProps> = ({
       const uniqueRoles = employeeData.reduce<
         { value: string; label: string }[]
       >((accumulator, employee) => {
-        if (employee.role?.roleType) {
+        if (employee) {
           // Access roleType from role object
           if (
-            !accumulator.some((item) => item.value === employee.role.roleType)
+            !accumulator.some(
+              (item) => item.value === employee.roleId.toString()
+            )
           ) {
             accumulator.push({
-              value: employee.role.roleType, // Use roleType
-              label: employee.role.roleType, // Adjust label as needed
+              value: employee.roleId.toString(),
+              label: roleValues[employee.roleId],
             });
           }
         }
@@ -63,6 +68,7 @@ const EmployeeControlPanel: React.FC<EmployeeControlPanelProps> = ({
         setStatusFilterValue={setStatusFilterValue}
       />
       <EmployeeDataTable
+        roleValues={roleValues}
         statusFilterValue={statusFilterValue}
         roleFilterValue={roleFilterValue}
         searchValue={searchValue}
