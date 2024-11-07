@@ -1,7 +1,12 @@
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { IndianRupee, UserRoundCheck, UserRoundX, Store as StoreIcon} from "lucide-react";
-import { Employee, Store, } from "@prisma/client";
+import {
+  IndianRupee,
+  UserRoundCheck,
+  UserRoundX,
+  Store as StoreIcon,
+} from "lucide-react";
+import { Employee, Store } from "@prisma/client";
 
 interface InfoCardProps {
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -15,12 +20,12 @@ const InfoCard: React.FC<InfoCardProps> = ({
   description,
 }) => {
   return (
-    <Card className="flex flex-col p-2 sm:p-3 border border-gray-200 shadow-md rounded-md hover:shadow-lg transition-shadow duration-200 mt-2">
-      <CardHeader className="flex flex-col ">
-        <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-slate-900 rounded-full mb-2">
-          <Icon className="text-xl sm:text-2xl text-white" />
+    <Card className="flex flex-col p-1 sm:p-1 border border-gray-200 shadow-md rounded-md hover:shadow-lg transition-shadow duration-200 my-5">
+      <CardHeader className="flex flex-col">
+        <div className="flex items-center justify-center w-10 h-10 sm:w-10 sm:h-10 bg-slate-900 rounded-full mb-1">
+          <Icon className="text-lg sm:text-lg text-white" />
         </div>
-        <h3 className="text-sm sm:text-base md:text-3xl text-gray-700  ">
+        <h3 className="text-sm sm:text-base md:text-lg text-gray-700  ">
           {heading}
         </h3>
       </CardHeader>
