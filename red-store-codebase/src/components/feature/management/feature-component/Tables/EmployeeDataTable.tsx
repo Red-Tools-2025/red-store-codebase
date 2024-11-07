@@ -2,6 +2,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Employee, Employee as PrismaEmployee } from "@prisma/client";
 import TableLayout from "../../layouts/TableLayout";
 import { useMemo } from "react";
+import { useManagement } from "@/app/contexts/management/ManagementContext";
 
 interface EmployeeDataTableProps {
   employeeData: Employee[] | null;
@@ -18,6 +19,7 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
   statusFilterValue,
   roleValues,
 }) => {
+  const { selectedStore } = useManagement();
   const headers: string[] = ["Employee ID", "Employee Name", "Role", "Status"];
 
   // Handle all filtering in one place with useMemo
@@ -34,6 +36,12 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
       );
     }
 
+    if (selectedStore) {
+      filtered = filtered.filter(
+        (employee) => employee.storeId === selectedStore.storeId
+      );
+    }
+
     // Apply role filter - only filter if not "All"
     if (roleFilterValue !== "All") {
       filtered = filtered.filter(
@@ -42,7 +50,7 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
     }
 
     return filtered;
-  }, [employeeData, searchValue, roleFilterValue]);
+  }, [employeeData, searchValue, roleFilterValue, selectedStore]);
 
   // Map directly to table rows without additional filtering
   const tableRows = filteredData
