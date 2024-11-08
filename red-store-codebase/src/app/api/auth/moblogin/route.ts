@@ -12,45 +12,20 @@ export async function POST(req: Request) {
     const body: MobLoginRouteRequestType = await req.json();
     const { empname, empphone, storename } = body;
 
-    console.log({ storename });
-
-    // tokenize storename
-    const tokenized_storename = storename
-      .replace(/[^a-zA-Z0-9\s]/g, "") // Remove non-alphanumeric characters
-      .toLowerCase() // Convert to lowercase
-      .split(" ") // Split into individual words
-      .filter(Boolean); // Remove any empty strings
-
-    if (tokenized_storename.length === 0) {
-      return NextResponse.json(
-        {
-          error: "Invalid store name provided",
-        },
-        {
-          status: 400, // bad request
-        }
-      );
-    }
-
     // Use `contains` to search for any of these keywords in storeName
     const store = await db.store.findMany({
       where: {
-        OR: tokenized_storename.map((token: string) => ({
-          storeName: {
-            contains: token,
-            mode: "insensitive", // Case-insensitive search
-          },
-        })),
+        storeName: {
+          contains: storename,
+          mode: "insensitive", // Case-insensitive search
+        },
       },
     });
 
     if (!store || store.length === 0)
-      return NextResponse.json(
-        {
-          error: "Store does not exist",
-        },
-        { status: 404 }
-      );
+      return NextResponse.json({
+        error: "Store does not exist",
+      });
 
     // Return and verify the right employee information
     // strictly ensure if full name, first name then last name
