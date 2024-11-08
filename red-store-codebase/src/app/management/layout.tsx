@@ -14,6 +14,7 @@ import AddStoreModal from "@/components/feature/management/feature-component/For
 import AddEmployeeModal from "@/components/feature/management/feature-component/FormModals/AddEmployeeModal";
 import { Store } from "@prisma/client";
 import useEmployeeServerFetch from "../hooks/management/ServerHooks/useEmployeeServerFetch";
+import AssignEmployeeModal from "@/components/feature/management/feature-component/FormModals/AssignEmployeeModal";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -30,8 +31,10 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     error: employeeError,
     isLoading: isEmployeeLoading,
   } = useEmployeeServerFetch(sessionUser?.id ?? ""); // Fetch employee data
+
   const [isStoreModalOpen, setisStoreModalOpen] = useState<boolean>(false);
   const [isEmpModalOpen, setIsEmpModalOpen] = useState<boolean>(false);
+  const [isAssignModalOpen, setAssignModalOpen] = useState<boolean>(false);
 
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
 
@@ -72,7 +75,11 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                       setSelectedStore={setIsSelectedStore}
                       selectedStore={selectedStore}
                     />
-                    <Button variant={"icon-left"}>
+                    <Button
+                      disabled={selectedStore ? false : true}
+                      onClick={() => handleOpenModal(setAssignModalOpen)}
+                      variant={"icon-left"}
+                    >
                       <MdOutlineAssignment className="mr-2" />
                       Assign Employee
                     </Button>
@@ -91,6 +98,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                       <IoStorefront className="mr-2" />
                       Add Store
                     </Button>
+                    {/* Modals */}
                     <AddStoreModal
                       isOpen={isStoreModalOpen}
                       onClose={() => handleCloseModal(setisStoreModalOpen)}
@@ -98,6 +106,10 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                     <AddEmployeeModal
                       isOpen={isEmpModalOpen}
                       onClose={() => handleCloseModal(setIsEmpModalOpen)}
+                    />
+                    <AssignEmployeeModal
+                      isOpen={isAssignModalOpen}
+                      onClose={() => handleCloseModal(setAssignModalOpen)}
                     />
                   </div>
                 </div>

@@ -16,38 +16,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useToast } from "@/hooks/use-toast";
-import { AddEmployeeRequestBody } from "@/app/types/management/employee";
+import { ArrowRightIcon } from "@radix-ui/react-icons";
 
-// Interface for the API response data
-interface Employee {
-  id: number;
-  storeId: number;
-  roleId: number;
-  empName: string;
-  empPhone: string;
-  empStatus: boolean;
-  storeManagerId: string;
-  createdAt: string;
-}
-
-interface AddEmployeeResponse {
-  message: string;
-  employee: Employee;
-}
-
-interface AddEmployeeModalProps {
+interface AssignEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
+const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
   isOpen,
   onClose,
 }) => {
@@ -55,76 +37,16 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   const { sessionData, selectedStore } = useManagement();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const roleOptions = [
-    { id: 1, name: "SALES" },
-    { id: 3, name: "INVENTORY_STAFF" },
-  ];
-
   const formik = useFormik({
     initialValues: {
       storeId: selectedStore?.storeId,
-      roleId: "",
-      empName: "",
-      empPhone: "",
-      empStatus: true,
-      storeManagerId: sessionData?.id || "",
+      empId: undefined,
+      newStoreId: undefined,
     },
     validationSchema: Yup.object({
-      roleId: Yup.number().required("Please select employee role type"),
-      empName: Yup.string().required("Employee name is required"),
-      empPhone: Yup.string().required("Employee phone is required"),
+      empId: Yup.string().required("Select an employee to assign"),
+      newStoreId: Yup.string().required("Select store to assign employee to"),
     }),
-    // onSubmit: async (values) => {
-    //   setIsSubmitting(true);
-    //   try {
-    //     const requestBody: AddEmployeeRequestBody = {
-    //       storeId: Number(values.storeId),
-    //       roleId: Number(values.roleId),
-    //       empName: values.empName,
-    //       empPhone: values.empPhone,
-    //       empStatus: values.empStatus,
-    //       storeManagerId: values.storeManagerId,
-    //     };
-
-    //     const { data } = await axios.post<AddEmployeeResponse>(
-    //       "/api/management/employees",
-    //       requestBody,
-    //       {
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //         },
-    //       }
-    //     );
-
-    //     toast({
-    //       title: "Success",
-    //       description: data.message,
-    //       variant: "default",
-    //     });
-
-    //     formik.resetForm();
-    //     onClose();
-    //   } catch (error) {
-    //     if (axios.isAxiosError(error)) {
-    //       toast({
-    //         title: "Error",
-    //         description:
-    //           error.response?.data?.error ||
-    //           "Failed to add employee. Please try again.",
-    //         variant: "destructive",
-    //       });
-    //     } else {
-    //       toast({
-    //         title: "Error",
-    //         description: "An unexpected error occurred. Please try again.",
-    //         variant: "destructive",
-    //       });
-    //     }
-    //     console.error("Error adding employee:", error);
-    //   } finally {
-    //     setIsSubmitting(false);
-    //   }
-    // },
     onSubmit: (values) => {
       console.log(values);
     },
@@ -142,71 +64,93 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
         <DialogHeader>
           <DialogTitle>Assign employee to store</DialogTitle>
           <DialogDescription>
-            {`Re-assign an employee from ${selectedStore?.storeId}`}
+            <p>
+              Re-assign an employee from{" "}
+              <span className="font-bold text-gray-800">{`${selectedStore?.storeName}`}</span>
+            </p>
           </DialogDescription>
         </DialogHeader>
+        <div className="flex items-center gap-2">
+          <div
+            className={
+              formik.values.empId
+                ? "py-1 px-2 rounded-md bg-green-200 text-green-600"
+                : "py-1 px-2 rounded-md bg-gray-200 text-gray-400"
+            }
+          >
+            {formik.values.empId ?? "Selected employee"}
+          </div>{" "}
+          <ArrowRightIcon />{" "}
+          <div
+            className={
+              formik.values.newStoreId
+                ? "py-1 px-2 rounded-md bg-green-200 text-green-600"
+                : "py-1 px-2 rounded-md bg-gray-200 text-gray-400"
+            }
+          >
+            {formik.values.newStoreId ?? "Assigned to store"}
+          </div>
+        </div>
         <form onSubmit={formik.handleSubmit} className="py-4">
-          <div className="flex">
-            <div className="flex-col">
-              <Label htmlFor="roleId" className="text-right">
+          <div className="flex gap-2">
+            <div className="flex flex-col items-start gap-2 w-1/2">
+              <Label htmlFor="empId" className="text-right">
                 Employee
               </Label>
               <Select
-                name="roleId"
-                onValueChange={(value) => formik.setFieldValue("roleId", value)}
-                value={formik.values.roleId}
+                name="empId"
+                onValueChange={(value) => formik.setFieldValue("empId", value)}
+                value={formik.values.empId || ""}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a role" />
+                  <SelectValue placeholder="Select an employee" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {roleOptions.map((role) => (
-                      <SelectItem key={role.id} value={role.id.toString()}>
-                        {role.name}
-                      </SelectItem>
-                    ))}
+                    {/* Replace with actual employee options */}
+                    <SelectItem value="1">Employee 1</SelectItem>
+                    <SelectItem value="2">Employee 2</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {formik.touched.roleId && formik.errors.roleId ? (
+              {formik.touched.empId && formik.errors.empId ? (
                 <div className="text-red-500 col-span-4">
-                  {formik.errors.roleId}
+                  {formik.errors.empId}
                 </div>
               ) : null}
             </div>
-            <div className="flex-col">
-              <Label htmlFor="roleId" className="text-right">
-                Employee
+            <div className="flex flex-col items-start gap-2 w-1/2">
+              <Label htmlFor="newStoreId" className="text-right">
+                Assign to Store
               </Label>
               <Select
-                name="roleId"
-                onValueChange={(value) => formik.setFieldValue("roleId", value)}
-                value={formik.values.roleId}
+                name="newStoreId"
+                onValueChange={(value) =>
+                  formik.setFieldValue("newStoreId", value)
+                }
+                value={formik.values.newStoreId || ""}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a role" />
+                  <SelectValue placeholder="Select a store" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {roleOptions.map((role) => (
-                      <SelectItem key={role.id} value={role.id.toString()}>
-                        {role.name}
-                      </SelectItem>
-                    ))}
+                    {/* Replace with actual store options */}
+                    <SelectItem value="101">Store 101</SelectItem>
+                    <SelectItem value="102">Store 102</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {formik.touched.roleId && formik.errors.roleId ? (
+              {formik.touched.newStoreId && formik.errors.newStoreId ? (
                 <div className="text-red-500 col-span-4">
-                  {formik.errors.roleId}
+                  {formik.errors.newStoreId}
                 </div>
               ) : null}
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="mt-5">
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Adding..." : "Add Employee"}
+              {isSubmitting ? "Assigning..." : "Assign Employee"}
             </Button>
           </DialogFooter>
         </form>
@@ -215,4 +159,4 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   );
 };
 
-export default AddEmployeeModal;
+export default AssignEmployeeModal;
