@@ -1,11 +1,20 @@
 import { SessionUserType } from "@/app/types/management/context";
-import { Store } from "@prisma/client";
+import { Store, Employee } from "@prisma/client";
 import { createContext, useContext } from "react";
+interface Role {
+  roleType: string; // Assuming roleType is the field you want to display
+}
+
+// // Extend the existing Employee type to include role
+// interface Employee extends PrismaEmployee {
+//   role: Role; // Now Employee has a role field
+// }
 
 interface ManagementContextType {
   storeData: Store[] | null;
   sessionData: SessionUserType | null;
   selectedStore: Store | null;
+  employeeData: Employee[] | null;
 }
 
 const ManagementContext = createContext<ManagementContextType | undefined>(
@@ -18,15 +27,17 @@ export const ManagementProvider = ({
   storeData,
   sessionData,
   selectedStore,
+  employeeData,
 }: {
   children: React.ReactNode;
   storeData: Store[] | null;
   selectedStore: Store | null;
   sessionData: SessionUserType | null;
+  employeeData: Employee[] | null;
 }) => {
   return (
     <ManagementContext.Provider
-      value={{ selectedStore, storeData, sessionData }}
+      value={{ selectedStore, storeData, sessionData, employeeData }}
     >
       {children}
     </ManagementContext.Provider>

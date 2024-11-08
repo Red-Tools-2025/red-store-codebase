@@ -44,51 +44,54 @@ export async function POST(req: Request) {
 
 //fetching employees for a given store
 // endpoint -- http://localhost:3000/api/management/employees?storeID=${IDhere}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const storeID = searchParams.get("storeID");
+    const storeManagerID = searchParams.get("storeManagerID");
 
-    if (!storeID) {
+    if (!storeManagerID) {
       return NextResponse.json(
-        { error: "storeID is required" },
+        { error: "storeManagerID is required" },
         { status: 400 }
       );
     }
 
-    const emp_for_store = await db.employee.findMany({
+    // Fetch employees along with the roleType based on roleId
+    const emp_for_manager = await db.employee.findMany({
       where: {
-        storeId: Number(storeID),
+        storeManagerId: storeManagerID,
       },
+      // include: {
+
+      // },
     });
 
-    if (emp_for_store.length === 0) {
+    if (emp_for_manager.length === 0) {
       return NextResponse.json(
         {
-          message: "No employees assigned to selected store",
-          emp_data: emp_for_store,
+          message: "No employees assigned to stores for this manager.",
+          emp_data: emp_for_manager,
         },
-        {
-          status: 200, // Change this to 200 to allow a body
-        }
+        { status: 200 }
       );
     }
 
-    // Return emps fetched from a partition
+    // Return employees found for the manager, including role type
     return NextResponse.json(
       {
         message: "Data retrieved successfully",
-        emp_for_store,
+        emp_for_manager,
       },
       { status: 200 }
     );
   } catch (err: unknown) {
-    console.log("Error fetching stores for manager");
+    console.error("Error fetching employees for manager");
     const errMessage =
-      err instanceof Error ? err.message : "An unknown error occured";
+      err instanceof Error ? err.message : "An unknown error occurred";
     return NextResponse.json(
       {
-        error: `An error occured while fetching store_data for manager: ${errMessage}`,
+        error: `An error occurred while fetching employees for manager: ${errMessage}`,
       },
       { status: 500 }
     );
