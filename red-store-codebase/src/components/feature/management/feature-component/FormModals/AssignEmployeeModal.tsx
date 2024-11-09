@@ -17,21 +17,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import axios from "axios";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import * as Yup from "yup";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
+
+import axios from "axios";
+import * as Yup from "yup";
+import { Employee, Store } from "@prisma/client";
 
 interface AssignEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  empDataMap: Map<string, Employee> | null;
+  storeDataMap: Map<string, Store> | null;
 }
 
 const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
   isOpen,
   onClose,
+  storeDataMap,
+  empDataMap,
 }) => {
   const { toast } = useToast();
   const { sessionData, selectedStore } = useManagement();
@@ -78,7 +84,9 @@ const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
                 : "py-1 px-2 rounded-md bg-gray-200 text-gray-400"
             }
           >
-            {formik.values.empId ?? "Selected employee"}
+            {formik.values.empId
+              ? `${empDataMap?.get(formik.values.empId)?.empName}`
+              : "Selected Employee"}
           </div>{" "}
           <ArrowRightIcon />{" "}
           <div
@@ -88,7 +96,9 @@ const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
                 : "py-1 px-2 rounded-md bg-gray-200 text-gray-400"
             }
           >
-            {formik.values.newStoreId ?? "Assigned to store"}
+            {formik.values.newStoreId
+              ? `${storeDataMap?.get(formik.values.newStoreId)?.storeName}`
+              : "Assigned to store"}
           </div>
         </div>
         <form onSubmit={formik.handleSubmit} className="py-4">
@@ -97,22 +107,36 @@ const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
               <Label htmlFor="empId" className="text-right">
                 Employee
               </Label>
-              <Select
-                name="empId"
-                onValueChange={(value) => formik.setFieldValue("empId", value)}
-                value={formik.values.empId || ""}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select an employee" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {/* Replace with actual employee options */}
-                    <SelectItem value="1">Employee 1</SelectItem>
-                    <SelectItem value="2">Employee 2</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              {empDataMap ? (
+                <Select
+                  name="empId"
+                  onValueChange={(value) =>
+                    formik.setFieldValue("empId", value)
+                  }
+                  value={formik.values.empId || ""}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select an employee" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {/* Replace with actual employee options */}
+                      {Array.from(empDataMap?.keys()).map((empId, index) => {
+                        const emp = empDataMap.get(empId);
+                        return (
+                          <SelectItem value={empId} key={index}>
+                            {emp?.empName}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <p className="bg-red-200 px-2 py-1 text-red-600">
+                  No employees added yet
+                </p>
+              )}
               {formik.touched.empId && formik.errors.empId ? (
                 <div className="text-red-500 col-span-4">
                   {formik.errors.empId}
@@ -123,24 +147,35 @@ const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
               <Label htmlFor="newStoreId" className="text-right">
                 Assign to Store
               </Label>
-              <Select
-                name="newStoreId"
-                onValueChange={(value) =>
-                  formik.setFieldValue("newStoreId", value)
-                }
-                value={formik.values.newStoreId || ""}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a store" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {/* Replace with actual store options */}
-                    <SelectItem value="101">Store 101</SelectItem>
-                    <SelectItem value="102">Store 102</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              {storeDataMap ? (
+                <Select
+                  name="newStoreId"
+                  onValueChange={(value) =>
+                    formik.setFieldValue("newStoreId", value)
+                  }
+                  value={formik.values.newStoreId || ""}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a store" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {Array.from(storeDataMap.keys()).map((storeId, index) => {
+                        const store = storeDataMap.get(storeId);
+                        return (
+                          <SelectItem key={index} value={storeId}>
+                            {store?.storeName}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <p className="bg-red-200 px-2 py-1 text-red-600">
+                  No Stores added yet
+                </p>
+              )}
               {formik.touched.newStoreId && formik.errors.newStoreId ? (
                 <div className="text-red-500 col-span-4">
                   {formik.errors.newStoreId}

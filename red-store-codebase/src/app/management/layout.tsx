@@ -7,7 +7,7 @@ import { SessionUserType } from "../types/management/context";
 import { MdOutlineAssignment } from "react-icons/md";
 import { ManagementProvider } from "../contexts/management/ManagementContext";
 
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction, useMemo, useState } from "react";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import AddStoreModal from "@/components/feature/management/feature-component/FormModals/AddStoreModal";
@@ -49,6 +49,19 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   ) => {
     setModalType(false);
   };
+
+  // Creating Map for O(1) look up, to be done for all cases handling dynamic data as select options
+  // Maps to be used in future modals, but now the assign modal
+
+  const empMap = useMemo(() => {
+    if (!employeeData) return null;
+    return new Map(employeeData.map((emp) => [emp.empId.toString(), emp]));
+  }, [employeeData]);
+
+  const storeMap = useMemo(() => {
+    if (!data) return null;
+    return new Map(data.map((store) => [store.storeId.toString(), store]));
+  }, [data]);
 
   return (
     <ManagementProvider
@@ -108,6 +121,8 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                       onClose={() => handleCloseModal(setIsEmpModalOpen)}
                     />
                     <AssignEmployeeModal
+                      empDataMap={empMap}
+                      storeDataMap={storeMap}
                       isOpen={isAssignModalOpen}
                       onClose={() => handleCloseModal(setAssignModalOpen)}
                     />
