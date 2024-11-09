@@ -55,13 +55,21 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
 
   const empMap = useMemo(() => {
     if (!employeeData) return null;
-    return new Map(employeeData.map((emp) => [emp.empId.toString(), emp]));
-  }, [employeeData]);
+    return new Map(
+      employeeData
+        .filter((emp) => emp.storeId === selectedStore?.storeId)
+        .map((emp) => [emp.empId.toString(), emp])
+    );
+  }, [employeeData, selectedStore]);
 
   const storeMap = useMemo(() => {
     if (!data) return null;
-    return new Map(data.map((store) => [store.storeId.toString(), store]));
-  }, [data]);
+    return new Map(
+      data
+        .filter((store) => store.storeId != selectedStore?.storeId)
+        .map((store) => [store.storeId.toString(), store])
+    );
+  }, [data, selectedStore]);
 
   return (
     <ManagementProvider

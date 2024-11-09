@@ -25,12 +25,18 @@ import { ArrowRightIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import * as Yup from "yup";
 import { Employee, Store } from "@prisma/client";
+import { AssignEmployeeRequestBody } from "@/app/types/management/employee";
+import { headers } from "next/headers";
 
 interface AssignEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
   empDataMap: Map<string, Employee> | null;
   storeDataMap: Map<string, Store> | null;
+}
+
+interface AssignEmployeeResponse {
+  message: string;
 }
 
 const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
@@ -53,8 +59,51 @@ const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
       empId: Yup.string().required("Select an employee to assign"),
       newStoreId: Yup.string().required("Select store to assign employee to"),
     }),
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      try {
+        const requestBody: AssignEmployeeRequestBody = {
+          empId: Number(values.empId),
+          newStoreId: Number(values.newStoreId),
+          previousStoreId: Number(values.storeId),
+        };
+        setIsSubmitting(true);
+        const { data } = await axios.patch<AssignEmployeeResponse>(
+          "/api/management/employees",
+          requestBody,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        toast({
+          title: "Success",
+          description: `${data.message}`,
+          variant: "default",
+        });
+        formik.resetForm();
+        onClose();
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast({
+            title: "Error",
+            description:
+              error.response?.data?.error ||
+              "Failed to add employee. Please try again.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "An unexpected error occurred. Please try again.",
+            variant: "destructive",
+          });
+        }
+        console.error("Error adding employee:", error);
+      } finally {
+        setIsSubmitting(false);
+      }
     },
   });
 

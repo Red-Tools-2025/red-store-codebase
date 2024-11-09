@@ -4,7 +4,6 @@ import {
   AddEmployeeRequestBody,
   AssignEmployeeRequestBody,
 } from "@/app/types/management/employee";
-import { error } from "console";
 
 // Function to handle the POST request
 export async function POST(req: Request) {
@@ -47,8 +46,6 @@ export async function POST(req: Request) {
 }
 
 //fetching employees for a given store
-// endpoint -- http://localhost:3000/api/management/employees?storeID=${IDhere}
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -108,6 +105,7 @@ export async function PATCH(req: Request) {
     const body: AssignEmployeeRequestBody = await req.json();
     const { empId, newStoreId, previousStoreId } = body;
 
+    // verify weather assigning to same store again
     if (newStoreId === previousStoreId)
       return NextResponse.json(
         {
