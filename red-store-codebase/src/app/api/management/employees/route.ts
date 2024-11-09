@@ -103,7 +103,7 @@ export async function GET(req: Request) {
 }
 
 // endpoint for assigning employee to new store
-export async function UPDATE(req: Request) {
+export async function PATCH(req: Request) {
   try {
     const body: AssignEmployeeRequestBody = await req.json();
     const { empId, newStoreId, previousStoreId } = body;
