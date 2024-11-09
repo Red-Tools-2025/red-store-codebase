@@ -40,7 +40,7 @@ const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
   empDataMap,
 }) => {
   const { toast } = useToast();
-  const { sessionData, selectedStore } = useManagement();
+  const { selectedStore } = useManagement();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const formik = useFormik({

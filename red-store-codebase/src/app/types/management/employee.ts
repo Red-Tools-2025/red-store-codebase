@@ -15,3 +15,9 @@ export interface employeeType {
   empStatus: boolean;
   storeManagerId: string; // This is used for partitioning
 }
+
+export interface AssignEmployeeRequestBody {
+  previousStoreId: number;
+  newStoreId: number;
+  empId: number;
+}

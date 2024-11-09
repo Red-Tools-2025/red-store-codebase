@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma"; // Adjust the import path based on your project structure
-import { AddEmployeeRequestBody } from "@/app/types/management/employee";
+import {
+  AddEmployeeRequestBody,
+  AssignEmployeeRequestBody,
+} from "@/app/types/management/employee";
+import { error } from "console";
 
 // Function to handle the POST request
 export async function POST(req: Request) {
@@ -95,5 +99,45 @@ export async function GET(req: Request) {
       },
       { status: 500 }
     );
+  }
+}
+
+// endpoint for assigning employee to new store
+export async function UPDATE(req: Request) {
+  try {
+    const body: AssignEmployeeRequestBody = await req.json();
+    const { empId, newStoreId, previousStoreId } = body;
+
+    if (newStoreId === previousStoreId)
+      return NextResponse.json(
+        {
+          error: "Employee already assigned to store",
+        },
+        { status: 400 }
+      );
+
+    const update_emp = await db.employee.updateMany({
+      where: {
+        empId: empId,
+      },
+      data: {
+        storeId: newStoreId,
+      },
+    });
+
+    if (update_emp.count === 0)
+      return NextResponse.json(
+        { error: "Employee not found or update failed" },
+        { status: 404 }
+      );
+
+    return NextResponse.json(
+      {
+        message: "Employee successfully reassigned",
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.log(err);
   }
 }
