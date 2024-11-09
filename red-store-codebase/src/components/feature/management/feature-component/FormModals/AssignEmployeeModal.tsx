@@ -26,7 +26,6 @@ import axios from "axios";
 import * as Yup from "yup";
 import { Employee, Store } from "@prisma/client";
 import { AssignEmployeeRequestBody } from "@/app/types/management/employee";
-import { headers } from "next/headers";
 
 interface AssignEmployeeModalProps {
   isOpen: boolean;
