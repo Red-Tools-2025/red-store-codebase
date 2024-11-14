@@ -35,11 +35,17 @@ export async function POST(req: Request) {
 
     // Convert storeId from string to number
     const storeId = parseInt(storeIdStr, 10);
-    
+
     console.log({ body });
 
     // Validate required fields
-    if (!storeId || !storeManagerId || !invItem || invItemStock < 0 || invItemPrice < 0) {
+    if (
+      !storeId ||
+      !storeManagerId ||
+      !invItem ||
+      invItemStock < 0 ||
+      invItemPrice < 0
+    ) {
       return NextResponse.json(
         { error: "Required fields are missing or invalid." },
         { status: 400 }
@@ -68,7 +74,10 @@ export async function POST(req: Request) {
 
     // Return the newly created inventory data
     return NextResponse.json(
-      { message: `Inventory item ${inventory.invItem} added successfully`, inventory },
+      {
+        message: `Inventory item ${inventory.invItem} added successfully`,
+        inventory,
+      },
       { status: 201 }
     );
   } catch (err) {

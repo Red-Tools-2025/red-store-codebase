@@ -91,11 +91,11 @@ model Inventory {
   // Composite foreign key to Store table
   store Store @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId])
 
-  @@unique([storeId, storeManagerId, invId]) // Composite unique constraint
+  @@unique([storeManagerId, invId]) // Composite unique constraint
   @@map(name: "inventory") // Map Prisma model to the PostgreSQL table
   @@unique([storeId, storeManagerId])
   Sale Sale[]
-  @@unique([invId, storeManagerId])
+  // @@unique([invId, storeManagerId]) // Removed cause doing so would only allow me to store on product in db lol
 }
 
 
