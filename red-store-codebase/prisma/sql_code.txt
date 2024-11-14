@@ -227,13 +227,14 @@ CREATE TABLE Inventory (
     invItemSize INT,                -- Size specification
     invAdditional JSON,             -- Additional information stored in JSON format
 
-    -- Composite primary key using storeId and storeManagerId
-    PRIMARY KEY (storeId, storeManagerId, invId),
-
-    -- Composite foreign key referencing the Store table
+  -- Composite foreign key referencing the Store table
     CONSTRAINT fk_store_inventory FOREIGN KEY (storeId, storeManagerId)
         REFERENCES Store (storeId, storeManagerId)
         ON DELETE CASCADE
+
+    -- Composite primary key using storeId and storeManagerId
+    PRIMARY KEY (storeId, invId),
+    
 ) PARTITION BY LIST (storeId);
 
 
