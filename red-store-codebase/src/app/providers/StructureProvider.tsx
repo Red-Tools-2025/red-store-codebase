@@ -1,7 +1,7 @@
 "use client";
 
+import Sidebar from "@/components/feature/global/SideNav/Sidebar";
 import { usePathname } from "next/navigation";
-import Sidebar from "@/components/feature/inventory/feature-components/SideNav/Sidebar";
 
 export default function StructureProvider({
   children,
@@ -20,7 +20,7 @@ export default function StructureProvider({
       {!isAuthPage && <Sidebar />}
 
       {/* Main content area */}
-      <div className="flex-1 overflow-auto">{children}</div>
+      <div className="flex-1 px-10  overflow-auto">{children}</div>
     </div>
   );
 }
