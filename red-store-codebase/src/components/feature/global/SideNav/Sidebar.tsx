@@ -10,6 +10,8 @@ import {
   Settings,
   User,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
@@ -26,11 +28,12 @@ import {
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
-  const { data: session } = useSession();
+
   const menuList = [
     {
       group: "General",
@@ -44,65 +47,63 @@ export default function Sidebar() {
         { link: "/", text: "Sales Report", icon: <Logs /> },
       ],
     },
-    /*   {
-      group: "Settings",
-      items: [
-        { links: "/", text: "General Settings", icon: <Settings /> },
-        { link: "/", text: "Privacy", icon: <GlobeLock /> },
-        { link: "/", text: "Notification", icon: <Bell /> },
-      ],
-    }, */
   ];
 
   return (
-    <div>
-      {/* Toggle button to open sidebar */}
-      <button
-        className="block lg:hidden p-2 border rounded-md m-2"
-        onClick={toggleSidebar}
-      >
-        <Menu size={24} className="text-black " />
-      </button>
-
+    <div className="relative h-screen">
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 z-40 h-screen w-[300px] min-w-[300px] border-r p-4 bg-white transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 lg:translate-x-0 lg:static lg:block`}
+        className={`fixed top-0 left-0 z-40 h-screen w-[300px] min-w-[300px] border-r bg-white transform transition-transform duration-300 flex flex-col ${
+          isOpen ? "translate-x-0" : "-translate-x-[256px]"
+        }`}
       >
-        {/* Close button inside the sidebar */}
-        {isOpen && (
-          <button
-            className="absolute top-4 right-4 p-2"
-            onClick={toggleSidebar}
-          >
-            <X size={24} className="text-black" />
-          </button>
-        )}
+        {/* Sidebar Content */}
+        <div className="flex-1 p-4 overflow-y-auto">
+          <div>
+            <UserItem name={session?.user?.name} email={session?.user?.email} />
+          </div>
 
-        <div>
-          <UserItem name={session?.user?.name} email={session?.user?.email} />
+          <div className="grow mt-8">
+            <Command>
+              <CommandInput placeholder="Type a command or search..." />
+              <CommandList>
+                {menuList.map((menu, key) => (
+                  <CommandGroup key={key} heading={menu.group}>
+                    {menu.items.map((options, optionKey) => (
+                      <CommandItem key={optionKey}>
+                        {options.icon}
+                        <span className="ml-2">{options.text}</span>
+                      </CommandItem>
+                    ))}
+                    <CommandSeparator />
+                  </CommandGroup>
+                ))}
+                <CommandEmpty>No results found.</CommandEmpty>
+              </CommandList>
+            </Command>
+          </div>
         </div>
-        <div className="grow mt-8">
-          <Command>
-            <CommandInput placeholder="Type a command or search..." />
-            <CommandList>
-              {menuList.map((menu: any, key: number) => (
-                <CommandGroup key={key} heading={menu.group}>
-                  {menu.items.map((options: any, optionKey: number) => (
-                    <CommandItem key={optionKey}>
-                      {options.icon}
-                      {options.text}
-                    </CommandItem>
-                  ))}
-                  <CommandSeparator />
-                </CommandGroup>
-              ))}
-              <CommandEmpty>No results found.</CommandEmpty>
-            </CommandList>
-          </Command>
-        </div>
+
+        {/* Toggle Button - Now at the bottom */}
+        <button
+          onClick={toggleSidebar}
+          className={`absolute bottom-4 right-0 transform translate-x-full flex items-center justify-center w-6 h-12 bg-gray-700 border border-l-0 rounded-r-md`}
+        >
+          {isOpen ? (
+            <ChevronLeft className="w-4 h-4 text-white" />
+          ) : (
+            <ChevronRight className="w-4 h-4 text-white" />
+          )}
+        </button>
       </div>
+
+      {/* Overlay for clicking outside to close on mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
     </div>
   );
 }
