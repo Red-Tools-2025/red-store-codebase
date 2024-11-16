@@ -55,14 +55,17 @@ export async function POST(req: Request) {
     const store = await db.store.findFirst({
       where: {
         storeManagerId: storeManagerId,
+        storeId: storeId,
       },
     });
 
     if (!store)
       return NextResponse.json(
-        { error: "You dont have this store" },
+        { error: "Couldn't find your store" },
         { status: 400 }
       );
+
+    console.log("found store", store);
 
     // Ensure the partition exists for the store
     await db.$executeRaw`SELECT check_and_create_inventory_partition(${storeId}::integer);`;
