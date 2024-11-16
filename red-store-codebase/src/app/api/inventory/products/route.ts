@@ -89,6 +89,22 @@ export async function POST(req: Request) {
     // Ensure the partition exists for the store
     await db.$executeRaw`SELECT check_and_create_inventory_partition(${storeId}::integer);`;
 
+    // check of existing product relies mostly on duplicate barcodes
+    const existingProduct = await db.inventory.findFirst({
+      where: {
+        storeId: storeId,
+        OR: [{ invItem: invItem }, { invItemBarcode: invItemBarcode }],
+      },
+    });
+
+    if (existingProduct)
+      return NextResponse.json(
+        {
+          message: `Product ${existingProduct.invItem}, with barcode : ${existingProduct.invItemBarcode} already exists`,
+        },
+        { status: 400 }
+      );
+
     // Create a new inventory record
     const inventory = await db.inventory.create({
       data: {
