@@ -183,31 +183,37 @@ export async function DELETE(req: Request) {
   try {
     const body: DeleteProductRequestBody = await req.json();
     const { productId, storeId } = body;
+    // First locate the product to ensure it exists
+    const product = await db.inventory.findFirst({
+      where: {
+        AND: [{ storeId: storeId }, { invId: productId }],
+      },
+    });
+
+    console.log("product", product);
+
+    if (!product) {
+      return NextResponse.json(
+        {
+          message: `Product not found`,
+        },
+        { status: 404 }
+      );
+    }
+
+    // Then delete using the composite key
     const deleteProduct = await db.inventory.delete({
       where: {
         storeId_invId: {
-          // taps into the partition
           storeId: storeId,
           invId: productId,
         },
       },
     });
 
-    if (!deleteProduct) {
-      return NextResponse.json(
-        {
-          message: `Error during product deletion, try again`,
-        },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        message: `Removed product: ${deleteProduct.invItem} from stock`,
-      },
-      { status: 204 }
-    );
+    return NextResponse.json({
+      message: `Removed product: ${deleteProduct.invItem} from stock`,
+    });
   } catch (err: unknown) {
     console.log("Error deleting items in inventory, Try again");
     const errMessage =
