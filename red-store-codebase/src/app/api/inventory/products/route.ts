@@ -15,6 +15,11 @@ interface AddInventoryRequestBody {
   invAdditional?: any; // Optional additional information
 }
 
+interface DeleteProductRequestBody {
+  productId: number;
+  storeId: number;
+}
+
 // Function to handle the POST request for adding inventory
 export async function POST(req: Request) {
   try {
@@ -146,6 +151,36 @@ export async function GET(req: Request) {
       },
       { status: 200 }
     );
+  } catch (err: unknown) {
+    console.log("Error fetching inventory items for store");
+    const errMessage =
+      err instanceof Error ? err.message : "An unknown error occurred";
+    return NextResponse.json(
+      {
+        error: `An error occurred while fetching inventory items: ${errMessage}`,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Endpoint to delete product from inventory
+export async function DELETE(req: Request) {
+  try {
+    const body: DeleteProductRequestBody = await req.json();
+    const { productId, storeId } = body;
+    const deleteProduct = await db.inventory.delete({
+      where: {
+        storeId_invId: {
+          // taps into the partition
+          storeId: storeId,
+          invId: productId,
+        },
+      },
+    });
+    return NextResponse.json({
+      message: `Removed product: ${deleteProduct.invItem} from stock`,
+    });
   } catch (err: unknown) {
     console.log("Error fetching inventory items for store");
     const errMessage =
