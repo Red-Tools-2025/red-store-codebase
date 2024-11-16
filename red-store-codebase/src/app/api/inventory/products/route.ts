@@ -183,6 +183,7 @@ export async function DELETE(req: Request) {
   try {
     const body: DeleteProductRequestBody = await req.json();
     const { productId, storeId } = body;
+
     // First locate the product to ensure it exists
     const product = await db.inventory.findFirst({
       where: {
@@ -232,6 +233,24 @@ export async function UPDATE(req: Request) {
   try {
     const body: UpdateProductRequestBody = await req.json();
     const { productId, storeId, updates } = body;
+
+    // First locate the product to ensure it exists
+    const product = await db.inventory.findFirst({
+      where: {
+        AND: [{ storeId: storeId }, { invId: productId }],
+      },
+    });
+
+    console.log("product", product);
+
+    if (!product) {
+      return NextResponse.json(
+        {
+          message: `Product not found`,
+        },
+        { status: 404 }
+      );
+    }
 
     const UpdateProduct = await db.inventory.update({
       where: {
