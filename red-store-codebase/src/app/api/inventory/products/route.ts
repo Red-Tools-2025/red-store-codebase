@@ -93,14 +93,14 @@ export async function POST(req: Request) {
     const existingProduct = await db.inventory.findFirst({
       where: {
         storeId: storeId,
-        OR: [{ invItem: invItem }, { invItemBarcode: invItemBarcode }],
+        invItemBarcode: invItemBarcode,
       },
     });
 
     if (existingProduct)
       return NextResponse.json(
         {
-          message: `Product ${existingProduct.invItem}, with barcode : ${existingProduct.invItemBarcode} already exists`,
+          message: `Product with barcode : ${existingProduct.invItemBarcode} already exists`,
         },
         { status: 400 }
       );
