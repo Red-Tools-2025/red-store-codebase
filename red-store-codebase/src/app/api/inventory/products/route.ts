@@ -20,6 +20,20 @@ interface DeleteProductRequestBody {
   storeId: number;
 }
 
+interface UpdateProductRequestBody {
+  updates: {
+    invItemBrand: string;
+    invItemStock: number;
+    invItemPrice: number;
+    invItemType: string;
+    invItemBarcode: number;
+    invItemSize: number;
+    invAdditional?: any; // Optional additional information
+  };
+  productId: number;
+  storeId: number;
+}
+
 // Function to handle the POST request for adding inventory
 export async function POST(req: Request) {
   try {
@@ -178,16 +192,72 @@ export async function DELETE(req: Request) {
         },
       },
     });
-    return NextResponse.json({
-      message: `Removed product: ${deleteProduct.invItem} from stock`,
-    });
+
+    if (!deleteProduct) {
+      return NextResponse.json(
+        {
+          message: `Error during product deletion, try again`,
+        },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: `Removed product: ${deleteProduct.invItem} from stock`,
+      },
+      { status: 204 }
+    );
   } catch (err: unknown) {
-    console.log("Error fetching inventory items for store");
+    console.log("Error deleting items in inventory, Try again");
     const errMessage =
       err instanceof Error ? err.message : "An unknown error occurred";
     return NextResponse.json(
       {
-        error: `An error occurred while fetching inventory items: ${errMessage}`,
+        error: `An error occurred while deleting inventory item: ${errMessage}`,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Endpoint to update product in inventory
+export async function UPDATE(req: Request) {
+  try {
+    const body: UpdateProductRequestBody = await req.json();
+    const { productId, storeId, updates } = body;
+
+    const UpdateProduct = await db.inventory.update({
+      where: {
+        storeId_invId: {
+          storeId: storeId,
+          invId: productId,
+        },
+      },
+      data: updates,
+    });
+
+    if (!UpdateProduct)
+      return NextResponse.json(
+        {
+          message: `Error during product updation, try again`,
+        },
+        { status: 400 }
+      );
+
+    return NextResponse.json(
+      {
+        message: `Updated product: ${UpdateProduct.invItem}`,
+      },
+      { status: 204 }
+    );
+  } catch (err: unknown) {
+    console.log("Error updating item in inventory, Try again");
+    const errMessage =
+      err instanceof Error ? err.message : "An unknown error occurred";
+    return NextResponse.json(
+      {
+        error: `An error occurred while updating inventory item: ${errMessage}`,
       },
       { status: 500 }
     );
