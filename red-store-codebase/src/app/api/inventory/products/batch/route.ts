@@ -1,28 +1,9 @@
+import {
+  AddBatchRequestBody,
+  DeleteProductBatchRequestBody,
+} from "@/app/types/inventory/api";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-
-// Interface for the incoming request body for adding batch to inventory
-interface AddBatchRequestBody {
-  storeId: string; // Store ID received as a string
-  storeManagerId: string; // Assuming this is a user ID
-  products: {
-    invItem: string;
-    invItemBrand: string;
-    invItemStock: number;
-    invItemPrice: number;
-    invItemType: string;
-    invItemBarcode: number;
-    invItemSize: number;
-    invAdditional?: any;
-  }[];
-}
-
-interface DeleteProductBatchRequestBody {
-  productBatch: {
-    productId: number;
-    storeId: number;
-  }[];
-}
 
 // batch addition upload to inventory
 export async function POST(req: Request) {

@@ -1,38 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma"; // Adjust the import path based on your project structure
-
-// Interface for the incoming request body for adding inventory
-interface AddInventoryRequestBody {
-  storeId: string; // Store ID received as a string
-  storeManagerId: string; // Assuming this is a user ID
-  invItem: string;
-  invItemBrand: string;
-  invItemStock: number;
-  invItemPrice: number;
-  invItemType: string;
-  invItemBarcode: number;
-  invItemSize: number;
-  invAdditional?: any; // Optional additional information
-}
-
-interface DeleteProductRequestBody {
-  productId: number;
-  storeId: number;
-}
-
-interface UpdateProductRequestBody {
-  updates: {
-    invItemBrand: string;
-    invItemStock: number;
-    invItemPrice: number;
-    invItemType: string;
-    invItemBarcode: number;
-    invItemSize: number;
-    invAdditional?: any; // Optional additional information
-  };
-  productId: number;
-  storeId: number;
-}
+import {
+  AddInventoryRequestBody,
+  DeleteProductRequestBody,
+  UpdateProductRequestBody,
+} from "@/app/types/inventory/api";
 
 // Function to handle the POST request for adding inventory
 export async function POST(req: Request) {
