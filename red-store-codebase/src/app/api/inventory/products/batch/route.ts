@@ -1,9 +1,9 @@
+import { db } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 import {
   AddBatchRequestBody,
   DeleteProductBatchRequestBody,
 } from "@/app/types/inventory/api";
-import { db } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 
 // batch addition upload to inventory
 export async function POST(req: Request) {
