@@ -55,8 +55,6 @@ export async function POST(req: Request) {
     // Convert storeId from string to number
     const storeId = parseInt(storeIdStr, 10);
 
-    console.log({ body });
-
     // Validate required fields
     if (
       !storeId ||
@@ -83,8 +81,6 @@ export async function POST(req: Request) {
         { error: "Couldn't find your store" },
         { status: 400 }
       );
-
-    console.log("found store", store);
 
     // Ensure the partition exists for the store
     await db.$executeRaw`SELECT check_and_create_inventory_partition(${storeId}::integer);`;
@@ -131,9 +127,12 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (err) {
-    console.error("Error adding inventory:", err);
+    console.error("Upload Error adding inventory:", err);
     return NextResponse.json(
-      { error: "An error occurred while adding the inventory" },
+      {
+        error:
+          "An error occurred while adding the inventory, Please check your internet",
+      },
       { status: 500 }
     );
   }
