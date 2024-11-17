@@ -77,7 +77,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
-        message: `Processed Batch, ${bulkProductAdd.count} products added to inventory`,
+        message: `Processed Batch, ${bulkProductAdd.count} products to inventory`,
       },
       { status: 200 }
     );
@@ -111,7 +111,7 @@ export async function DELETE(req: Request) {
       invId: item.productId,
     }));
 
-    // Validate existence of products before removal
+    // Validate existence of products before removal, through composite key
     const existingProducts = await db.inventory.findMany({
       where: {
         OR: idsToDelete.map(({ storeId, invId }) => ({ storeId, invId })),
@@ -125,10 +125,13 @@ export async function DELETE(req: Request) {
       );
     }
 
-    // Perform batch delete
+    // Perform batch delete using composite key logic
     const deleteResult = await db.inventory.deleteMany({
       where: {
-        OR: idsToDelete.map(({ storeId, invId }) => ({ storeId, invId })),
+        OR: idsToDelete.map(({ storeId, invId }) => ({
+          storeId,
+          invId,
+        })),
       },
     });
 
