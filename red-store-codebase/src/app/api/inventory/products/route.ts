@@ -1,19 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma"; // Adjust the import path based on your project structure
-
-// Interface for the incoming request body for adding inventory
-interface AddInventoryRequestBody {
-  storeId: string; // Store ID received as a string
-  storeManagerId: string; // Assuming this is a user ID
-  invItem: string;
-  invItemBrand: string;
-  invItemStock: number;
-  invItemPrice: number;
-  invItemType: string;
-  invItemBarcode: number;
-  invItemSize: number;
-  invAdditional?: any; // Optional additional information
-}
+import {
+  AddInventoryRequestBody,
+  DeleteProductRequestBody,
+  UpdateProductRequestBody,
+} from "@/app/types/inventory/api";
 
 // Function to handle the POST request for adding inventory
 export async function POST(req: Request) {
@@ -35,19 +26,52 @@ export async function POST(req: Request) {
 
     // Convert storeId from string to number
     const storeId = parseInt(storeIdStr, 10);
-    
-    console.log({ body });
 
     // Validate required fields
-    if (!storeId || !storeManagerId || !invItem || invItemStock < 0 || invItemPrice < 0) {
+    if (
+      !storeId ||
+      !storeManagerId ||
+      !invItem ||
+      invItemStock < 0 ||
+      invItemPrice < 0
+    ) {
       return NextResponse.json(
         { error: "Required fields are missing or invalid." },
         { status: 400 }
       );
     }
 
+    const store = await db.store.findFirst({
+      where: {
+        storeManagerId: storeManagerId,
+        storeId: storeId,
+      },
+    });
+
+    if (!store)
+      return NextResponse.json(
+        { error: "Couldn't find your store" },
+        { status: 400 }
+      );
+
     // Ensure the partition exists for the store
     await db.$executeRaw`SELECT check_and_create_inventory_partition(${storeId}::integer);`;
+
+    // check of existing product relies mostly on duplicate barcodes
+    const existingProduct = await db.inventory.findFirst({
+      where: {
+        storeId: storeId,
+        invItemBarcode: invItemBarcode,
+      },
+    });
+
+    if (existingProduct)
+      return NextResponse.json(
+        {
+          message: `Product with barcode : ${existingProduct.invItemBarcode} already exists`,
+        },
+        { status: 400 }
+      );
 
     // Create a new inventory record
     const inventory = await db.inventory.create({
@@ -68,13 +92,19 @@ export async function POST(req: Request) {
 
     // Return the newly created inventory data
     return NextResponse.json(
-      { message: `Inventory item ${inventory.invItem} added successfully`, inventory },
+      {
+        message: `Inventory item ${inventory.invItem} added successfully`,
+        inventory,
+      },
       { status: 201 }
     );
   } catch (err) {
-    console.error("Error adding inventory:", err);
+    console.error("Upload Error adding inventory:", err);
     return NextResponse.json(
-      { error: "An error occurred while adding the inventory" },
+      {
+        error:
+          "An error occurred while adding the inventory, Please check your internet",
+      },
       { status: 500 }
     );
   }
@@ -129,6 +159,117 @@ export async function GET(req: Request) {
     return NextResponse.json(
       {
         error: `An error occurred while fetching inventory items: ${errMessage}`,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Endpoint to delete product from inventory
+export async function DELETE(req: Request) {
+  try {
+    const body: DeleteProductRequestBody = await req.json();
+    const { productId, storeId } = body;
+
+    // First locate the product to ensure it exists
+    const product = await db.inventory.findFirst({
+      where: {
+        AND: [{ storeId: storeId }, { invId: productId }],
+      },
+    });
+
+    console.log("product", product);
+
+    if (!product) {
+      return NextResponse.json(
+        {
+          message: `Product not found`,
+        },
+        { status: 404 }
+      );
+    }
+
+    // Then delete using the composite key
+    const deleteProduct = await db.inventory.delete({
+      where: {
+        storeId_invId: {
+          storeId: storeId,
+          invId: productId,
+        },
+      },
+    });
+
+    return NextResponse.json({
+      message: `Removed product: ${deleteProduct.invItem} from stock`,
+    });
+  } catch (err: unknown) {
+    console.log("Error deleting items in inventory, Try again");
+    const errMessage =
+      err instanceof Error ? err.message : "An unknown error occurred";
+    return NextResponse.json(
+      {
+        error: `An error occurred while deleting inventory item: ${errMessage}`,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Endpoint to update product in inventory
+export async function UPDATE(req: Request) {
+  try {
+    const body: UpdateProductRequestBody = await req.json();
+    const { productId, storeId, updates } = body;
+
+    // First locate the product to ensure it exists
+    const product = await db.inventory.findFirst({
+      where: {
+        AND: [{ storeId: storeId }, { invId: productId }],
+      },
+    });
+
+    console.log("product", product);
+
+    if (!product) {
+      return NextResponse.json(
+        {
+          message: `Product not found`,
+        },
+        { status: 404 }
+      );
+    }
+
+    const UpdateProduct = await db.inventory.update({
+      where: {
+        storeId_invId: {
+          storeId: storeId,
+          invId: productId,
+        },
+      },
+      data: updates,
+    });
+
+    if (!UpdateProduct)
+      return NextResponse.json(
+        {
+          message: `Error during product updation, try again`,
+        },
+        { status: 400 }
+      );
+
+    return NextResponse.json(
+      {
+        message: `Updated product: ${UpdateProduct.invItem}`,
+      },
+      { status: 204 }
+    );
+  } catch (err: unknown) {
+    console.log("Error updating item in inventory, Try again");
+    const errMessage =
+      err instanceof Error ? err.message : "An unknown error occurred";
+    return NextResponse.json(
+      {
+        error: `An error occurred while updating inventory item: ${errMessage}`,
       },
       { status: 500 }
     );

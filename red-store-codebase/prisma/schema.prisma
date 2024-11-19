@@ -7,29 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum RoleType {
-  SALES
-  MANAGER
-  INVENTORY_STAFF
-  STORE_MANAGER
-}
-// declared an enum for type safety of roles
-
 model Account {
   id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -46,15 +37,14 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  password      String    
+  password      String
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
-  roleId        Int       
+  roleId        Int
   phone         String?
   createdAt     DateTime  @default(now())
-  stores        Store[]
+  accounts      Account[]
+  sessions      Session[]
   role          Role      @relation(fields: [roleId], references: [roleId])
 }
 
@@ -67,83 +57,71 @@ model VerificationToken {
 }
 
 model Role {
-  roleId   Int        @id @default(autoincrement())
+  roleId   Int      @id @default(autoincrement())
   roleType RoleType
-  employee Employee[] // Many employees of the same role type
-
-  User User[]
+  User     User[]
 }
 
 model Inventory {
-  invId          Int      @id @default(autoincrement()) @map("invid")
-  storeId        Int      @map("storeid")
-  storeManagerId String   @map("storemanagerid")
-  invItem        String   @map("invitem")
-  invItemBrand   String?  @map("invitembrand")
-  invItemStock   Int      @map("invitemstock")
-  invItemPrice   Int      @map("invitemprice")
-  invItemType    String?  @map("invitemtype")
-  invCreatedDate DateTime @default(now()) @map("invcreateddate")
-  invItemBarcode Int?     @map("invitembarcode")
-  invItemSize    Int?     @map("invitemsize")
-  invAdditional  Json?    @map("invadditional")
+  invId          Int       @default(autoincrement()) @map("invid")
+  storeId        Int       @map("storeid")
+  storeManagerId String    @map("storemanagerid")
+  invitemid      Int       @default(autoincrement())
+  invItem        String    @map("invitem") @db.VarChar(255)
+  invItemBrand   String?   @map("invitembrand") @db.VarChar(255)
+  invItemStock   Int       @map("invitemstock")
+  invItemPrice   Int       @map("invitemprice")
+  invItemType    String?   @map("invitemtype") @db.VarChar(100)
+  invCreatedDate DateTime? @default(now()) @map("invcreateddate") @db.Timestamp(6)
+  invItemBarcode Int?      @map("invitembarcode")
+  invItemSize    Int?      @map("invitemsize")
+  invAdditional  Json?     @map("invadditional") @db.Json
+  store          Store     @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: Cascade, onUpdate: NoAction, map: "fk_store_inventory")
 
-  // Composite foreign key to Store table
-  store Store @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId])
-
-  @@unique([storeId, storeManagerId, invId]) // Composite unique constraint
-  @@map(name: "inventory") // Map Prisma model to the PostgreSQL table
-  @@unique([storeId, storeManagerId])
-  Sale Sale[]
-  @@unique([invId, storeManagerId])
+  @@id([storeId, invId])
+  @@map("inventory")
 }
 
-
 model Store {
-  storeId        Int      @id @default(autoincrement()) @map("storeid")
-  storeName      String   @map("storename")
-  storeLocation  String   @map("storelocation")
-  storeManagerId String   @map("storemanagerid")
-  storeStatus    Boolean  @map("storestatus")
-  createdAt      DateTime @map("createdat")
+  storeId        Int         @default(autoincrement()) @map("storeid")
+  storeName      String      @map("storename")
+  storeLocation  String?     @map("storelocation")
+  storeManagerId String      @map("storemanagerid")
+  storeStatus    Boolean     @map("storestatus")
+  createdAt      DateTime?   @default(now()) @map("createdat") @db.Timestamptz(6)
+  inventory      Inventory[]
 
-  manager   User       @relation(fields: [storeManagerId], references: [id])
-  employees Employee[]
-  inventory Inventory?
-  sales     Sale[]
-
-  @@unique([storeId, storeManagerId]) // Composite unique constraint
-  @@map(name: "store") // Map Prisma model to the PostgreSQL table
+  @@id([storeId, storeManagerId])
+  @@map("store")
 }
 
 model Sale {
-  saleId       Int       @id @default(autoincrement())
-  storeId      Int
+  saleId         Int      @id @default(autoincrement())
+  storeId        Int
+  saleDate       DateTime
+  invId          Int
+  saleQuantity   Int
+  salePrice      Int
   storeManagerId String
-  saleDate     DateTime
-  invId        Int
-  saleQuantity Int
-  salePrice    Int
-  
-  // Foreign keys
-  store        Store     @relation(fields: [storeId], references: [storeId])
-  inventory    Inventory @relation(fields: [invId, storeManagerId], references: [invId, storeManagerId]) // Update to include storeManagerId
 }
 
 model Employee {
-  empId          Int      @id @default(autoincrement()) @map("empid") // Automatically incrementing employee ID
-  storeId        Int      @map("storeid") // Foreign key to the Store table
-  roleId         Int      @map("roleid") // Foreign key to the Role table
-  createdAt      DateTime @default(now()) @map("createdat") // Default created timestamp
-  empName        String   @map("empname") // Employee name
-  empPhone       String   @map("empphone") // Employee phone number
-  empStatus      Boolean  @map("empstatus") // Status of the employee
-  storeManagerId String   @map("storemanagerid") // Manager ID for partitioning
+  empId          Int       @default(autoincrement()) @map("empid")
+  storeId        Int       @map("storeid")
+  roleId         Int       @map("roleid")
+  createdAt      DateTime? @default(now()) @map("createdat") @db.Timestamp(6)
+  empName        String    @map("empname") @db.VarChar(255)
+  empPhone       String    @map("empphone") @db.VarChar(50)
+  empStatus      Boolean   @map("empstatus")
+  storeManagerId String    @map("storemanagerid") @db.VarChar(255)
 
-  // Relationships
-  store Store @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId]) // Composite foreign key
-  role  Role  @relation(fields: [roleId], references: [roleId]) // Foreign key to Role
+  @@id([storeId, empId])
+  @@map("employee")
+}
 
-  @@unique([storeManagerId, empId]) // Composite unique constraint for primary key
-  @@map(name: "employee") // Map Prisma model to the PostgreSQL table
+enum RoleType {
+  SALES
+  MANAGER
+  INVENTORY_STAFF
+  STORE_MANAGER
 }
