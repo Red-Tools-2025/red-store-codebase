@@ -3,9 +3,21 @@ import supabase from "../../../../../supabase/client";
 
 export async function GET(req: Request) {
   try {
+    // Parse query parameters from the URL
+    const url = new URL(req.url);
+    const store_id = parseInt(url.searchParams.get("store_id") || "0", 10);
+    const startDate = url.searchParams.get("startDate");
+    const endDate = url.searchParams.get("endDate");
+
+    // Convert dates to ISO format for querying (ensure timestamps are valid)
+
+    // Query Supabase
     const { data, error } = await supabase
       .from("inventory_timeseries")
-      .select("*");
+      .select("*")
+      .eq("store_id", store_id)
+      .gte("time", startDate)
+      .lte("time", endDate);
 
     if (error) {
       console.error("Error fetching data:", error.message);
