@@ -9,23 +9,38 @@ export async function GET(req: Request) {
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
 
-    // Convert dates to ISO format for querying (ensure timestamps are valid)
+    // Parse query params for pagination
+    const page = parseInt(url.searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(url.searchParams.get("pageSize") || "15", 10); // displaying 15 records per page
+
+    const offset = (page - 1) * pageSize;
 
     // Query Supabase
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
       .from("inventory_timeseries")
-      .select("*")
+      .select("*", { count: "exact" })
       .eq("store_id", store_id)
       .gte("time", startDate)
-      .lte("time", endDate);
+      .lte("time", endDate)
+      .range(offset, offset + pageSize - 1); // LIMIT and OFFSET
 
     if (error) {
       console.error("Error fetching data:", error.message);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    const totalPageCount = count! / pageSize;
+
     // Return the fetched data
-    return NextResponse.json({ data }, { status: 200 });
+    return NextResponse.json(
+      {
+        data,
+        total_pages: totalPageCount,
+        current_page: page,
+        items_per_page: pageSize,
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("Unexpected error:", err);
     return NextResponse.json(
