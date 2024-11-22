@@ -29,7 +29,23 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const totalPageCount = count! / pageSize;
+    const totalPageCount = Math.ceil(count! / pageSize);
+
+    if (page > totalPageCount)
+      return NextResponse.json(
+        {
+          error: `Page Range out of index, total pages available - ${totalPageCount}`,
+        },
+        { status: 400 }
+      );
+
+    if (data && data.length === 0)
+      return NextResponse.json(
+        {
+          error: `Data not available for month range between ${startDate} & ${endDate}`,
+        },
+        { status: 404 }
+      );
 
     // Return the fetched data
     return NextResponse.json(
