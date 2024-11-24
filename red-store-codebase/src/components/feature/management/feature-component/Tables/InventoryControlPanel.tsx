@@ -1,6 +1,6 @@
 "use client";
+import InventoryDataTable from "@/components/feature/sales/feature-component/Tables/InventoryDataTable";
 import { useState, useEffect } from "react";
-import InventoryDataTable from "../Tables/InventoryDataTable";
 
 // Please Polish UI for page
 

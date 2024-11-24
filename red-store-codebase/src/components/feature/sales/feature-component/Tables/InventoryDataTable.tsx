@@ -1,5 +1,5 @@
 import { TableCell, TableRow } from "@/components/ui/table";
-import TableLayout from "../../layouts/TableLayout";
+import TableLayout from "@/components/feature/management/layouts/TableLayout";
 import { useMemo } from "react";
 
 interface InventoryDataTableProps {
