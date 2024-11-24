@@ -1,7 +1,7 @@
 import InfoCards from "@/components/feature/inventory/info-card";
 import InventoryControlPanel from "@/components/feature/management/feature-component/Tables/InventoryControlPanel";
 
-const InventoryPage = () => {
+const SalesPage = () => {
   // Correct naming convention here according to the renaming I have done for this page
   // Control panel is purely for controling the fetched inventory data and nothing more
 
@@ -17,4 +17,4 @@ const InventoryPage = () => {
   );
 };
 
-export default InventoryPage;
+export default SalesPage;
