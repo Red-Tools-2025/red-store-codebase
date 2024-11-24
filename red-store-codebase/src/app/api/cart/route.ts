@@ -38,9 +38,13 @@ export async function GET(req: Request) {
         { status: 404 }
       );
 
-    return {
-      product,
-    };
+    return NextResponse.json(
+      {
+        message: "Item added to cart",
+        product,
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.log(err);
   }
