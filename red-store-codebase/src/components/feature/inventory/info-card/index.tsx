@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -48,7 +48,7 @@ const InfoCards = () => {
     const fetchMetrics = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/inventory/timeseries/metrics?store_id=1"
+          "http://localhost:3000/api/inventory/timeseries/metrics?store_id=7"
         );
         const data = await response.json();
         // Assuming data structure: { "data": [{ "avg_daily_sales": number, "avg_monthly_sales": number }] }

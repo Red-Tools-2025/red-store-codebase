@@ -6,8 +6,8 @@ import InventoryDataTable from "../Tables/InventoryDataTable";
 
 const InventoryControlPanel = () => {
   // Set default startDate and endDate
-  const defaultStartDate = "2024-01-01";
-  const defaultEndDate = "2024-02-20";
+  const defaultStartDate = "2024-10-01";
+  const defaultEndDate = "2024-11-01";
   const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
   const [inventoryData, setInventoryData] = useState([]);
@@ -15,11 +15,15 @@ const InventoryControlPanel = () => {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
 
+  // Please handle all possible edge, case like:
+  // No purchase logs in inventory, if no purchase logs then how will u display metrics all these cases\
+
   // move it towards a hook
+  // Invalid hook name please refer to as timeseries, otherwise will cause confusions moving forward
   const fetchInventoryData = async (page: any) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/inventory/timeseries?store_id=1&startDate=${startDate}&endDate=${endDate}&page=${page}&pageSize=${itemsPerPage}`
+        `http://localhost:3000/api/inventory/timeseries?store_id=7&startDate=${startDate}&endDate=${endDate}&page=${page}&pageSize=${itemsPerPage}`
       );
       const data = await response.json();
       setInventoryData(data.data);
