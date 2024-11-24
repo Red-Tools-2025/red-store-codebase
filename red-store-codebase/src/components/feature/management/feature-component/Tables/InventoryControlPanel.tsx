@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import InventoryDataTable from "../Tables/InventoryDataTable";
 
+// Please Polish UI for page
+
 const InventoryControlPanel = () => {
   // Set default startDate and endDate
   const defaultStartDate = "2024-01-01";
@@ -11,9 +13,10 @@ const InventoryControlPanel = () => {
   const [inventoryData, setInventoryData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 10;
 
-  const fetchInventoryData = async (page:any) => {
+  // move it towards a hook
+  const fetchInventoryData = async (page: any) => {
     try {
       const response = await fetch(
         `http://localhost:3000/api/inventory/timeseries?store_id=1&startDate=${startDate}&endDate=${endDate}&page=${page}&pageSize=${itemsPerPage}`
@@ -44,7 +47,7 @@ const InventoryControlPanel = () => {
     }
   };
 
-  const handleDateChange = (type:any, value:any) => {
+  const handleDateChange = (type: any, value: any) => {
     if (type === "start") setStartDate(value);
     else setEndDate(value);
 
