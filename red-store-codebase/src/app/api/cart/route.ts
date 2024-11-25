@@ -1,5 +1,13 @@
+import { ProcessCartRequestBody } from "@/app/types/inventory/api";
+import {
+  TimeSeries,
+  TimeSeriesUpdateFunctionArgumentType,
+  TimeSeriesUpdateFuntionReturnType,
+} from "@/app/types/inventory/api";
+
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import supabase from "../../../../supabase/client";
 
 // fetches product for cart
 export async function GET(req: Request) {
@@ -45,6 +53,53 @@ export async function GET(req: Request) {
       },
       { status: 200 }
     );
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// endpoint to process cart items
+export async function POST(req: Request) {
+  try {
+    const body: ProcessCartRequestBody = await req.json();
+    const { cartItems, purchase_time } = body;
+    const timestamp = purchase_time ? new Date(purchase_time) : new Date();
+
+    if (cartItems.length === 0)
+      return NextResponse.json(
+        { error: "Cart is empty, cannot process" },
+        { status: 400 }
+      );
+
+    const prepped_series_inserts: TimeSeries[] = cartItems.map(
+      ({
+        productQuantity,
+        product_id,
+        product_price,
+        store_id,
+        product_current_stock,
+      }) => ({
+        mrp_per_bottle: product_price,
+        sales: productQuantity,
+        sale_amount: productQuantity * product_price,
+        product_id: product_id,
+        opening_stock: product_current_stock,
+        received_stock: 0,
+        closing_stock: product_current_stock + 0 - productQuantity,
+        store_id: store_id,
+        time: timestamp.toISOString(),
+      })
+    );
+
+    const { data, error: TimeseriesInsertionError } = await supabase
+      .from("inventory_timeseries")
+      .insert(prepped_series_inserts);
+
+    if (TimeseriesInsertionError)
+      return NextResponse.json(
+        { error: TimeseriesInsertionError.message },
+        { status: 400 }
+      );
   } catch (err) {
     console.log(err);
   }

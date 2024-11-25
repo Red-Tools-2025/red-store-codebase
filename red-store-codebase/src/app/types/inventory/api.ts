@@ -1,3 +1,5 @@
+import { Database } from "../../../../supabase/database.types";
+
 //interface for the incoming request body for adding inventory
 export interface AddInventoryRequestBody {
   storeId: string; // Store ID received as a string
@@ -53,3 +55,21 @@ export interface DeleteProductBatchRequestBody {
     storeId: number;
   }[];
 }
+
+export interface ProcessCartRequestBody {
+  cartItems: {
+    product_id: number;
+    product_current_stock: number;
+    store_id: number;
+    product_price: number;
+    productQuantity: number;
+  }[];
+  purchase_time?: string; // defaults to today, just for testing
+}
+
+export type TimeSeries =
+  Database["public"]["Tables"]["inventory_timeseries"]["Row"];
+export type TimeSeriesUpdateFuntionReturnType =
+  Database["public"]["Functions"]["get_timeseries_status"]["Returns"];
+export type TimeSeriesUpdateFunctionArgumentType =
+  Database["public"]["Functions"]["get_timeseries_status"]["Args"];
