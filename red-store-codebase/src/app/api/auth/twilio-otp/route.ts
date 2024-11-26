@@ -28,7 +28,12 @@ export async function POST(req: Request) {
 
     // Move otp gens to Redis, with a TTL for more security and to prevent MIM attacks
     return NextResponse.json(
-      { message: "Sent message", condition: message.status, otp: otp },
+      {
+        message: "Sent message",
+        condition: message.status,
+        otp: otp,
+        expiryTime: 3600,
+      },
       { status: 200 }
     );
   } catch (err) {
