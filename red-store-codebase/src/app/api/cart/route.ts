@@ -1,9 +1,4 @@
-import { ProcessCartRequestBody } from "@/app/types/inventory/api";
-import {
-  TimeSeries,
-  TimeSeriesUpdateFunctionArgumentType,
-  TimeSeriesUpdateFuntionReturnType,
-} from "@/app/types/inventory/api";
+import { ProcessCartRequestBody, TimeSeries } from "@/app/types/inventory/api";
 
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
@@ -62,7 +57,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body: ProcessCartRequestBody = await req.json();
-    const { cartItems, purchase_time } = body;
+    const { cartItems, store_id, purchase_time } = body;
     const timestamp = purchase_time ? new Date(purchase_time) : new Date();
 
     if (cartItems.length === 0)
@@ -71,25 +66,57 @@ export async function POST(req: Request) {
         { status: 400 }
       );
 
-    const prepped_series_inserts: TimeSeries[] = cartItems.map(
-      ({
-        productQuantity,
-        product_id,
-        product_price,
-        store_id,
-        product_current_stock,
-      }) => ({
-        mrp_per_bottle: product_price,
-        sales: productQuantity,
-        sale_amount: productQuantity * product_price,
-        product_id: product_id,
-        opening_stock: product_current_stock,
+    const cart_product_ids = cartItems.map((cartItem) => cartItem.product_id);
+
+    // no health check done, handled in scan api
+    const products_inventory = await db.inventory.findMany({
+      where: {
+        storeId: store_id,
+        invId: { in: cart_product_ids },
+      },
+    });
+
+    if (products_inventory.length === 0)
+      return NextResponse.json(
+        { error: "No matching products found in inventory" },
+        { status: 404 }
+      );
+
+    console.log({ cartItems });
+
+    const prepped_series_inserts: TimeSeries[] = cartItems.map((cartItem) => {
+      const inventoryItem = products_inventory.find(
+        (item) => item.invId === cartItem.product_id
+      );
+
+      if (!inventoryItem)
+        throw new Error(
+          `Product with ID ${cartItem.product_id} not found in inventory, please scan again`
+        );
+
+      console.log({
+        calculations: {
+          closing: inventoryItem.invItemStock - cartItem.productQuantity,
+          sales: cartItem.productQuantity,
+        },
+      });
+
+      // Corrected to match API body keys
+      const productQuantity = cartItem.productQuantity; // Fix here
+      const productPrice = cartItem.product_price; // Fix here
+
+      return {
+        mrp_per_bottle: inventoryItem.invItemPrice,
+        sales: cartItem.productQuantity,
+        sale_amount: cartItem.productQuantity * productPrice,
+        product_id: cartItem.product_id,
+        opening_stock: inventoryItem.invItemStock,
         received_stock: 0,
-        closing_stock: product_current_stock + 0 - productQuantity,
+        closing_stock: inventoryItem.invItemStock - productQuantity,
         store_id: store_id,
         time: timestamp.toISOString(),
-      })
-    );
+      };
+    });
 
     const { data, error: TimeseriesInsertionError } = await supabase
       .from("inventory_timeseries")
@@ -100,6 +127,27 @@ export async function POST(req: Request) {
         { error: TimeseriesInsertionError.message },
         { status: 400 }
       );
+
+    // given we pass error gaurd clause i update my inventory as well
+    const inventory_updates = cartItems.map((cartItem) =>
+      db.inventory.update({
+        where: {
+          storeId_invId: { storeId: store_id, invId: cartItem.product_id }, // utilizing the primary key
+        },
+        data: {
+          invItemStock: {
+            decrement: cartItem.productQuantity,
+          },
+        },
+      })
+    );
+
+    await db.$transaction(inventory_updates);
+
+    return NextResponse.json(
+      { message: "Purchase successfull" },
+      { status: 200 }
+    );
   } catch (err) {
     console.log(err);
   }
