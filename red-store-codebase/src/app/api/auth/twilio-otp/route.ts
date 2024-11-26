@@ -32,7 +32,7 @@ export async function POST(req: Request) {
         message: "Sent message",
         condition: message.status,
         otp: otp,
-        expiryTime: 3600,
+        expiryTime: 10600,
       },
       { status: 200 }
     );
