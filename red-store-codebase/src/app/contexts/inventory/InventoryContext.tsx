@@ -11,6 +11,7 @@ import { Inventory } from "@prisma/client";
 interface InventoryContextType {
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
+  isLoading: boolean;
 }
 
 const InventoryContext = createContext<InventoryContextType | undefined>(
@@ -21,13 +22,17 @@ export const InventoryProvider = ({
   children,
   sessionData,
   inventoryItems,
+  isLoading,
 }: {
   children: ReactNode;
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
+  isLoading: boolean;
 }) => {
   return (
-    <InventoryContext.Provider value={{ sessionData, inventoryItems }}>
+    <InventoryContext.Provider
+      value={{ sessionData, inventoryItems, isLoading }}
+    >
       {children}
     </InventoryContext.Provider>
   );

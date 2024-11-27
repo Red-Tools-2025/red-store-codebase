@@ -68,34 +68,35 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   };
 
   // Combine loading states
-  const isLoading = isLoadingStores || (selectedStore && isLoadingProducts);
 
   return (
     <InventoryProvider
+      isLoading={isLoadingProducts}
       inventoryItems={inventoryItems}
       sessionData={sessionUser ?? null}
     >
       <div className="p-5">
         {session ? (
           <>
-            {isLoading && !userStores?.length ? (
-              <>Loading..</>
-            ) : (
+            {isLoadingStores ? (
+              <div>Loading...</div>
+            ) : userStores && userStores.length > 0 ? (
               <>
                 <div className="flex justify-between">
                   <h1 className="text-2xl font-semibold">Inventory Overview</h1>
                   <div className="flex gap-2">
                     <DropDownStoreSelect
-                      data={userStores ?? []}
-                      isDisabled={userStores?.length === 0}
+                      data={userStores}
+                      isDisabled={userStores.length === 0}
                       setSelectedStore={setIsSelectedStore}
                       selectedStore={selectedStore}
                     />
                   </div>
                 </div>
-                {/* Pass the inventoryItems and loading status to children */}
                 {children}
               </>
+            ) : (
+              <div>No stores found</div>
             )}
           </>
         ) : (

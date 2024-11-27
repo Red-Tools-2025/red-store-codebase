@@ -9,17 +9,18 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { SessionUserType } from "../types/management/context";
+import { useInventory } from "../contexts/inventory/InventoryContext";
 
 const InventoryPage = () => {
-  const [displayState, setDisplayState] = useState<string>("list");
-  const [input, setInput] = useState<string>("");
-  const [tempOpen, setTempOpen] = useState<boolean>(false);
   const { data: session } = useSession();
+  const { inventoryItems, isLoading: isLoadingProducts } = useInventory();
+  const [displayState, setDisplayState] = useState<string>("list");
   const sessionUser = session?.user as SessionUserType | undefined;
   console.log(sessionUser?.id);
 
   return (
     <div>
+      {/* Control Panel */}
       <div className="my-5 flex items-center justify-between">
         <div className="flex w-2/4 items-center space-x-4">
           <Input
@@ -85,6 +86,26 @@ const InventoryPage = () => {
           </Button>
           <Button variant={"secondary"}>Add Product</Button>
         </div>
+      </div>
+      {/* Inventory Render boi*/}
+      <div>
+        {isLoadingProducts ? (
+          <div>Fetching Products</div>
+        ) : (
+          <div>
+            {!inventoryItems ? (
+              <div></div>
+            ) : inventoryItems.length === 0 ? (
+              <div className="Let's begin adding products to your inventory"></div>
+            ) : (
+              <div className="flex-col">
+                {inventoryItems.map((item, index) => {
+                  return <div key={index}>{item.invItem}</div>;
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
