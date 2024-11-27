@@ -16,7 +16,6 @@ const InventoryPage = () => {
   const { inventoryItems, isLoading: isLoadingProducts } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
   const sessionUser = session?.user as SessionUserType | undefined;
-  console.log(sessionUser?.id);
 
   return (
     <div>
@@ -66,21 +65,6 @@ const InventoryPage = () => {
 
         {/* Other Options */}
         <div className="flex space-x-2">
-          {/* <div
-            className={`flex items-center justify-center p-1.5 rounded-sm border cursor-pointer 
-              ${
-                tempOpen
-                  ? "bg-green-200 border-green-500"
-                  : "bg-gray-300 border-gray-500 opacity-50"
-              } transition-all duration-300 ease-in-out`}
-            onClick={() => setTempOpen(!tempOpen)}
-          >
-            <SlOptionsVertical
-              className={`text-md ${
-                tempOpen ? "text-green-500" : "text-gray-500"
-              } transition-all duration-300 ease-in-out`}
-            />
-          </div> */}
           <Button variant={"secondary"}>
             <SlOptionsVertical />
           </Button>
@@ -94,13 +78,31 @@ const InventoryPage = () => {
         ) : (
           <div>
             {!inventoryItems ? (
-              <div></div>
+              <div>Issue in Rendering Inventory Items</div>
             ) : inventoryItems.length === 0 ? (
               <div className="Let's begin adding products to your inventory"></div>
             ) : (
-              <div className="flex-col">
+              <div className="flex-col space-y-2">
                 {inventoryItems.map((item, index) => {
-                  return <div key={index}>{item.invItem}</div>;
+                  return (
+                    <div
+                      className="bg-gray-100 px-3 py-2 rounded-sm flex-col space-y-1"
+                      key={index}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <p className="font-bold text-lg">{item.invItem}</p>
+                        <p className="px-1 rounded-sm bg-white">
+                          #{item.invitemid}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <p className="">{item.invItemBrand}</p>
+                        <p className="py-0.2 px-1 rounded-sm text-green-600 bg-green-200">
+                          {item.invItemType}
+                        </p>
+                      </div>
+                    </div>
+                  );
                 })}
               </div>
             )}

@@ -25,7 +25,6 @@ interface ManagementPageLayoutProps {
 const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   const { data: session } = useSession();
   const sessionUser = session?.user as SessionUserType | undefined;
-  console.log(sessionUser?.id);
 
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
 
@@ -52,8 +51,6 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     selectedStore ? String(selectedStore.storeId) : "",
     sessionUser?.id ?? ""
   );
-
-  console.log(inventoryItems);
 
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
