@@ -15,6 +15,8 @@ import AddEmployeeModal from "@/components/feature/management/feature-component/
 import { Store } from "@prisma/client";
 import useEmployeeServerFetch from "../hooks/management/ServerHooks/useEmployeeServerFetch";
 import AssignEmployeeModal from "@/components/feature/management/feature-component/FormModals/AssignEmployeeModal";
+import useProducts from "../hooks/inventory/FetchHooks/useProducts";
+import { InventoryProvider } from "../contexts/inventory/InventoryContext";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -25,18 +27,33 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   const sessionUser = session?.user as SessionUserType | undefined;
   console.log(sessionUser?.id);
 
-  const { data, error, isLoading } = useStoreServerFetch(sessionUser?.id ?? "");
-  const {
-    data: employeeData,
-    error: employeeError,
-    isLoading: isEmployeeLoading,
-  } = useEmployeeServerFetch(sessionUser?.id ?? ""); // Fetch employee data
-
-  const [isStoreModalOpen, setisStoreModalOpen] = useState<boolean>(false);
-  const [isEmpModalOpen, setIsEmpModalOpen] = useState<boolean>(false);
-  const [isAssignModalOpen, setAssignModalOpen] = useState<boolean>(false);
-
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
+
+  // Fetching store data and inventory data
+  const {
+    data: userStores,
+    error: storeServerFetchError,
+    isLoading: isLoadingStores,
+  } = useStoreServerFetch(sessionUser?.id ?? "");
+
+  // Use useEffect to set initial store when stores are loaded
+  React.useEffect(() => {
+    if (userStores && userStores.length > 0 && !selectedStore) {
+      setIsSelectedStore(userStores[0]);
+    }
+  }, [userStores]);
+
+  const {
+    error: InventoryFetchError,
+    inventoryItems,
+    message,
+    isLoading: isLoadingProducts,
+  } = useProducts(
+    selectedStore ? String(selectedStore.storeId) : "",
+    sessionUser?.id ?? ""
+  );
+
+  console.log(inventoryItems);
 
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
@@ -50,61 +67,42 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     setModalType(false);
   };
 
-  // Creating Map for O(1) look up, to be done for all cases handling dynamic data as select options
-  // Maps to be used in future modals, but now the assign modal
-
-  const empMap = useMemo(() => {
-    if (!employeeData) return null;
-    return new Map(
-      employeeData
-        .filter((emp) => emp.storeId === selectedStore?.storeId)
-        .map((emp) => [emp.empId.toString(), emp])
-    );
-  }, [employeeData, selectedStore]);
-
-  const storeMap = useMemo(() => {
-    if (!data) return null;
-    return new Map(
-      data
-        .filter((store) => store.storeId != selectedStore?.storeId)
-        .map((store) => [store.storeId.toString(), store])
-    );
-  }, [data, selectedStore]);
+  // Combine loading states
+  const isLoading = isLoadingStores || (selectedStore && isLoadingProducts);
 
   return (
-    <ManagementProvider
-      selectedStore={selectedStore}
-      storeData={data}
+    <InventoryProvider
+      inventoryItems={inventoryItems}
       sessionData={sessionUser ?? null}
-      employeeData={employeeData}
     >
       <div className="p-5">
         {session ? (
           <>
-            {isLoading && !data?.length ? (
-              <>Loading</>
+            {isLoading && !userStores?.length ? (
+              <>Loading..</>
             ) : (
               <>
                 <div className="flex justify-between">
                   <h1 className="text-2xl font-semibold">Inventory Overview</h1>
                   <div className="flex gap-2">
                     <DropDownStoreSelect
-                      data={data ?? []}
-                      isDisabled={data?.length === 0}
+                      data={userStores ?? []}
+                      isDisabled={userStores?.length === 0}
                       setSelectedStore={setIsSelectedStore}
                       selectedStore={selectedStore}
                     />
                   </div>
                 </div>
+                {/* Pass the inventoryItems and loading status to children */}
                 {children}
               </>
             )}
           </>
         ) : (
-          <main>Session not found please login again</main>
+          <main>Session not found. Please log in again.</main>
         )}
       </div>
-    </ManagementProvider>
+    </InventoryProvider>
   );
 };
 

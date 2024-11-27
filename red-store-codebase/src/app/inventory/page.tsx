@@ -7,11 +7,16 @@ import { IndianRupee } from "lucide-react";
 import { SlOptionsVertical } from "react-icons/sl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import { SessionUserType } from "../types/management/context";
 
 const InventoryPage = () => {
   const [displayState, setDisplayState] = useState<string>("list");
   const [input, setInput] = useState<string>("");
   const [tempOpen, setTempOpen] = useState<boolean>(false);
+  const { data: session } = useSession();
+  const sessionUser = session?.user as SessionUserType | undefined;
+  console.log(sessionUser?.id);
 
   return (
     <div>
