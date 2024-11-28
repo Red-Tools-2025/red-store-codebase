@@ -43,7 +43,23 @@ const InventoryPage = () => {
       {/* All modals */}
       <AddProductModal
         isOpen={isAddProdModalOpen}
-        productTypes={["Big", "Man"]}
+        productTypes={["L", "M", "N", "P", "Q"]}
+        amountMeasurements={["ml", "L"]}
+        productCategories={[
+          "Beer",
+          "Wine",
+          "Whiskey",
+          "Vodka",
+          "Rum",
+          "Gin",
+          "Tequila",
+          "Brandy",
+          "Liqueur",
+          "Cider",
+          "Perry",
+          "Hard Seltzer",
+          "Other",
+        ]}
         onClose={() => handleCloseModal(setIsAddProdModalOpen)}
       />
       {/* Control Panel */}

@@ -68,6 +68,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
 
   return (
     <InventoryProvider
+      selectedStore={selectedStore}
       isLoading={isLoadingProducts}
       inventoryItems={inventoryItems}
       sessionData={sessionUser ?? null}
