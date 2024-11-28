@@ -89,29 +89,6 @@ const InventoryPage = () => {
             ) : inventoryItems.length === 0 ? (
               <div className="Let's begin adding products to your inventory"></div>
             ) : (
-              // <div className="flex-col space-y-2">
-              //   {inventoryItems.map((item, index) => {
-              //     return (
-              //       <div
-              //         className="bg-gray-100 px-3 py-2 rounded-sm flex-col space-y-1"
-              //         key={index}
-              //       >
-              //         <div className="flex items-center space-x-2">
-              //           <p className="font-bold text-lg">{item.invItem}</p>
-              //           <p className="px-1 rounded-sm bg-white">
-              //             #{item.invitemid}
-              //           </p>
-              //         </div>
-              //         <div className="flex items-center space-x-2">
-              //           <p className="">{item.invItemBrand}</p>
-              //           <p className="py-0.2 px-1 rounded-sm text-green-600 bg-green-200">
-              //             {item.invItemType}
-              //           </p>
-              //         </div>
-              //       </div>
-              //     );
-              //   })}
-              // </div>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -120,7 +97,6 @@ const InventoryPage = () => {
                     <TableCell>Type</TableCell>
                     <TableCell>Quantity</TableCell>
                     <TableCell>Price</TableCell>
-                    <TableCell>Sale</TableCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -128,21 +104,15 @@ const InventoryPage = () => {
                     <TableRow key={index}>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <p className="font-bold text-lg">{item.invItem}</p>
-                          <Badge className="text-green-600 bg-green-200">
-                            #{item.invitemid}
-                          </Badge>
+                          <p className="font-bold ">
+                            {`#${item.invitemid} ${item.invItem}`}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>{item.invItemBrand}</TableCell>
-                      <TableCell>
-                        <Badge className="text-green-600 bg-green-200">
-                          {item.invItemType}
-                        </Badge>
-                      </TableCell>
+                      <TableCell>{item.invItemType}</TableCell>
                       <TableCell>{item.invItemStock}</TableCell>
                       <TableCell>₹{item.invItemPrice}</TableCell>
-                      <TableCell>{item.invItemType}%</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
