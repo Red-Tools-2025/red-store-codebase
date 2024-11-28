@@ -5,7 +5,7 @@ import { IoGrid } from "react-icons/io5";
 import { FaListUl } from "react-icons/fa";
 import { Badge, IndianRupee } from "lucide-react";
 import { SlOptionsVertical } from "react-icons/sl";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { SessionUserType } from "../types/management/context";
@@ -17,15 +17,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
 
 const InventoryPage = () => {
   const { data: session } = useSession();
   const { inventoryItems, isLoading: isLoadingProducts } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
+  const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
   const sessionUser = session?.user as SessionUserType | undefined;
+
+  const handleOpenModal = (
+    setModalType: React.Dispatch<SetStateAction<boolean>>
+  ) => {
+    setModalType(true);
+  };
+
+  const handleCloseModal = (
+    setModalType: React.Dispatch<SetStateAction<boolean>>
+  ) => {
+    setModalType(false);
+  };
 
   return (
     <div>
+      {/* All modals */}
+      <AddProductModal
+        isOpen={isAddProdModalOpen}
+        productTypes={["Big", "Man"]}
+        onClose={() => handleCloseModal(setIsAddProdModalOpen)}
+      />
       {/* Control Panel */}
       <div className="my-5 flex items-center justify-between">
         <div className="flex w-2/4 items-center space-x-4">
@@ -75,7 +95,12 @@ const InventoryPage = () => {
           <Button variant={"secondary"}>
             <SlOptionsVertical />
           </Button>
-          <Button variant={"secondary"}>Add Product</Button>
+          <Button
+            onClick={() => handleOpenModal(setIsAddProdModalOpen)}
+            variant={"secondary"}
+          >
+            Add Product
+          </Button>
         </div>
       </div>
       {/* Inventory Render boi*/}
@@ -116,7 +141,7 @@ const InventoryPage = () => {
                   {inventoryItems.map((item, index) => (
                     <TableRow
                       key={index}
-                      className={`border-b border-gray-200 ${
+                      className={`border-b border-gray-200 hover:bg-green-200 cursor-pointer ${
                         index % 2 === 0 ? "bg-gray-100" : "bg-white"
                       }`}
                     >
