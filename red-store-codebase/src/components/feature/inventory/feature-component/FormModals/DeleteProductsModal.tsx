@@ -16,7 +16,6 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { X, Trash2, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
