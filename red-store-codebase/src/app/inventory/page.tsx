@@ -5,7 +5,7 @@ import { IoGrid } from "react-icons/io5";
 import { FaListUl } from "react-icons/fa";
 import { Badge, IndianRupee } from "lucide-react";
 import { SlOptionsVertical } from "react-icons/sl";
-import { SetStateAction, useState } from "react";
+import React, { SetStateAction, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { SessionUserType } from "../types/management/context";
@@ -27,10 +27,17 @@ import {
 import { Trash, RefreshCw, Edit } from "lucide-react";
 import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
 import { Toaster } from "@/components/ui/toaster";
+import DeleteProductModal from "@/components/feature/inventory/feature-component/FormModals/DeleteProductsModal";
 
 // Drop down component move to another folder later
 
-const InventoryActionsCTA = () => {
+interface InventoryActionsCTAProps {
+  openDeleteModal: () => void;
+}
+
+const InventoryActionsCTA: React.FC<InventoryActionsCTAProps> = ({
+  openDeleteModal,
+}) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -40,16 +47,16 @@ const InventoryActionsCTA = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40">
         <DropdownMenuGroup>
-          <DropdownMenuItem className="text-red-600">
-            <Trash className="mr-2 h-4 w-4 text-red-600" /> {/* Delete icon */}
+          <DropdownMenuItem onClick={openDeleteModal} className="text-red-600">
+            <Trash className="mr-2 h-4 w-4 text-red-600" />
             Delete
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <RefreshCw className="mr-2 h-4 w-4" /> {/* Restock icon */}
+            <RefreshCw className="mr-2 h-4 w-4" />
             Restock
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Edit className="mr-2 h-4 w-4" /> {/* Update icon */}
+            <Edit className="mr-2 h-4 w-4" />
             Update
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -66,6 +73,8 @@ const InventoryPage = () => {
   } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
+  const [isDeleteProdModalOpen, setIsDeleteProdModalOpen] =
+    useState<boolean>(false);
 
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
@@ -83,6 +92,11 @@ const InventoryPage = () => {
     <div>
       {/* All modals */}
       <Toaster />
+      <DeleteProductModal
+        isOpen={isDeleteProdModalOpen}
+        inventoryItems={inventoryItems ?? []}
+        onClose={() => handleCloseModal(setIsDeleteProdModalOpen)}
+      />
       <AddProductModal
         isOpen={isAddProdModalOpen}
         productTypes={["L", "M", "N", "P", "Q"]}
@@ -163,7 +177,9 @@ const InventoryPage = () => {
           {/* <Button variant={"secondary"}>
             <SlOptionsVertical />
           </Button> */}
-          <InventoryActionsCTA />
+          <InventoryActionsCTA
+            openDeleteModal={() => handleOpenModal(setIsDeleteProdModalOpen)}
+          />
           <Button
             onClick={() => handleOpenModal(setIsAddProdModalOpen)}
             variant={"secondary"}
