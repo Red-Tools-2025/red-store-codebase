@@ -17,15 +17,51 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Trash, RefreshCw, Edit } from "lucide-react";
 import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
 import { Toaster } from "@/components/ui/toaster";
 
+// Drop down component move to another folder later
+
+const InventoryActionsCTA = () => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant={"secondary"}>
+          <SlOptionsVertical />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-40">
+        <DropdownMenuGroup>
+          <DropdownMenuItem className="text-red-600">
+            <Trash className="mr-2 h-4 w-4 text-red-600" /> {/* Delete icon */}
+            Delete
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <RefreshCw className="mr-2 h-4 w-4" /> {/* Restock icon */}
+            Restock
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Edit className="mr-2 h-4 w-4" /> {/* Update icon */}
+            Update
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 const InventoryPage = () => {
-  const { data: session } = useSession();
   const { inventoryItems, isLoading: isLoadingProducts } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
-  const sessionUser = session?.user as SessionUserType | undefined;
 
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
@@ -110,9 +146,10 @@ const InventoryPage = () => {
 
         {/* Other Options */}
         <div className="flex space-x-2">
-          <Button variant={"secondary"}>
+          {/* <Button variant={"secondary"}>
             <SlOptionsVertical />
-          </Button>
+          </Button> */}
+          <InventoryActionsCTA />
           <Button
             onClick={() => handleOpenModal(setIsAddProdModalOpen)}
             variant={"secondary"}
