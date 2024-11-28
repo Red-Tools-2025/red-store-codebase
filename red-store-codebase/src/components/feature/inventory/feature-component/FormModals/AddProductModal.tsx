@@ -36,6 +36,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   onClose,
   productTypes,
   amountMeasurements,
+  productCategories,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { sessionData, selectedStore } = useInventory();
@@ -147,7 +148,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               }
               value={formik.values.invItemType}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
                 <SelectValue placeholder="Select product type" />
               </SelectTrigger>
               <SelectContent>
@@ -220,7 +221,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               onBlur={formik.handleBlur}
             />
           </div>
-          <div className="col-span-1">
+          {/* <div className="col-span-1">
             <Label htmlFor="category">Category</Label>
             <Input
               id="category"
@@ -230,6 +231,32 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
+            {formik.touched.category && formik.errors.category && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.category}
+              </div>
+            )}
+          </div> */}
+          <div className="col-span-1">
+            <Label htmlFor="category">Category</Label>
+            <Select
+              name="category"
+              onValueChange={(value) => formik.setFieldValue("category", value)}
+              value={formik.values.category}
+            >
+              <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {productCategories.map((type, index) => (
+                    <SelectItem key={index} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             {formik.touched.category && formik.errors.category && (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.category}
@@ -252,7 +279,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               </div>
             )}
           </div>
-          <div className="col-span-1">
+          {/* <div className="col-span-1">
             <Label htmlFor="measurement">Measurement</Label>
             <Input
               id="measurement"
@@ -262,6 +289,34 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
+            {formik.touched.measurement && formik.errors.measurement && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.measurement}
+              </div>
+            )}
+          </div> */}
+          <div className="col-span-1">
+            <Label htmlFor="measurement">Measurement</Label>
+            <Select
+              name="measurement"
+              onValueChange={(value) =>
+                formik.setFieldValue("measurement", value)
+              }
+              value={formik.values.measurement}
+            >
+              <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
+                <SelectValue placeholder="Select measurement" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {amountMeasurements.map((type, index) => (
+                    <SelectItem key={index} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             {formik.touched.measurement && formik.errors.measurement && (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.measurement}
