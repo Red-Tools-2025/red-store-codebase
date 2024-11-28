@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,17 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Trash2 } from "lucide-react";
+import { X, Trash2, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,20 +47,25 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
   const { toast } = useToast();
   const { selectedStore } = useInventory();
 
-  const handleAddProduct = () => {
-    const matchingProduct = inventoryItems.find((product) =>
-      product.invItem.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  // Memoized filtered suggestions
+  const suggestionItems = useMemo(() => {
+    // Filter out already selected products and match search term
+    return inventoryItems
+      .filter(
+        (item) =>
+          !productsToDelete.some((p) => p.invId === item.invId) &&
+          item.invItem.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .slice(0, 5); // Limit to 5 suggestions
+  }, [inventoryItems, searchTerm, productsToDelete]);
 
-    if (
-      matchingProduct &&
-      !productsToDelete.some((p) => p.invId === matchingProduct.invId)
-    ) {
+  const handleAddProduct = (product: Inventory) => {
+    if (!productsToDelete.some((p) => p.invId === product.invId)) {
       setProductsToDelete((prev) => [
         ...prev,
         {
-          invId: matchingProduct.invId,
-          invItem: matchingProduct.invItem,
+          invId: product.invId,
+          invItem: product.invItem,
         },
       ]);
       setSearchTerm("");
@@ -76,16 +89,18 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
     }
 
     try {
-      const deleteRequests = productsToDelete.map((product) =>
-        axios.delete("/api/inventory/products", {
-          data: {
-            productId: product.invId,
-            storeId: selectedStore?.storeId,
-          },
-        })
-      );
+      // Construct the request payload
+      const payload = {
+        productBatch: productsToDelete.map((product) => ({
+          productId: product.invId,
+          storeId: selectedStore?.storeId,
+        })),
+      };
 
-      await Promise.all(deleteRequests);
+      // Make the delete request
+      await axios.delete("/api/inventory/products/batch", {
+        data: payload, // Specify `data` for the DELETE request
+      });
 
       toast({
         title: "Success",
@@ -115,22 +130,33 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex space-x-2 mb-4">
-          <Input
-            placeholder="Search product to delete"
+        <Command>
+          <CommandInput
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleAddProduct();
-              }
-            }}
-            className="flex-grow"
+            onValueChange={setSearchTerm}
+            placeholder="Search product to delete"
           />
-          <Button variant="outline" onClick={handleAddProduct}>
-            Add
-          </Button>
-        </div>
+          <CommandList>
+            {searchTerm && (
+              <CommandGroup heading="Suggestions">
+                {suggestionItems.map((product) => (
+                  <CommandItem
+                    key={product.invId}
+                    value={product.invItem}
+                    onSelect={() => handleAddProduct(product)}
+                  >
+                    <div className="flex justify-between w-full items-center">
+                      <span>{product.invItem}</span>
+                      <Button variant="ghost" size="icon">
+                        <Check className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+          </CommandList>
+        </Command>
 
         {/* Animated Product List */}
         <div className="max-h-[300px] overflow-y-auto">
