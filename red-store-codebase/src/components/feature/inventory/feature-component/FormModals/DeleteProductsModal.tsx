@@ -41,6 +41,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
   inventoryItems,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [productsToDelete, setProductsToDelete] = useState<ProductToDelete[]>(
     []
   );
@@ -89,6 +90,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
     }
 
     try {
+      setIsDeleting(true);
       // Construct the request payload
       const payload = {
         productBatch: productsToDelete.map((product) => ({
@@ -108,10 +110,13 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
         variant: "default",
       });
 
+      setIsDeleting(false);
+
       // Reset state
       setProductsToDelete([]);
       onClose();
     } catch (error) {
+      setIsDeleting(false);
       toast({
         title: "Error",
         description: "Failed to delete products",
@@ -185,10 +190,12 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
         <DialogFooter>
           <Button
             onClick={handleBulkDelete}
-            disabled={productsToDelete.length === 0}
+            disabled={productsToDelete.length === 0 || isDeleting}
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            Delete {productsToDelete.length} Product(s)
+            {isDeleting
+              ? `Deleting...`
+              : `Delete ${productsToDelete.length} Product(s)`}
           </Button>
         </DialogFooter>
       </DialogContent>
