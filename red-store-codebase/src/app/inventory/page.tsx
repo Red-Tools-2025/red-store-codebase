@@ -89,26 +89,39 @@ const InventoryPage = () => {
             ) : inventoryItems.length === 0 ? (
               <div className="Let's begin adding products to your inventory"></div>
             ) : (
-              <Table>
+              <Table className="w-full border border-gray-200">
                 <TableHeader>
                   <TableRow>
-                    <TableCell>Product</TableCell>
-                    <TableCell>Brand</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Quantity</TableCell>
-                    <TableCell>Price</TableCell>
+                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                      ID
+                    </TableCell>
+                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                      Product
+                    </TableCell>
+                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                      Brand
+                    </TableCell>
+                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                      Type
+                    </TableCell>
+                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                      Quantity
+                    </TableCell>
+                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                      Price
+                    </TableCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {inventoryItems.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <p className="font-bold ">
-                            {`#${item.invitemid} ${item.invItem}`}
-                          </p>
-                        </div>
-                      </TableCell>
+                    <TableRow
+                      key={index}
+                      className={`border-b border-gray-200 ${
+                        index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                      }`}
+                    >
+                      <TableCell>{`#${item.invitemid}`}</TableCell>
+                      <TableCell>{`${item.invItem}`}</TableCell>
                       <TableCell>{item.invItemBrand}</TableCell>
                       <TableCell>{item.invItemType}</TableCell>
                       <TableCell>{item.invItemStock}</TableCell>
