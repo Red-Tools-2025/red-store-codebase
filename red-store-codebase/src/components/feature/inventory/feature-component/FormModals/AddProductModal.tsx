@@ -28,6 +28,7 @@ interface AddProductModalProps {
   onClose: () => void;
   productTypes: string[];
   amountMeasurements: string[];
+  productCategories: string[];
 }
 
 const AddProductModal: React.FC<AddProductModalProps> = ({
