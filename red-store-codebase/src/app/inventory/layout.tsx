@@ -1,20 +1,11 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
-import { IoMdPersonAdd } from "react-icons/io";
-import { IoStorefront } from "react-icons/io5";
 import { SessionUserType } from "../types/management/context";
-import { MdOutlineAssignment } from "react-icons/md";
-import { ManagementProvider } from "../contexts/management/ManagementContext";
 
 import React, { SetStateAction, useMemo, useState } from "react";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
-import AddStoreModal from "@/components/feature/management/feature-component/FormModals/AddStoreModal";
-import AddEmployeeModal from "@/components/feature/management/feature-component/FormModals/AddEmployeeModal";
 import { Store } from "@prisma/client";
-import useEmployeeServerFetch from "../hooks/management/ServerHooks/useEmployeeServerFetch";
-import AssignEmployeeModal from "@/components/feature/management/feature-component/FormModals/AssignEmployeeModal";
 import useProducts from "../hooks/inventory/FetchHooks/useProducts";
 import { InventoryProvider } from "../contexts/inventory/InventoryContext";
 
@@ -47,6 +38,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     inventoryItems,
     message,
     isLoading: isLoadingProducts,
+    handleRefresh,
   } = useProducts(
     selectedStore ? String(selectedStore.storeId) : "",
     sessionUser?.id ?? ""
@@ -68,6 +60,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
 
   return (
     <InventoryProvider
+      handleRefresh={handleRefresh}
       selectedStore={selectedStore}
       isLoading={isLoadingProducts}
       inventoryItems={inventoryItems}

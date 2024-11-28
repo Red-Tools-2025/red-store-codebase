@@ -59,7 +59,11 @@ const InventoryActionsCTA = () => {
 };
 
 const InventoryPage = () => {
-  const { inventoryItems, isLoading: isLoadingProducts } = useInventory();
+  const {
+    inventoryItems,
+    isLoading: isLoadingProducts,
+    handleRefresh,
+  } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
 
@@ -142,6 +146,16 @@ const InventoryPage = () => {
               />
             </div>
           </div>
+          {/* <div className="flex items-center space-x-1">
+            <p>Refresh</p>
+            <RefreshCw className="mr-2 h-3 w-3" />
+          </div> */}
+          <Button onClick={handleRefresh} variant={"secondary"}>
+            <div className="flex items-center ">
+              <RefreshCw className="mr-2 h-3 w-3" />
+              <p>Refresh</p>
+            </div>
+          </Button>
         </div>
 
         {/* Other Options */}

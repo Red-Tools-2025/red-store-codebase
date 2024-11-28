@@ -1,5 +1,5 @@
 // src/hooks/inventory/useProducts.tsx
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import axios from "axios";
 import { Inventory } from "@prisma/client";
 
@@ -16,13 +16,19 @@ const useProducts = (
   message: string | null;
   error: string | null;
   isLoading: boolean;
+  handleRefresh: () => void;
 } => {
   const [inventoryItems, setInventoryItems] = useState<Inventory[] | null>(
     null
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [refreshInventory, setRefreshInventory] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const handleRefresh = () => {
+    setRefreshInventory(!refreshInventory);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,9 +53,9 @@ const useProducts = (
     };
 
     fetchData();
-  }, [storeId, storeManagerId]);
+  }, [storeId, storeManagerId, refreshInventory]);
 
-  return { inventoryItems, message, error, isLoading };
+  return { inventoryItems, message, error, isLoading, handleRefresh };
 };
 
 export default useProducts;
