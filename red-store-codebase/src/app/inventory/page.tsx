@@ -28,15 +28,18 @@ import { Trash, RefreshCw, Edit } from "lucide-react";
 import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
 import { Toaster } from "@/components/ui/toaster";
 import DeleteProductModal from "@/components/feature/inventory/feature-component/FormModals/DeleteProductsModal";
+import RestockProductModal from "@/components/feature/inventory/feature-component/FormModals/RestockProductModal";
 
 // Drop down component move to another folder later
 
 interface InventoryActionsCTAProps {
   openDeleteModal: () => void;
+  openRestockModal: () => void;
 }
 
 const InventoryActionsCTA: React.FC<InventoryActionsCTAProps> = ({
   openDeleteModal,
+  openRestockModal,
 }) => {
   return (
     <DropdownMenu>
@@ -51,7 +54,7 @@ const InventoryActionsCTA: React.FC<InventoryActionsCTAProps> = ({
             <Trash className="mr-2 h-4 w-4 text-red-600" />
             Delete
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={openRestockModal}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Restock
           </DropdownMenuItem>
@@ -75,6 +78,8 @@ const InventoryPage = () => {
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
   const [isDeleteProdModalOpen, setIsDeleteProdModalOpen] =
     useState<boolean>(false);
+  const [isRestockProdModalOpen, setIsRestockProdModalOpen] =
+    useState<boolean>(false);
 
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
@@ -92,6 +97,11 @@ const InventoryPage = () => {
     <div>
       {/* All modals */}
       <Toaster />
+      <RestockProductModal
+        isOpen={isRestockProdModalOpen}
+        inventoryItems={inventoryItems ?? []}
+        onClose={() => handleCloseModal(setIsRestockProdModalOpen)}
+      />
       <DeleteProductModal
         isOpen={isDeleteProdModalOpen}
         inventoryItems={inventoryItems ?? []}
@@ -178,6 +188,7 @@ const InventoryPage = () => {
             <SlOptionsVertical />
           </Button> */}
           <InventoryActionsCTA
+            openRestockModal={() => handleOpenModal(setIsRestockProdModalOpen)}
             openDeleteModal={() => handleOpenModal(setIsDeleteProdModalOpen)}
           />
           <Button
