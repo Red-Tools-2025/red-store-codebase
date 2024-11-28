@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
 import { Inventory } from "@prisma/client";
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
 
 interface AddProductModalProps {
   isOpen: boolean;
@@ -38,6 +40,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   amountMeasurements,
   productCategories,
 }) => {
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { sessionData, selectedStore } = useInventory();
 
@@ -66,31 +69,62 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       amount: Yup.string().required("Bottle Amount is required"),
       measurement: Yup.string().required("Measurement is required"),
     }),
-    onSubmit: (values) => {
-      setIsSubmitting(true);
-      const newProduct: Partial<Inventory> = {
-        storeId: selectedStore?.storeId,
-        storeManagerId: sessionData?.id,
-        invItem: values.invItem,
-        invItemBrand: values.invItemBrand,
-        invItemStock: Number(values.invItemStock),
-        invItemPrice: Number(values.invItemPrice),
-        invItemType: values.invItemType,
-        invCreatedDate: new Date(),
-        invItemBarcode: values.invItemBarcode
-          ? Number(values.invItemBarcode)
-          : null,
-        invItemSize: values.invItemSize ? Number(values.invItemSize) : null,
-        invAdditional: {
-          category: values.category,
-          size: values.amount,
-          measurement: values.measurement,
-        },
-      };
-      console.log("New Product:", newProduct);
-      setIsSubmitting(false);
-      formik.resetForm();
-      onClose();
+    onSubmit: async (values) => {
+      try {
+        setIsSubmitting(true);
+        const newProduct: Partial<Inventory> = {
+          storeId: selectedStore?.storeId,
+          storeManagerId: sessionData?.id,
+          invItem: values.invItem,
+          invItemBrand: values.invItemBrand,
+          invItemStock: Number(values.invItemStock),
+          invItemPrice: Number(values.invItemPrice),
+          invItemType: values.invItemType,
+          invCreatedDate: new Date(),
+          invItemBarcode: values.invItemBarcode
+            ? Number(values.invItemBarcode)
+            : null,
+          invItemSize: values.invItemSize ? Number(values.invItemSize) : null,
+          invAdditional: {
+            category: values.category,
+            size: values.amount,
+            measurement: values.measurement,
+          },
+        };
+        const response = await axios.post<{
+          message: string;
+          inventory: Inventory;
+        }>("/api/inventory/products", newProduct);
+
+        // Success toast
+        toast({
+          title: "Success",
+          description: response.data.message || "Product added successfully",
+          variant: "default",
+        });
+        formik.resetForm();
+        setIsSubmitting(false);
+        onClose();
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast({
+            title: "Error",
+            description:
+              error.response?.data?.error ||
+              "Failed to add product. Please try again.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "An unexpected error occurred. Please try again.",
+            variant: "destructive",
+          });
+        }
+        console.error("Error adding product:", error);
+      } finally {
+        setIsSubmitting(false);
+      }
     },
   });
 

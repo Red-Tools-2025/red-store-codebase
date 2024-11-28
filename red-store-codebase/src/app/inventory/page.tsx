@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
+import { Toaster } from "@/components/ui/toaster";
 
 const InventoryPage = () => {
   const { data: session } = useSession();
@@ -41,6 +42,7 @@ const InventoryPage = () => {
   return (
     <div>
       {/* All modals */}
+      <Toaster />
       <AddProductModal
         isOpen={isAddProdModalOpen}
         productTypes={["L", "M", "N", "P", "Q"]}
