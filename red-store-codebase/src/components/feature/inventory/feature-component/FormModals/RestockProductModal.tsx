@@ -1,4 +1,5 @@
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
+import { UpdateProductBatchRequestBody } from "@/app/types/inventory/api";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -14,8 +15,10 @@ import {
   DialogTitle,
   DialogHeader,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Inventory } from "@prisma/client";
+import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, X } from "lucide-react";
 
@@ -30,6 +33,7 @@ interface RestockProductModalProps {
 interface ProductToUpdate {
   invId: number;
   invItem: string;
+  restockQuantity: number;
 }
 
 const RestockProductModal: React.FC<RestockProductModalProps> = ({
@@ -40,10 +44,12 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
   const { toast } = useToast();
   const { selectedStore } = useInventory();
 
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [productsToUpdate, setProductsToUpdate] = useState<ProductToUpdate[]>(
     []
   );
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
 
   const handleAddProduct = (product: Inventory) => {
     if (!productsToUpdate.some((p) => p.invId === product.invId)) {
@@ -52,9 +58,11 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
         {
           invId: product.invId,
           invItem: product.invItem,
+          restockQuantity: selectedQuantity,
         },
       ]);
       setSearchTerm("");
+      setSelectedQuantity(1); // Reset quantity after adding
     }
   };
 
@@ -63,6 +71,38 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
       prev.filter((product) => product.invId !== invId)
     );
   };
+
+  const handleBulkUpdate = async (
+    products_update_list: UpdateProductBatchRequestBody
+  ) => {
+    try {
+      setIsUpdating(true);
+      const update_response = await axios.patch<{
+        message: string;
+        updatedProducts: Inventory[];
+      }>("/api/inventory/products/batch", {
+        data: products_update_list,
+      });
+
+      toast({
+        title: "Success",
+        description: `Updated stock for ${update_response.data.updatedProducts.map(
+          (p) => {
+            return `${p.invItem}, `;
+          }
+        )}`,
+        variant: "default",
+      });
+    } catch (err) {
+      setIsUpdating(false);
+      toast({
+        title: "Error",
+        description: "Failed to delete products",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Memoized filtered suggestions
   const suggestionItems = useMemo(() => {
     // Filter out already selected products and match search term
@@ -84,33 +124,45 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
             Search and select products to restock
           </DialogDescription>
         </DialogHeader>
-        <Command>
-          <CommandInput
-            value={searchTerm}
-            onValueChange={setSearchTerm}
-            placeholder="Search product to delete"
+
+        <div className="flex items-center space-x-2 mb-4">
+          <Command className="flex-grow">
+            <CommandInput
+              value={searchTerm}
+              onValueChange={setSearchTerm}
+              placeholder="Search product to restock"
+            />
+            <CommandList>
+              {searchTerm && (
+                <CommandGroup heading="Suggestions">
+                  {suggestionItems.map((product) => (
+                    <CommandItem
+                      key={product.invId}
+                      value={product.invItem}
+                      onSelect={() => handleAddProduct(product)}
+                    >
+                      <div className="flex justify-between w-full items-center">
+                        <span>{product.invItem}</span>
+                        <Button variant="ghost" size="icon">
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+            </CommandList>
+          </Command>
+
+          <Input
+            type="number"
+            min="1"
+            value={selectedQuantity}
+            onChange={(e) => setSelectedQuantity(Number(e.target.value))}
+            placeholder="Qty"
+            className="w-20"
           />
-          <CommandList>
-            {searchTerm && (
-              <CommandGroup heading="Suggestions">
-                {suggestionItems.map((product) => (
-                  <CommandItem
-                    key={product.invId}
-                    value={product.invItem}
-                    onSelect={() => handleAddProduct(product)}
-                  >
-                    <div className="flex justify-between w-full items-center">
-                      <span>{product.invItem}</span>
-                      <Button variant="ghost" size="icon">
-                        <Check className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-          </CommandList>
-        </Command>
+        </div>
 
         {/* Animated Product List */}
         <div className="max-h-[300px] overflow-y-auto">
@@ -123,7 +175,12 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
                 exit={{ opacity: 0, x: 20 }}
                 className="flex items-center justify-between bg-gray-100 p-2 rounded-lg mb-2"
               >
-                <span>{product.invItem}</span>
+                <div className="flex items-center space-x-2">
+                  <span>{product.invItem}</span>
+                  <span className="text-green-600 font-semibold">
+                    +{product.restockQuantity}
+                  </span>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
