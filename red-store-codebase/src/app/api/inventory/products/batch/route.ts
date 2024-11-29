@@ -150,9 +150,9 @@ export async function PATCH(req: Request) {
       },
     });
 
-    if (existingProducts.length === 0) {
+    if (existingProducts.length !== productBatch.length) {
       return NextResponse.json(
-        { error: "No matching products found for deletion." },
+        { error: "Some products do not exist in the inventory." },
         { status: 404 }
       );
     }
@@ -167,10 +167,9 @@ export async function PATCH(req: Request) {
           },
         },
         data: {
-          invItemStock: product.recievedStock, // Example update
-          // Add other fields as needed
-          // invItemPrice: product.price,
-          // invItemType: product.type,
+          invItemStock: {
+            increment: product.recievedStock,
+          },
         },
       })
     );
