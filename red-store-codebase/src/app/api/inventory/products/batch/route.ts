@@ -138,6 +138,8 @@ export async function PATCH(req: Request) {
     const body: UpdateProductBatchRequestBody = await req.json();
     const { productBatch } = body;
 
+    console.log(productBatch);
+
     const idsToUpdate = productBatch.map((p) => ({
       storeId: p.storeId,
       invId: p.productId,
