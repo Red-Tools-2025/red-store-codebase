@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   AddBatchRequestBody,
   DeleteProductBatchRequestBody,
+  UpdateProductBatchRequestBody,
 } from "@/app/types/inventory/api";
 
 // batch addition upload to inventory
@@ -120,6 +121,67 @@ export async function DELETE(req: Request) {
       message: `${deleteResult.count} products removed from inventory successfully.`,
     });
   } catch (err: unknown) {
+    console.error("Error deleting items in inventory:", err);
+    const errMessage =
+      err instanceof Error ? err.message : "An unknown error occurred";
+    return NextResponse.json(
+      {
+        error: `An error occurred while deleting inventory items: ${errMessage}`,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const body: UpdateProductBatchRequestBody = await req.json();
+    const { productBatch } = body;
+
+    const idsToUpdate = productBatch.map((p) => ({
+      storeId: p.storeId,
+      invId: p.productId,
+    }));
+
+    // Validate existence of products before removal, through composite key
+    const existingProducts = await db.inventory.findMany({
+      where: {
+        OR: idsToUpdate.map(({ storeId, invId }) => ({ storeId, invId })),
+      },
+    });
+
+    if (existingProducts.length === 0) {
+      return NextResponse.json(
+        { error: "No matching products found for deletion." },
+        { status: 404 }
+      );
+    }
+
+    // Perform individual updates for each product
+    const updatePromises = productBatch.map((product) =>
+      db.inventory.update({
+        where: {
+          storeId_invId: {
+            storeId: product.storeId,
+            invId: product.productId,
+          },
+        },
+        data: {
+          invItemStock: product.recievedStock, // Example update
+          // Add other fields as needed
+          // invItemPrice: product.price,
+          // invItemType: product.type,
+        },
+      })
+    );
+
+    const updatedProducts = await Promise.all(updatePromises);
+
+    return NextResponse.json({
+      message: "Products updated successfully",
+      updatedProducts,
+    });
+  } catch (err) {
     console.error("Error deleting items in inventory:", err);
     const errMessage =
       err instanceof Error ? err.message : "An unknown error occurred";
