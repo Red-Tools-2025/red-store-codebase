@@ -101,6 +101,9 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
         )}`,
         variant: "default",
       });
+      setisRestocking(false);
+      setProductsToUpdate([]);
+      onClose();
     } catch (err) {
       setisRestocking(false);
       toast({
