@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       invItemPrice,
       invItemType,
       invItemBarcode,
-      invItemSize,
+      
       invAdditional,
     } = body;
 
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
         invItemPrice,
         invItemType,
         invItemBarcode,
-        invItemSize,
+        
         invAdditional,
         invCreatedDate: new Date(), // Automatically set the created timestamp
       },

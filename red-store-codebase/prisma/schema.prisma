@@ -66,15 +66,13 @@ model Inventory {
   invId          Int       @default(autoincrement()) @map("invid")
   storeId        Int       @map("storeid")
   storeManagerId String    @map("storemanagerid")
-  invitemid      Int       @default(autoincrement())
   invItem        String    @map("invitem") @db.VarChar(255)
   invItemBrand   String?   @map("invitembrand") @db.VarChar(255)
   invItemStock   Int       @map("invitemstock")
   invItemPrice   Int       @map("invitemprice")
   invItemType    String?   @map("invitemtype") @db.VarChar(100)
   invCreatedDate DateTime? @default(now()) @map("invcreateddate") @db.Timestamp(6)
-  invItemBarcode Int?      @map("invitembarcode")
-  invItemSize    Int?      @map("invitemsize")
+  invItemBarcode String?   @map("invitembarcode") @db.VarChar(255)
   invAdditional  Json?     @map("invadditional") @db.Json
   store          Store     @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: Cascade, onUpdate: NoAction, map: "fk_store_inventory")
 
