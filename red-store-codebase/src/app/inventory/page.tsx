@@ -1,15 +1,13 @@
 "use client";
-import { InfoCard } from "@/components/feature/management/info-card";
 import { Input } from "@/components/ui/input";
 import { IoGrid } from "react-icons/io5";
 import { FaListUl } from "react-icons/fa";
-import { Badge, IndianRupee } from "lucide-react";
 import { SlOptionsVertical } from "react-icons/sl";
 import React, { SetStateAction, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
-import { SessionUserType } from "../types/management/context";
 import { useInventory } from "../contexts/inventory/InventoryContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -29,9 +27,9 @@ import AddProductModal from "@/components/feature/inventory/feature-component/Fo
 import { Toaster } from "@/components/ui/toaster";
 import DeleteProductModal from "@/components/feature/inventory/feature-component/FormModals/DeleteProductsModal";
 import RestockProductModal from "@/components/feature/inventory/feature-component/FormModals/RestockProductModal";
+import { Inventory } from "@prisma/client";
 
-// Drop down component move to another folder later
-
+// Inventory Actions Dropdown
 interface InventoryActionsCTAProps {
   openDeleteModal: () => void;
   openRestockModal: () => void;
@@ -68,6 +66,159 @@ const InventoryActionsCTA: React.FC<InventoryActionsCTAProps> = ({
   );
 };
 
+interface JsonRenderProps {
+  item: Inventory;
+  field: string;
+}
+
+const JsonRender: React.FC<JsonRenderProps> = ({ item, field }) => {
+  return (
+    <p>
+      {typeof item.invAdditional === "object" &&
+      item.invAdditional !== null &&
+      field in item.invAdditional
+        ? String((item.invAdditional as Record<string, unknown>)[field])
+        : ""}
+    </p>
+  );
+};
+
+// Inventory Display Component
+interface InventoryDisplayProps {
+  displayState: "list" | "grid";
+  inventoryItems: Inventory[];
+}
+
+const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
+  displayState,
+  inventoryItems,
+}) => {
+  const listVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0.2,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+    },
+  };
+
+  if (displayState === "list") {
+    return (
+      <motion.div initial="hidden" animate="visible" variants={listVariants}>
+        <Table className="w-full border border-gray-200">
+          <TableHeader>
+            <TableRow>
+              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                ID
+              </TableCell>
+              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                Product
+              </TableCell>
+              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                Brand
+              </TableCell>
+              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                Type
+              </TableCell>
+              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                Quantity
+              </TableCell>
+              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
+                Price
+              </TableCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <AnimatePresence>
+              {inventoryItems.map((item, index) => (
+                <motion.tr
+                  key={item.invitemid}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  variants={itemVariants}
+                  className={`border-b border-gray-200 hover:bg-green-100 cursor-pointer ${
+                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  }`}
+                >
+                  <TableCell>{`#${item.invitemid}`}</TableCell>
+                  <TableCell>{`${item.invItem}`}</TableCell>
+                  <TableCell>{item.invItemBrand}</TableCell>
+                  <TableCell>{item.invItemType}</TableCell>
+                  <TableCell>{item.invItemStock}</TableCell>
+                  <TableCell>₹{item.invItemPrice}</TableCell>
+                </motion.tr>
+              ))}
+            </AnimatePresence>
+          </TableBody>
+        </Table>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+      initial="hidden"
+      animate="visible"
+      variants={listVariants}
+    >
+      <AnimatePresence>
+        {inventoryItems.map((item) => (
+          <motion.div
+            key={item.invitemid}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={itemVariants}
+          >
+            <Card className="hover:shadow-lg transition-shadow duration-300 bg-[#F5F5F5] flex flex-col gap-3">
+              <CardHeader>
+                <CardTitle className="text-sm flex justify-between items-center">
+                  <p className="font-light rounded-sm px-2 py-1 bg-[#F5F7F9] border border-1 border-gray-300">
+                    {item.invItemBrand}
+                  </p>
+                  <p className="font-light rounded-sm px-2 py-1 bg-[#F5F7F9] border border-1 border-gray-300 flex gap-1 text-gray-500">
+                    <JsonRender field="size" item={item} />
+                    <JsonRender field="measurement" item={item} />
+                  </p>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p className="font-light text-xs text-gray-500 rounded-sm w-fit px-2 py-1 bg-[#F5F7F9] border border-1 border-gray-300">
+                    <JsonRender field="category" item={item} />
+                  </p>
+                  <p className="text-xl">{item.invItem}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-lg">
+                      ₹{item.invItemPrice}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      Qty: {item.invItemStock}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
+
+// Main Inventory Page Component
 const InventoryPage = () => {
   const {
     inventoryItems,
@@ -128,6 +279,7 @@ const InventoryPage = () => {
         ]}
         onClose={() => handleCloseModal(setIsAddProdModalOpen)}
       />
+
       {/* Control Panel */}
       <div className="my-5 flex items-center justify-between">
         <div className="flex w-2/4 items-center space-x-4">
@@ -170,10 +322,6 @@ const InventoryPage = () => {
               />
             </div>
           </div>
-          {/* <div className="flex items-center space-x-1">
-            <p>Refresh</p>
-            <RefreshCw className="mr-2 h-3 w-3" />
-          </div> */}
           <Button onClick={handleRefresh} variant={"secondary"}>
             <div className="flex items-center ">
               <RefreshCw className="mr-2 h-3 w-3" />
@@ -184,9 +332,6 @@ const InventoryPage = () => {
 
         {/* Other Options */}
         <div className="flex space-x-2">
-          {/* <Button variant={"secondary"}>
-            <SlOptionsVertical />
-          </Button> */}
           <InventoryActionsCTA
             openRestockModal={() => handleOpenModal(setIsRestockProdModalOpen)}
             openDeleteModal={() => handleOpenModal(setIsDeleteProdModalOpen)}
@@ -199,7 +344,8 @@ const InventoryPage = () => {
           </Button>
         </div>
       </div>
-      {/* Inventory Render boi*/}
+
+      {/* Inventory Render */}
       <div>
         {isLoadingProducts ? (
           <div>Fetching Products</div>
@@ -208,49 +354,12 @@ const InventoryPage = () => {
             {!inventoryItems ? (
               <div>Issue in Rendering Inventory Items</div>
             ) : inventoryItems.length === 0 ? (
-              <div className="Let's begin adding products to your inventory"></div>
+              <div>Let's begin adding products to your inventory</div>
             ) : (
-              <Table className="w-full border border-gray-200">
-                <TableHeader>
-                  <TableRow>
-                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                      ID
-                    </TableCell>
-                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                      Product
-                    </TableCell>
-                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                      Brand
-                    </TableCell>
-                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                      Type
-                    </TableCell>
-                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                      Quantity
-                    </TableCell>
-                    <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                      Price
-                    </TableCell>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {inventoryItems.map((item, index) => (
-                    <TableRow
-                      key={index}
-                      className={`border-b border-gray-200 hover:bg-green-200 cursor-pointer ${
-                        index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                      }`}
-                    >
-                      <TableCell>{`#${item.invitemid}`}</TableCell>
-                      <TableCell>{`${item.invItem}`}</TableCell>
-                      <TableCell>{item.invItemBrand}</TableCell>
-                      <TableCell>{item.invItemType}</TableCell>
-                      <TableCell>{item.invItemStock}</TableCell>
-                      <TableCell>₹{item.invItemPrice}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <InventoryDisplay
+                displayState={displayState as "list" | "grid"}
+                inventoryItems={inventoryItems}
+              />
             )}
           </div>
         )}
