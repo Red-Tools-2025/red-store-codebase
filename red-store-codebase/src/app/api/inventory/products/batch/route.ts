@@ -181,12 +181,12 @@ export async function PATCH(req: Request) {
       updatedProducts,
     });
   } catch (err) {
-    console.error("Error deleting items in inventory:", err);
+    console.error("Error updating items in inventory:", err);
     const errMessage =
       err instanceof Error ? err.message : "An unknown error occurred";
     return NextResponse.json(
       {
-        error: `An error occurred while deleting inventory items: ${errMessage}`,
+        error: `An error occurred while updating inventory items: ${errMessage}`,
       },
       { status: 500 }
     );
