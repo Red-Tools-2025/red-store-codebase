@@ -1,0 +1,32 @@
+{
+    "storeManagerId": "cm2yxnzbm00018nqsnnjh9zpm",
+    "storeId": 7,
+    "products": [
+        {
+            "invItem": "Whiskey 500ml",
+            "invItemBrand": "Blackdog 1857",
+            "invItemStock": 50,
+            "invItemPrice": 29,
+            "invItemType": "Q",
+            "invItemBarcode": "3345",
+            
+            "invAdditional": {
+                "color": "Black",
+                "dispatched from": "London"
+            }
+        },
+        {
+            "invItem": "Whiskey 500ml",
+            "invItemBrand": "Hinekin 1257",
+            "invItemStock": 50,
+            "invItemPrice": 29,
+            "invItemType": "Q",
+            "invItemBarcode": "3045",
+           
+            "invAdditional": {
+                "color": "Black",
+                "dispatched from": "London"
+            }
+        }
+    ]
+}
