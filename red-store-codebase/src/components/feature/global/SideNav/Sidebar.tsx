@@ -2,6 +2,7 @@
 import { useState } from "react";
 import {
   Bell,
+  SquareChartGantt ,
   GlobeLock,
   Inbox,
   Logs,
@@ -12,8 +13,12 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  SquarePercent,
+  UserCog,
+  FileCheck2,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Link from "next/link"; // Import Link for navigation
 
 import UserItem from "./UserItem";
 import {
@@ -38,13 +43,13 @@ export default function Sidebar() {
     {
       group: "General",
       items: [
-        { links: "/", text: "DashBoard", icon: <User /> },
+        { link: "/", text: "DashBoard", icon: <User /> },
         { link: "/", text: "Accounting", icon: <Inbox /> },
         { link: "/", text: "Inventory", icon: <Receipt /> },
-        { link: "/", text: "Invoicing", icon: <Logs /> },
-        { link: "/", text: "Goods Sold", icon: <Logs /> },
-        { link: "/", text: "Users", icon: <Logs /> },
-        { link: "/", text: "Sales Report", icon: <Logs /> },
+        { link: "/management", text: "Management", icon: <SquareChartGantt /> },
+        { link: "/", text: "Goods Sold", icon: <SquarePercent /> },
+        { link: "/", text: "Users", icon: <UserCog /> },
+        { link: "/sales", text: "Sales Report", icon: <FileCheck2 /> }, // Update the link for Sales Report
       ],
     },
   ];
@@ -70,9 +75,18 @@ export default function Sidebar() {
                 {menuList.map((menu, key) => (
                   <CommandGroup key={key} heading={menu.group}>
                     {menu.items.map((options, optionKey) => (
-                      <CommandItem key={optionKey}>
-                        {options.icon}
-                        <span className="ml-2">{options.text}</span>
+                      <CommandItem
+                        key={optionKey}
+                        className="flex items-center space-x-2"
+                      >
+                        <Link
+                          href={options.link}
+                          className="flex items-center w-full"
+                        >
+                          {/* Make sure the icon and text are aligned properly */}
+                          <span className="flex-shrink-0">{options.icon}</span>
+                          <span className="ml-2">{options.text}</span>
+                        </Link>
                       </CommandItem>
                     ))}
                     <CommandSeparator />

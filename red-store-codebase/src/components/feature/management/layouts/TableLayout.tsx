@@ -17,12 +17,12 @@ const TableLayout: React.FC<TableLayoutProps> = ({
 }) => {
   return (
     <Table>
-      <TableHeader className="border">
+      <TableHeader className="border ">
         {TableColumnValues.map((col, index) => {
           return (
             <TableCell
               key={index}
-              className="px-3 py-4 text-xs font-semibold text-gray-500"
+              className="px-3 py-4 text-sm font-semibold text-gray-500"
             >
               {col}
             </TableCell>

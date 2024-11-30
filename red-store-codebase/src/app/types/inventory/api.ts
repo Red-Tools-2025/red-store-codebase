@@ -10,7 +10,6 @@ export interface AddInventoryRequestBody {
   invItemPrice: number;
   invItemType: string;
   invItemBarcode: string;
-  
   invAdditional?: any; // Optional additional information
 }
 
@@ -26,7 +25,6 @@ export interface UpdateProductRequestBody {
     invItemPrice: number;
     invItemType: string;
     invItemBarcode: string;
-    
     invAdditional?: any; // Optional additional information
   };
   productId: number;
@@ -44,7 +42,6 @@ export interface AddBatchRequestBody {
     invItemPrice: number;
     invItemType: string;
     invItemBarcode: string;
-  
     invAdditional?: any;
   }[];
 }
