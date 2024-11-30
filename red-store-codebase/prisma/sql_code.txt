@@ -282,7 +282,17 @@ VALUES (6, 'cm2yxnzbm00018nqsnnjh9zpm', 'Headphones', 'SoundMax', 25, 200, 'Acce
 
 
 
+// Alter table inventory changing int of barcode to string
+ALTER TABLE inventory 
+ALTER COLUMN invitembarcode TYPE VARCHAR(255) USING invitembarcode::VARCHAR;
 
+// dropped invitemsize column
+ALTER TABLE inventory
+DROP COLUMN invitemsize;
+
+// dropped invitemid column 
+ALTER TABLE inventory
+DROP COLUMN invitemid;
 
 
 
