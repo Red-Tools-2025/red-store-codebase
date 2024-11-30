@@ -22,17 +22,29 @@ const InfoCard: React.FC<InfoCardProps> = ({
   description,
 }) => {
   return (
-    <Card className="flex flex-col p-1 sm:p-1 border border-gray-200 shadow-md rounded-md hover:shadow-lg transition-shadow duration-200 my-5">
+    <Card className="flex flex-col p-1 sm:p-1 border border-gray-200 shadow-md rounded-md hover:shadow-lg transition-shadow duration-200 my-5 bg-gray-50">
       <CardHeader className="flex flex-col">
         <div className="flex items-center justify-center w-10 h-10 sm:w-10 sm:h-10 bg-slate-900 rounded-full mb-1">
           <Icon className="text-lg sm:text-lg text-white" />
         </div>
-        <h3 className="text-sm sm:text-base md:text-lg text-gray-700">
+        <h3 className="text-base sm:text-lg md:text-xl lg:text-3xl text-gray-500">
           {heading}
         </h3>
       </CardHeader>
-      <CardContent>
-        <p className="text-sm sm:text-3xl">{description}</p>
+      <CardContent className="relative">
+        <p className="text-sm text-gray-700 sm:text-3xl">
+          {/* Show the number */}
+          <span className="relative">
+            {description.split(" ")[0]} {/* Show the number */}
+            {/* Check for units and position them at the bottom-right */}
+            {heading === "Total Stock Quantity" &&
+              description.includes("units") && (
+                <span className="absolute bottom-[-4px] right-[-40px] text-lg text-gray-500">
+                  units
+                </span>
+              )}
+          </span>
+        </p>
       </CardContent>
     </Card>
   );
@@ -42,6 +54,11 @@ const InfoCards = () => {
   // State for storing fetched metrics data
   const [avgDailySales, setAvgDailySales] = useState<string>("Loading...");
   const [avgMonthlySales, setAvgMonthlySales] = useState<string>("Loading...");
+
+  // Function to format numbers with commas
+  const formatNumber = (num: number) => {
+    return num.toLocaleString(); // This formats the number with commas
+  };
 
   useEffect(() => {
     // Fetch the metrics data from the API
@@ -53,8 +70,10 @@ const InfoCards = () => {
         const data = await response.json();
         // Assuming data structure: { "data": [{ "avg_daily_sales": number, "avg_monthly_sales": number }] }
         const metrics = data.data[0];
-        setAvgDailySales(metrics.avg_daily_sales.toFixed(2)); // Convert to string with 2 decimal places
-        setAvgMonthlySales(metrics.avg_monthly_sales.toFixed(2));
+
+        // Format the numbers with commas and update the state
+        setAvgDailySales(formatNumber(metrics.avg_daily_sales));
+        setAvgMonthlySales(formatNumber(metrics.avg_monthly_sales));
       } catch (error) {
         console.error("Failed to fetch metrics data:", error);
         setAvgDailySales("Error");
@@ -75,17 +94,17 @@ const InfoCards = () => {
       <InfoCard
         icon={UserRoundCheck}
         heading="Total Stock Quantity"
-        description={"6 units"}
+        description={"756 units"}
       />
       <InfoCard
         icon={Flame}
         heading="Monthly Sales"
-        description={`₹ ${avgMonthlySales}`}
+        description={`₹${avgMonthlySales}`}
       />
       <InfoCard
         icon={Radiation}
         heading="Average Daily Sales"
-        description={avgDailySales}
+        description={`₹${avgDailySales}`}
       />
     </div>
   );

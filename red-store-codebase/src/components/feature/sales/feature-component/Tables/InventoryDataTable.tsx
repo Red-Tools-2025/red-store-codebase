@@ -2,6 +2,12 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import TableLayout from "@/components/feature/management/layouts/TableLayout";
 import { useMemo } from "react";
 
+// Helper function to format numbers with commas
+const formatNumberWithCommas = (num: number, fixed: number = 0) => {
+  const formattedNumber = num.toFixed(fixed); // Ensure we respect decimal places
+  return new Intl.NumberFormat().format(Number(formattedNumber)); // Format number with commas
+};
+
 interface InventoryDataTableProps {
   inventoryData: {
     time: string;
@@ -48,15 +54,32 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({
   }, [inventoryData, startDate, endDate]);
 
   const tableRows = filteredData.map((entry, index) => (
-    <TableRow key={index}>
-      <TableCell>{new Date(entry.time).toLocaleDateString()}</TableCell>
-      <TableCell>{entry.product_id}</TableCell>
-      <TableCell>{entry.opening_stock}</TableCell>
-      <TableCell>{entry.received_stock}</TableCell>
-      <TableCell>{entry.closing_stock}</TableCell>
-      <TableCell>{entry.sales}</TableCell>
-      <TableCell>{entry.mrp_per_bottle.toFixed(2)}</TableCell>
-      <TableCell>{entry.sale_amount.toFixed(2)}</TableCell>
+    <TableRow
+      key={index}
+      className={index % 2 === 0 ? "bg-white" : "bg-gray-50"} // Alternate row colors
+    >
+      <TableCell className="font-semibold">
+        {new Date(entry.time).toLocaleDateString()}
+      </TableCell>
+      <TableCell className="pl-6 font-semibold">{entry.product_id}</TableCell>
+      <TableCell className="pl-6 font-semibold">
+        {formatNumberWithCommas(entry.opening_stock)}
+      </TableCell>
+      <TableCell className="pl-6 font-semibold">
+        {formatNumberWithCommas(entry.received_stock)}
+      </TableCell>
+      <TableCell className="pl-6 font-semibold">
+        {formatNumberWithCommas(entry.closing_stock)}
+      </TableCell>
+      <TableCell className="pl-6 font-semibold">
+        {formatNumberWithCommas(entry.sales)}
+      </TableCell>
+      <TableCell className="pl-6 font-semibold">
+        ₹ {formatNumberWithCommas(entry.mrp_per_bottle, 2)}
+      </TableCell>
+      <TableCell className="pl-6 font-semibold">
+        ₹ {formatNumberWithCommas(entry.sale_amount, 2)}
+      </TableCell>
     </TableRow>
   ));
 
