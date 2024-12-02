@@ -142,7 +142,7 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
             <AnimatePresence>
               {inventoryItems.map((item, index) => (
                 <motion.tr
-                  key={item.invitemid}
+                  key={item.invId}
                   initial="hidden"
                   animate="visible"
                   exit="hidden"
@@ -151,7 +151,7 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
                     index % 2 === 0 ? "bg-gray-50" : "bg-white"
                   }`}
                 >
-                  <TableCell>{`#${item.invitemid}`}</TableCell>
+                  <TableCell>{`#${item.invId}`}</TableCell>
                   <TableCell>{`${item.invItem}`}</TableCell>
                   <TableCell>{item.invItemBrand}</TableCell>
                   <TableCell>{item.invItemType}</TableCell>
@@ -176,7 +176,7 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
       <AnimatePresence>
         {inventoryItems.map((item) => (
           <motion.div
-            key={item.invitemid}
+            key={item.invId}
             initial="hidden"
             animate="visible"
             exit="hidden"
