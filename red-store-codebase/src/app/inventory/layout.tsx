@@ -56,8 +56,6 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     setModalType(false);
   };
 
-  // Combine loading states
-
   return (
     <InventoryProvider
       handleRefresh={handleRefresh}
