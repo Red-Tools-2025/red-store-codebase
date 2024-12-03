@@ -63,7 +63,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       invItemType: Yup.string().required("Product type is required"),
       invItemPrice: Yup.number().required("Price is required"),
       invItemStock: Yup.number().required("Stock is required"),
-      invItemBarcode: Yup.number().nullable(),
+      invItemBarcode: Yup.string().nullable(),
       invItemSize: Yup.number().nullable(),
       category: Yup.string().required("Category is required"),
       amount: Yup.string().required("Bottle Amount is required"),
@@ -81,10 +81,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           invItemPrice: Number(values.invItemPrice),
           invItemType: values.invItemType,
           invCreatedDate: new Date(),
-          invItemBarcode: values.invItemBarcode
-            ? Number(values.invItemBarcode)
-            : null,
-          invItemSize: values.invItemSize ? Number(values.invItemSize) : null,
+          invItemBarcode: values.invItemBarcode,
+            
+          
           invAdditional: {
             category: values.category,
             size: values.amount,
@@ -238,7 +237,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             <Input
               id="invItemBarcode"
               name="invItemBarcode"
-              type="number"
+              type="string"
               value={formik.values.invItemBarcode}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
