@@ -43,7 +43,7 @@ export interface AddBatchRequestBody {
     invItemStock: number;
     invItemPrice: number;
     invItemType: string;
-    invItemBarcode: number;
+    invItemBarcode: string;
     invItemSize: number;
     invAdditional?: any;
   }[];
