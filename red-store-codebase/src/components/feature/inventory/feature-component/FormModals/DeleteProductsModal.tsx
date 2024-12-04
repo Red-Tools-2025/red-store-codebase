@@ -22,6 +22,7 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Inventory } from "@prisma/client";
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
+import useScanner from "@/app/hooks/scanner/StaticHooks/useScanner";
 
 interface DeleteProductModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ interface DeleteProductModalProps {
 interface ProductToDelete {
   invId: number;
   invItem: string;
+  invItemBarcode: string | null;
 }
 
 const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
@@ -45,19 +47,41 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
     []
   );
   const { toast } = useToast();
+  const {
+    closeScanner,
+    onScannedAddProduct,
+    toggleScanning,
+    setInitializedScanner,
+    openScanner,
+    initializedScanner,
+    license,
+  } = useScanner();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchBarcode, setSearchBarcode] = useState<string>("");
   const { selectedStore } = useInventory();
 
   // Memoized filtered suggestions
   const suggestionItems = useMemo(() => {
-    // Filter out already selected products and match search term
-    return inventoryItems
-      .filter(
-        (item) =>
-          !productsToDelete.some((p) => p.invId === item.invId) &&
-          item.invItem.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .slice(0, 5); // Limit to 5 suggestions
-  }, [inventoryItems, searchTerm, productsToDelete]);
+    if (searchBarcode) {
+      // If a barcode is scanned, only show the matching item
+      return inventoryItems
+        .filter(
+          (item) =>
+            item.invItemBarcode === searchBarcode &&
+            !productsToDelete.some((p) => p.invId === item.invId)
+        )
+        .slice(0, 1); // Limit to 1 suggestion as it should be unique
+    } else {
+      // If no barcode is scanned, filter based on search term
+      return inventoryItems
+        .filter(
+          (item) =>
+            !productsToDelete.some((p) => p.invId === item.invId) &&
+            item.invItem.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .slice(0, 5); // Limit to 5 suggestions
+    }
+  }, [inventoryItems, searchTerm, productsToDelete, searchBarcode]);
 
   const handleAddProduct = (product: Inventory) => {
     if (!productsToDelete.some((p) => p.invId === product.invId)) {
@@ -66,6 +90,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
         {
           invId: product.invId,
           invItem: product.invItem,
+          invItemBarcode: product.invItemBarcode,
         },
       ]);
       setSearchTerm("");
