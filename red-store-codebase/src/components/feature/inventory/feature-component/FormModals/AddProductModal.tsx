@@ -24,7 +24,7 @@ import { useInventory } from "@/app/contexts/inventory/InventoryContext";
 import { Inventory } from "@prisma/client";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
-import { AddProductFormValidation } from "@/lib/formik";
+import { AddProductFormValidation } from "@/lib/formik/formik";
 
 interface AddProductModalProps {
   isOpen: boolean;

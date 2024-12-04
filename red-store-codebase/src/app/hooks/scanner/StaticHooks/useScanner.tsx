@@ -1,5 +1,8 @@
 import { TextResult } from "dynamsoft-javascript-barcode";
+import { FormikHelpers } from "formik";
 import { useEffect, useState } from "react";
+import { AddProductFormValidation } from "@/lib/formik/formik";
+import { AddProductModalValues } from "@/lib/formik/formikValueTypes";
 
 const useScanner = () => {
   const [openScanner, setOpenScanner] = useState<boolean>(false);
@@ -40,8 +43,27 @@ const useScanner = () => {
     }
   };
 
+  // function for scanning barcode and populating field
+  const onScannedAddProduct = (
+    results: TextResult[],
+    setValue: FormikHelpers<AddProductModalValues>["setFieldValue"]
+  ) => {
+    if (results.length > 0) {
+      const scannedResult = results[0];
+      const barcodeText = scannedResult.barcodeText;
+
+      if (setValue) {
+        setValue("invItemBarcode", barcodeText, true);
+      } else {
+        alert(`${scannedResult.barcodeFormatString}: ${barcodeText}`);
+      }
+      setOpenScanner(false);
+    }
+  };
+
   return {
     onScanned,
+    onScannedAddProduct,
     toggleScanning,
     closeScanner,
     setInitializedScanner,
