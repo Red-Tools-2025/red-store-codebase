@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -58,7 +57,6 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
     initializedScanner,
     license,
   } = useScanner();
-  const [searchBarcode, setSearchBarcode] = useState<string>("");
   const { selectedStore } = useInventory();
 
   // Memoized filtered suggestions
@@ -71,7 +69,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
           item.invItem.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .slice(0, 5); // Limit to 5 suggestions
-  }, [inventoryItems, searchTerm, productsToDelete, searchBarcode]);
+  }, [inventoryItems, searchTerm, productsToDelete]);
 
   const handleAddProduct = (product: Inventory) => {
     if (!productsToDelete.some((p) => p.invId === product.invId)) {
@@ -231,6 +229,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
             <div>Initializing...</div>
           )}
           <Button
+            variant="secondary"
             onClick={handleBulkDelete}
             disabled={productsToDelete.length === 0 || isDeleting}
           >
