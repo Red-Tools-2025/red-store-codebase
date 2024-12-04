@@ -223,6 +223,8 @@ const InventoryPage = () => {
   const {
     inventoryItems,
     isLoading: isLoadingProducts,
+    intializedScanner,
+    license,
     handleRefresh,
   } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
@@ -243,6 +245,8 @@ const InventoryPage = () => {
   ) => {
     setModalType(false);
   };
+
+  console.log({ intializedScanner, license });
 
   return (
     <div>

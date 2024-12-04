@@ -7,6 +7,8 @@ interface InventoryContextType {
   inventoryItems: Inventory[] | null;
   isLoading: boolean;
   selectedStore: Store | null;
+  intializedScanner: boolean;
+  license: string;
   handleRefresh: () => void;
 }
 
@@ -20,6 +22,8 @@ export const InventoryProvider = ({
   inventoryItems,
   selectedStore,
   isLoading,
+  intializedScanner,
+  license,
   handleRefresh,
 }: {
   children: ReactNode;
@@ -27,6 +31,8 @@ export const InventoryProvider = ({
   inventoryItems: Inventory[] | null;
   selectedStore: Store | null;
   isLoading: boolean;
+  intializedScanner: boolean;
+  license: string;
   handleRefresh: () => void;
 }) => {
   return (
@@ -36,6 +42,8 @@ export const InventoryProvider = ({
         inventoryItems,
         isLoading,
         selectedStore,
+        intializedScanner,
+        license,
         handleRefresh,
       }}
     >

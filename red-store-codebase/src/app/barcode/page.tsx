@@ -16,6 +16,8 @@ export default function Home() {
     license,
   } = useScanner();
 
+  console.log({ initializedScanner, license });
+
   return (
     <>
       <Head>

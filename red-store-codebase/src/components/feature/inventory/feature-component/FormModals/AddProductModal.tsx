@@ -24,6 +24,7 @@ import { useInventory } from "@/app/contexts/inventory/InventoryContext";
 import { Inventory } from "@prisma/client";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import { AddProductFormValidation } from "@/lib/formik";
 
 interface AddProductModalProps {
   isOpen: boolean;
@@ -57,18 +58,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       amount: "",
       measurement: "",
     },
-    validationSchema: Yup.object({
-      invItem: Yup.string().required("Product name is required"),
-      invItemBrand: Yup.string().required("Brand is required"),
-      invItemType: Yup.string().required("Product type is required"),
-      invItemPrice: Yup.number().required("Price is required"),
-      invItemStock: Yup.number().required("Stock is required"),
-      invItemBarcode: Yup.string().nullable(),
-      invItemSize: Yup.number().nullable(),
-      category: Yup.string().required("Category is required"),
-      amount: Yup.string().required("Bottle Amount is required"),
-      measurement: Yup.string().required("Measurement is required"),
-    }),
+    validationSchema: AddProductFormValidation,
     onSubmit: async (values) => {
       try {
         setIsSubmitting(true);
@@ -82,8 +72,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           invItemType: values.invItemType,
           invCreatedDate: new Date(),
           invItemBarcode: values.invItemBarcode,
-            
-          
+
           invAdditional: {
             category: values.category,
             size: values.amount,
@@ -126,6 +115,10 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       }
     },
   });
+
+  const handleChange = () => {
+    formik.setFieldValue;
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

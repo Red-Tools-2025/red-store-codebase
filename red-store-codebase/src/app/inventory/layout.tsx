@@ -8,6 +8,7 @@ import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerF
 import { Store } from "@prisma/client";
 import useProducts from "../hooks/inventory/FetchHooks/useProducts";
 import { InventoryProvider } from "../contexts/inventory/InventoryContext";
+import useScanner from "../hooks/scanner/StaticHooks/useScanner";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,8 @@ interface ManagementPageLayoutProps {
 
 const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   const { data: session } = useSession();
+  // trigger intialization on load time via layout
+  const { initializedScanner, license } = useScanner();
   const sessionUser = session?.user as SessionUserType | undefined;
 
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
@@ -58,6 +61,8 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
 
   return (
     <InventoryProvider
+      intializedScanner={initializedScanner}
+      license={license}
       handleRefresh={handleRefresh}
       selectedStore={selectedStore}
       isLoading={isLoadingProducts}
