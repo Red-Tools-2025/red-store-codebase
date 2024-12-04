@@ -1,10 +1,10 @@
-// src/app/barcode/page.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import { TextResult } from "dynamsoft-javascript-barcode";
 import Head from "next/head";
 import { Button } from "@/components/ui/button";
+import useScanner from "../hooks/scanner/StaticHooks/useScanner";
 
 async function fetchLicense() {
   let license: string | undefined = process.env.DBRLicense;
@@ -15,7 +15,7 @@ async function fetchLicense() {
 }
 
 export default function Home() {
-  const [isActive, setIsActive] = useState(false);
+  const { closeScanner, onScanned, toggleScanning, openScanner } = useScanner();
   const [initialized, setInitialized] = useState(false);
   const [license, setLicense] = useState<string>("");
 
@@ -26,27 +26,6 @@ export default function Home() {
     };
     loadLicense();
   }, []);
-
-  const toggleScanning = () => {
-    setIsActive(!isActive);
-  };
-
-  const onScanned = (results: TextResult[]) => {
-    if (results.length > 0) {
-      let text = "";
-      for (let index = 0; index < results.length; index++) {
-        const result = results[index];
-        text =
-          text + result.barcodeFormatString + ": " + result.barcodeText + "\n";
-      }
-      alert(text);
-      setIsActive(false);
-    }
-  };
-
-  const onCloseScanner = () => {
-    setIsActive(false);
-  };
 
   return (
     <>
@@ -62,7 +41,7 @@ export default function Home() {
           {initialized ? (
             <>
               <Button onClick={toggleScanning} variant="primary">
-                {isActive ? "Stop Scanning" : "Start Scanning"}
+                {openScanner ? "Stop Scanning" : "Start Scanning"}
               </Button>
             </>
           ) : (
@@ -72,9 +51,9 @@ export default function Home() {
             <BarcodeScanner
               license={license}
               onInitialized={() => setInitialized(true)}
-              isActive={isActive}
+              isActive={openScanner}
               onScanned={(results) => onScanned(results)}
-              onClose={onCloseScanner} // Pass onClose function here
+              onClose={closeScanner} // Pass onClose function here
             ></BarcodeScanner>
           </div>
         </div>
