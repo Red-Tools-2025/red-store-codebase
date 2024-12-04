@@ -28,7 +28,12 @@ export async function GET(req: Request) {
     if (!store_id || !product_barcode_number)
       return NextResponse.json(
         { error: "product barcode and store id are required" },
-        { status: 404 }
+        {
+          status: 404,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
       );
 
     // Convert storeId and productbarcodes to a number
@@ -44,14 +49,24 @@ export async function GET(req: Request) {
     if (!product)
       return NextResponse.json(
         { error: "Could not find product in store" },
-        { status: 404 }
+        {
+          status: 404,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
       );
 
     // check product stock levels
     if (product.invItemStock === 0)
       return NextResponse.json(
         { error: "Product not in stock" },
-        { status: 404 }
+        {
+          status: 404,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
       );
 
     return NextResponse.json(
@@ -59,7 +74,12 @@ export async function GET(req: Request) {
         message: "Item added to cart",
         product,
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
     );
   } catch (err) {
     console.log(err);
@@ -76,7 +96,12 @@ export async function POST(req: Request) {
     if (cartItems.length === 0)
       return NextResponse.json(
         { error: "Cart is empty, cannot process" },
-        { status: 400 }
+        {
+          status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
       );
 
     const cart_product_ids = cartItems.map((cartItem) => cartItem.product_id);
@@ -92,7 +117,12 @@ export async function POST(req: Request) {
     if (products_inventory.length === 0)
       return NextResponse.json(
         { error: "No matching products found in inventory" },
-        { status: 404 }
+        {
+          status: 404,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
       );
 
     console.log({ cartItems });
@@ -138,7 +168,12 @@ export async function POST(req: Request) {
     if (TimeseriesInsertionError)
       return NextResponse.json(
         { error: TimeseriesInsertionError.message },
-        { status: 400 }
+        {
+          status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
       );
 
     // given we pass error gaurd clause i update my inventory as well
@@ -159,7 +194,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: "Purchase successfull" },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
     );
   } catch (err) {
     console.log(err);
