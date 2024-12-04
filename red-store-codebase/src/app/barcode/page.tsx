@@ -1,31 +1,20 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import BarcodeScanner from "@/components/BarcodeScanner";
-import { TextResult } from "dynamsoft-javascript-barcode";
 import Head from "next/head";
 import { Button } from "@/components/ui/button";
 import useScanner from "../hooks/scanner/StaticHooks/useScanner";
 
-async function fetchLicense() {
-  let license: string | undefined = process.env.DBRLicense;
-  if (license === undefined) {
-    license = "";
-  }
-  return license;
-}
-
 export default function Home() {
-  const { closeScanner, onScanned, toggleScanning, openScanner } = useScanner();
-  const [initialized, setInitialized] = useState(false);
-  const [license, setLicense] = useState<string>("");
-
-  useEffect(() => {
-    const loadLicense = async () => {
-      const fetchedLicense = await fetchLicense();
-      setLicense(fetchedLicense);
-    };
-    loadLicense();
-  }, []);
+  const {
+    closeScanner,
+    onScanned,
+    toggleScanning,
+    setInitializedScanner,
+    openScanner,
+    initializedScanner,
+    license,
+  } = useScanner();
 
   return (
     <>
@@ -38,7 +27,7 @@ export default function Home() {
       <main>
         <div className="app">
           <h2>Next.js Barcode Scanner</h2>
-          {initialized ? (
+          {initializedScanner ? (
             <>
               <Button onClick={toggleScanning} variant="primary">
                 {openScanner ? "Stop Scanning" : "Start Scanning"}
@@ -47,15 +36,13 @@ export default function Home() {
           ) : (
             <div>Initializing...</div>
           )}
-          <div className="barcodeScanner">
-            <BarcodeScanner
-              license={license}
-              onInitialized={() => setInitialized(true)}
-              isActive={openScanner}
-              onScanned={(results) => onScanned(results)}
-              onClose={closeScanner} // Pass onClose function here
-            ></BarcodeScanner>
-          </div>
+          <BarcodeScanner
+            license={license}
+            onInitialized={() => setInitializedScanner(true)}
+            isActive={openScanner}
+            onScanned={(results) => onScanned(results)}
+            onClose={closeScanner} // Pass onClose function here
+          />
         </div>
       </main>
     </>

@@ -1,12 +1,32 @@
 import { TextResult } from "dynamsoft-javascript-barcode";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const useScanner = () => {
   const [openScanner, setOpenScanner] = useState<boolean>(false);
+  const [initializedScanner, setInitializedScanner] = useState(false);
+  const [license, setLicense] = useState<string>("");
+
+  useEffect(() => {
+    const loadLicense = async () => {
+      const fetchedLicense = await fetchLicense();
+      setLicense(fetchedLicense);
+    };
+    loadLicense();
+  }, []);
 
   const toggleScanning = () => setOpenScanner(!openScanner);
-  const activateScanner = () => setOpenScanner(false);
+  const closeScanner = () => setOpenScanner(false);
 
+  // function for fetching license authorization
+  async function fetchLicense() {
+    let license: string | undefined = process.env.DBRLicense;
+    if (license === undefined) {
+      license = "";
+    }
+    return license;
+  }
+
+  // basic scanned function for testing
   const onScanned = (results: TextResult[]) => {
     if (results.length > 0) {
       let text = "";
@@ -20,7 +40,15 @@ const useScanner = () => {
     }
   };
 
-  return { onScanned, toggleScanning, activateScanner, openScanner };
+  return {
+    onScanned,
+    toggleScanning,
+    closeScanner,
+    setInitializedScanner,
+    openScanner,
+    initializedScanner,
+    license,
+  };
 };
 
 export default useScanner;
