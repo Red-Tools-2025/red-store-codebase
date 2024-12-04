@@ -25,6 +25,8 @@ import { Inventory } from "@prisma/client";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { AddProductFormValidation } from "@/lib/formik/formik";
+import BarcodeScanner from "@/components/BarcodeScanner";
+import useScanner from "@/app/hooks/scanner/StaticHooks/useScanner";
 
 interface AddProductModalProps {
   isOpen: boolean;
@@ -42,6 +44,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   productCategories,
 }) => {
   const { toast } = useToast();
+  const {
+    closeScanner,
+    onScannedAddProduct,
+    toggleScanning,
+    setInitializedScanner,
+    openScanner,
+    initializedScanner,
+    license,
+  } = useScanner();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { sessionData, selectedStore } = useInventory();
 
@@ -125,6 +136,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             Fill in the details to add a new product to the inventory.
           </DialogDescription>
         </DialogHeader>
+        <BarcodeScanner
+          license={license}
+          onInitialized={() => setInitializedScanner(true)}
+          isActive={openScanner}
+          onScanned={(results) =>
+            onScannedAddProduct(results, formik.setFieldValue)
+          }
+          onClose={closeScanner} // Pass onClose function here
+        />
         <form
           onSubmit={formik.handleSubmit}
           className="py-4 grid grid-cols-2 gap-4"
@@ -346,12 +366,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             )}
           </div>
           <DialogFooter className="col-span-2 mt-5">
-            <Button>
-              <div className="flex items-center gap-2">
-                <LuScanFace size={16} />
-                <p>Scan</p>
-              </div>
-            </Button>
+            {initializedScanner ? (
+              <>
+                <Button type="button" onClick={toggleScanning}>
+                  <div className="flex items-center gap-2">
+                    <LuScanFace size={16} />
+                    <p>Scan</p>
+                  </div>
+                </Button>
+              </>
+            ) : (
+              <div>Initializing...</div>
+            )}
             <Button type="submit" variant="secondary" disabled={isSubmitting}>
               {isSubmitting ? "Adding..." : "Add Product"}
             </Button>
