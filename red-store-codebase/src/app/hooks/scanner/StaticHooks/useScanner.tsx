@@ -64,12 +64,12 @@ const useScanner = () => {
   // function for scanning barcodes for the purpose of finding items
   const onScannedSearchProduct = (
     results: TextResult[],
-    setSearchItemBarcode: Dispatch<SetStateAction<string>>
+    handleSearch: (searchBarcode: string) => void
   ) => {
     if (results.length > 0) {
       const scannedResult = results[0];
       const barcodeText = scannedResult.barcodeText;
-      setSearchItemBarcode(barcodeText);
+      handleSearch(barcodeText);
       setOpenScanner(false);
     }
   };
