@@ -1,5 +1,6 @@
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
-import { UpdateProductBatchRequestBody } from "@/app/types/inventory/api";
+import useScanner from "@/app/hooks/scanner/StaticHooks/useScanner";
+import BarcodeScanner from "@/components/BarcodeScanner";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -24,6 +25,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check, Trash2, X } from "lucide-react";
 
 import React, { useMemo, useState } from "react";
+import { LuScanFace } from "react-icons/lu";
 
 interface RestockProductModalProps {
   isOpen: boolean;
@@ -36,6 +38,7 @@ interface ProductToUpdate {
   invItem: string;
   productDetails: Inventory;
   restockQuantity: number;
+  invItemBarcode: string | null;
 }
 
 const RestockProductModal: React.FC<RestockProductModalProps> = ({
@@ -44,6 +47,15 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
   onClose,
 }) => {
   const { toast } = useToast();
+  const {
+    closeScanner,
+    onScannedSearchProduct,
+    toggleScanning,
+    setInitializedScanner,
+    openScanner,
+    initializedScanner,
+    license,
+  } = useScanner();
   const { selectedStore } = useInventory();
 
   const [isRestocking, setisRestocking] = useState<boolean>(false);
@@ -62,11 +74,19 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
           invItem: product.invItem,
           restockQuantity: selectedQuantity,
           productDetails: product,
+          invItemBarcode: product.invItemBarcode,
         },
       ]);
       setSearchTerm("");
       setSelectedQuantity(1); // Reset quantity after adding
     }
+  };
+
+  const handleAddByBarcode = (searchBarcode: string) => {
+    const productToAdd = inventoryItems.find(
+      (item) => item.invItemBarcode === searchBarcode
+    );
+    handleAddProduct(productToAdd as Inventory);
   };
 
   const handleRemoveProduct = (invId: number) => {
@@ -135,6 +155,15 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
             Search and select products to restock
           </DialogDescription>
         </DialogHeader>
+        <BarcodeScanner
+          license={license}
+          onInitialized={() => setInitializedScanner(true)}
+          isActive={openScanner}
+          onScanned={(results) =>
+            onScannedSearchProduct(results, handleAddByBarcode)
+          }
+          onClose={closeScanner} // Pass onClose function here
+        />
 
         <div className="flex items-center space-x-2 mb-4">
           <Command className="flex-grow">
@@ -224,6 +253,18 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
           </AnimatePresence>
         </div>
         <DialogFooter>
+          {initializedScanner ? (
+            <>
+              <Button type="button" onClick={toggleScanning}>
+                <div className="flex items-center gap-2">
+                  <LuScanFace size={16} />
+                  <p>Scan</p>
+                </div>
+              </Button>
+            </>
+          ) : (
+            <div>Initializing...</div>
+          )}
           <Button
             onClick={() => handleBulkUpdate(productsToUpdate)}
             disabled={productsToUpdate.length === 0 || isRestocking}

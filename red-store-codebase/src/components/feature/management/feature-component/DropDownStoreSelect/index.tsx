@@ -27,7 +27,7 @@ const DropDownStoreSelect: React.FC<DropDownStoreSelectProps> = ({
     <DropdownMenu>
       <DropdownMenuTrigger
         disabled={isDisabled}
-        className={`bg-[#344054] text-accent px-3 rounded-sm shadow ${
+        className={`bg-[#344054] text-accent px-4 py-2 rounded-sm shadow ${
           isDisabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
