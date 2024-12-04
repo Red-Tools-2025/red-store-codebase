@@ -1,8 +1,8 @@
 import { TextResult } from "dynamsoft-javascript-barcode";
 import { FormikHelpers } from "formik";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { AddProductFormValidation } from "@/lib/formik/formik";
 import { AddProductModalValues } from "@/lib/formik/formikValueTypes";
+import { DBR_LICENSE } from "@/lib/dynamsoft/env";
 
 const useScanner = () => {
   const [openScanner, setOpenScanner] = useState<boolean>(false);
@@ -22,7 +22,7 @@ const useScanner = () => {
 
   // function for fetching license authorization
   async function fetchLicense() {
-    let license: string | undefined = process.env.DBRLicense;
+    let license: string | undefined = DBR_LICENSE;
     if (license === undefined) {
       license = "";
     }
