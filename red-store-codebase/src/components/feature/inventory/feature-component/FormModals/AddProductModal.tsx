@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
-import * as Yup from "yup";
+import { LuScanFace } from "react-icons/lu";
 import {
   Dialog,
   DialogContent,
@@ -115,10 +115,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       }
     },
   });
-
-  const handleChange = () => {
-    formik.setFieldValue;
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -350,7 +346,13 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             )}
           </div>
           <DialogFooter className="col-span-2 mt-5">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button>
+              <div className="flex items-center gap-2">
+                <LuScanFace size={16} />
+                <p>Scan</p>
+              </div>
+            </Button>
+            <Button type="submit" variant="secondary" disabled={isSubmitting}>
               {isSubmitting ? "Adding..." : "Add Product"}
             </Button>
           </DialogFooter>
