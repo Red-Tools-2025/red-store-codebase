@@ -1,5 +1,5 @@
 import { CameraEnhancer } from "dynamsoft-camera-enhancer";
-import { PlayCallbackInfo } from "dynamsoft-camera-enhancer/dist/types/interface/playcallbackinfo";
+import { PlayCallbackInfo } from "dynamsoft-camera-enhancer";
 import { TextResult, BarcodeReader } from "dynamsoft-javascript-barcode";
 import React from "react";
 import { ReactNode } from "react";
