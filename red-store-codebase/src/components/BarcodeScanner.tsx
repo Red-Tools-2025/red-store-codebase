@@ -1,8 +1,10 @@
 import { CameraEnhancer } from "dynamsoft-camera-enhancer";
 import { PlayCallbackInfo } from "dynamsoft-camera-enhancer";
 import { TextResult, BarcodeReader } from "dynamsoft-javascript-barcode";
-import React from "react";
 import { ReactNode } from "react";
+import { motion } from "framer-motion";
+
+import React from "react";
 
 export interface ScannerProps {
   isActive?: boolean;
@@ -113,10 +115,27 @@ const BarcodeScanner = (props: ScannerProps): React.ReactElement => {
     >
       <div ref={container} className="relative bg-black rounded-lg w-4/5 h-4/5">
         <div className="dce-video-container w-full h-full"></div>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-3/4 h-1/2 border-2 border-white rounded-lg">
+            <div className="w-full h-full relative overflow-hidden">
+              <motion.div
+                className="absolute top-0 left-0 w-full h-2 bg-white opacity-50"
+                animate={{
+                  y: ["0%", "700%", "0%"],
+                }}
+                transition={{
+                  duration: 2,
+                  ease: "linear",
+                  repeat: Infinity,
+                }}
+              ></motion.div>
+            </div>
+          </div>
+        </div>
         {props.children}
         <button
           onClick={() => {
-            props.onClose(); // Close the scanner when button is clicked
+            props.onClose();
             stopScanning();
             enhancer.current?.close();
           }}
