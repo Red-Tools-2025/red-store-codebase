@@ -1,6 +1,6 @@
 import { TextResult } from "dynamsoft-javascript-barcode";
 import { FormikHelpers } from "formik";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { AddProductFormValidation } from "@/lib/formik/formik";
 import { AddProductModalValues } from "@/lib/formik/formikValueTypes";
 
@@ -61,9 +61,23 @@ const useScanner = () => {
     }
   };
 
+  // function for scanning barcodes for the purpose of finding items
+  const onScannedSearchProduct = (
+    results: TextResult[],
+    setSearchItemBarcode: Dispatch<SetStateAction<string>>
+  ) => {
+    if (results.length > 0) {
+      const scannedResult = results[0];
+      const barcodeText = scannedResult.barcodeText;
+      setSearchItemBarcode(barcodeText);
+      setOpenScanner(false);
+    }
+  };
+
   return {
     onScanned,
     onScannedAddProduct,
+    onScannedSearchProduct,
     toggleScanning,
     closeScanner,
     setInitializedScanner,
