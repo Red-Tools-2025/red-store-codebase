@@ -45,7 +45,7 @@ export default function Sidebar() {
       items: [
         { link: "/", text: "DashBoard", icon: <User /> },
         { link: "/", text: "Accounting", icon: <Inbox /> },
-        { link: "/", text: "Inventory", icon: <Receipt /> },
+        { link: "/inventory", text: "Inventory", icon: <Receipt /> },
         { link: "/management", text: "Management", icon: <SquareChartGantt /> },
         { link: "/", text: "Goods Sold", icon: <SquarePercent /> },
         { link: "/", text: "Users", icon: <UserCog /> },

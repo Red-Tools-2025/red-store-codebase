@@ -10,6 +10,7 @@ export interface HandleRegisterInputObject {
   router: AppRouterInstance;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
   setError: Dispatch<SetStateAction<string>>;
+   setSuccess?: Dispatch<SetStateAction<string>>;
 }
 
 // server interfaces
