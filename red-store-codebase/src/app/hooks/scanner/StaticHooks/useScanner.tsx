@@ -1,6 +1,6 @@
 import { TextResult } from "dynamsoft-javascript-barcode";
 import { FormikHelpers } from "formik";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AddProductModalValues } from "@/lib/formik/formikValueTypes";
 import { DBR_LICENSE } from "@/lib/dynamsoft/env";
 
