@@ -43,7 +43,7 @@ export default function Sidebar() {
     {
       group: "General",
       items: [
-        { link: "/", text: "DashBoard", icon: <User /> },
+        { link: "/dashboard", text: "DashBoard", icon: <User /> },
         { link: "/", text: "Accounting", icon: <Inbox /> },
         { link: "/inventory", text: "Inventory", icon: <Receipt /> },
         { link: "/management", text: "Management", icon: <SquareChartGantt /> },
