@@ -7,7 +7,7 @@ import DropDownStoreSelect from "@/components/feature/management/feature-compone
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Store } from "@prisma/client";
 import useProducts from "../hooks/inventory/FetchHooks/useProducts";
-import { InventoryProvider } from "../contexts/inventory/InventoryContext";
+import { SalesProvider } from "../contexts/sales/SalesContext";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -33,17 +33,6 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     }
   }, [userStores]);
 
-  const {
-    error: InventoryFetchError,
-    inventoryItems,
-    message,
-    isLoading: isLoadingProducts,
-    handleRefresh,
-  } = useProducts(
-    selectedStore ? String(selectedStore.storeId) : "",
-    sessionUser?.id ?? ""
-  );
-
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
   ) => {
@@ -57,11 +46,8 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   };
 
   return (
-    <InventoryProvider
-      handleRefresh={handleRefresh}
+    <SalesProvider
       selectedStore={selectedStore}
-      isLoading={isLoadingProducts}
-      inventoryItems={inventoryItems}
       sessionData={sessionUser ?? null}
     >
       <div className="p-5">
@@ -92,7 +78,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
           <main>Session not found. Please log in again.</main>
         )}
       </div>
-    </InventoryProvider>
+    </SalesProvider>
   );
 };
 

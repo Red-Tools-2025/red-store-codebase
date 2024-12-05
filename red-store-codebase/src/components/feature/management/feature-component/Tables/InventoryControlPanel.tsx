@@ -2,8 +2,12 @@
 import InventoryDataTable from "@/components/feature/sales/feature-component/Tables/InventoryDataTable";
 import { useState, useEffect } from "react";
 import { DatePickerWithRange } from "@/components/feature/sales/feature-component/DatePicker/DatePickerWithRange";
-import "../../../../../styles/global.css"
+import "../../../../../styles/global.css";
+import { useSales } from "@/app/contexts/sales/SalesContext";
+
 const InventoryControlPanel = () => {
+  const { selectedStore } = useSales();
+
   const currentDate = new Date();
   const endDate = currentDate.toISOString().split("T")[0];
   const startDate = new Date();
@@ -18,11 +22,11 @@ const InventoryControlPanel = () => {
   const [loading, setLoading] = useState(false);
   const itemsPerPage = 13;
 
-  const fetchInventoryData = async (page: number) => {
+  const fetchInventoryData = async (page: number, selectedStoreId: number) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/inventory/timeseries?store_id=7&startDate=${startDateState}&endDate=${endDateState}&page=${page}&pageSize=${itemsPerPage}`
+        `http://localhost:3000/api/inventory/timeseries?store_id=${selectedStoreId}&startDate=${startDateState}&endDate=${endDateState}&page=${page}&pageSize=${itemsPerPage}`
       );
       const data = await response.json();
       setInventoryData(data.data);
@@ -36,8 +40,9 @@ const InventoryControlPanel = () => {
   };
 
   useEffect(() => {
-    fetchInventoryData(currentPage);
-  }, [currentPage, startDateState, endDateState]);
+    const selectedStoreId = selectedStore?.storeId as number;
+    fetchInventoryData(currentPage, selectedStoreId);
+  }, [currentPage, startDateState, endDateState, selectedStore]);
 
   const handleDateChange = (dateRange: any) => {
     if (dateRange && dateRange.from && dateRange.to) {
@@ -47,7 +52,9 @@ const InventoryControlPanel = () => {
     setCurrentPage(1);
   };
 
-  const handlePageSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handlePageSelectChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const selectedPage = Number(event.target.value);
     setCurrentPage(selectedPage);
   };
