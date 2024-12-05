@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
     // Convert storeId and productbarcodes to a number
     const storeId = parseInt(store_id, 10);
-    const itemBarcode = parseInt(product_barcode_number, 10);
+    const itemBarcode = product_barcode_number;
 
     const product = await db.inventory.findFirst({
       where: {
