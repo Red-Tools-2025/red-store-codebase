@@ -22,3 +22,5 @@
     background: #f1f1f1; /* Light gray track */
   }
 }
+/* Add this to your global CSS or `_app.js` */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');

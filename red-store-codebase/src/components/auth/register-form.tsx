@@ -57,7 +57,7 @@ const [phone, setPhone] = useState<string>("");
   return (
     <div>
       <CardWrapper
-        headerHeading="Sign Up"
+        headerHeading="SignUp"
         headerLabel="Create an account"
         backButtonLabel="Already have an account?"
         backButtonHref="/auth/login"
@@ -71,12 +71,12 @@ const [phone, setPhone] = useState<string>("");
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                   {/*  <FormLabel>Name</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
                         disabled={isPending}
-                        placeholder="John Doe"
+                        placeholder="Name"
                       />
                     </FormControl>
                     <FormMessage />
@@ -88,12 +88,12 @@ const [phone, setPhone] = useState<string>("");
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    {/* <FormLabel>Email</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
                         disabled={isPending}
-                        placeholder="abc.xyz@example.com"
+                        placeholder="Email"
                         type="email"
                       />
                     </FormControl>
@@ -106,12 +106,12 @@ const [phone, setPhone] = useState<string>("");
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                  {/*   <FormLabel>Password</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
                         disabled={isPending}
-                        placeholder="******"
+                        placeholder="Password"
                         type="password"
                       />
                     </FormControl>
@@ -124,12 +124,12 @@ const [phone, setPhone] = useState<string>("");
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone (optional)</FormLabel>
+                {/*     <FormLabel>Phone (optional)</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
                         disabled={isPending}
-                        placeholder="+1234567890"
+                        placeholder="Phone (Optional)"
                         type="tel"
                       />
                     </FormControl>

@@ -123,7 +123,6 @@ dependencies:
     specifier: ^3.23.8
     version: 3.23.8
 
-<<<<<<< HEAD
   .:
     dependencies:
       '@hookform/resolvers':
@@ -280,42 +279,6 @@ dependencies:
       typescript:
         specifier: ^5.6.2
         version: 5.6.2
-=======
-devDependencies:
-  '@types/bcryptjs':
-    specifier: ^2.4.6
-    version: 2.4.6
-  '@types/node':
-    specifier: ^20.16.10
-    version: 20.16.10
-  '@types/react':
-    specifier: ^18
-    version: 18.3.10
-  '@types/react-dom':
-    specifier: ^18
-    version: 18.3.0
-  eslint:
-    specifier: ^8
-    version: 8.57.1
-  eslint-config-next:
-    specifier: 14.2.13
-    version: 14.2.13(eslint@8.57.1)(typescript@5.6.2)
-  postcss:
-    specifier: ^8
-    version: 8.4.47
-  prisma:
-    specifier: ^5.20.0
-    version: 5.20.0
-  tailwindcss:
-    specifier: ^3.4.1
-    version: 3.4.13(ts-node@10.9.2)
-  ts-node:
-    specifier: ^10.9.2
-    version: 10.9.2(@types/node@20.16.10)(typescript@5.6.2)
-  typescript:
-    specifier: ^5.6.2
-    version: 5.6.2
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
 
 packages:
 
@@ -341,7 +304,6 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
-<<<<<<< HEAD
 
   '@eslint-community/regexpp@4.11.1':
     resolution: {integrity: sha512-m4DVN9ZqskZoLU5GlWZadwDnYo3vAEydiUayB9widCl9ffWx2IvPnp6n3on5rJmziJSw9Bv+Z3ChDVdMwXCY8Q==}
@@ -3301,8 +3263,6 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.9
 
   '@eslint-community/eslint-utils@4.4.0(eslint@8.57.1)':
-=======
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       eslint: 8.57.1
       eslint-visitor-keys: 3.4.3
@@ -4647,7 +4607,6 @@ snapshots:
     resolution: {integrity: sha512-9xlo6R2qDs5uixm0bcIqCeMCE6HiQsIyel9KQySStiyqNl2tnj2mP3DX1Nf56MD6KMenNNlBBsy3LJ7gUEQPXQ==}
     dev: true
 
-<<<<<<< HEAD
   '@types/d3-array@3.2.1': {}
 
   '@types/d3-color@3.1.3': {}
@@ -4673,10 +4632,6 @@ snapshots:
   '@types/d3-timer@3.0.2': {}
 
   '@types/hoist-non-react-statics@3.3.5':
-=======
-  /@types/hoist-non-react-statics@3.3.5:
-    resolution: {integrity: sha512-SbcrWzkKBw2cdwRTwQAswfpB9g9LJWfjtUeW/jvNwbhC8cpmmNYVePa+ncbUe0rGTQ7G3Ff6mYUN2VMfLVr+Sg==}
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       '@types/react': 18.3.10
       hoist-non-react-statics: 3.3.2
@@ -5293,7 +5248,6 @@ snapshots:
       uniq: 1.0.1
     dev: false
 
-<<<<<<< HEAD
   d3-array@3.2.4:
     dependencies:
       internmap: 2.0.3
@@ -5333,11 +5287,6 @@ snapshots:
   d3-timer@3.0.1: {}
 
   damerau-levenshtein@1.0.8: {}
-=======
-  /damerau-levenshtein@1.0.8:
-    resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
-    dev: true
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
 
   /dashdash@1.14.1:
     resolution: {integrity: sha512-jRFi8UDGo6j+odZiEpjazZaWqEal3w/basFjQHQEwVtZJGDpxbH1MeYluwCS8Xq5wmLJooDlMgvVarmWfGM44g==}
@@ -5412,7 +5361,6 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-<<<<<<< HEAD
   debug@4.3.7:
     dependencies:
       ms: 2.1.3
@@ -5420,11 +5368,6 @@ snapshots:
   decimal.js-light@2.5.1: {}
 
   deep-equal@2.2.3:
-=======
-  /deep-equal@2.2.3:
-    resolution: {integrity: sha512-ZIwpnevOurS8bpT4192sqAowWM76JDKSHYzMLty3BZGSswgq6pBaH3DhCSW5xVAZICZyKdOBPjwww5wfgT/6PA==}
-    engines: {node: '>= 0.4'}
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       array-buffer-byte-length: 1.0.1
       call-bind: 1.0.7
@@ -5514,17 +5457,12 @@ snapshots:
       esutils: 2.0.3
     dev: true
 
-<<<<<<< HEAD
   dom-helpers@5.2.1:
     dependencies:
       '@babel/runtime': 7.25.7
       csstype: 3.1.3
 
   dynamsoft-camera-enhancer@3.3.1:
-=======
-  /dynamsoft-camera-enhancer@3.3.1:
-    resolution: {integrity: sha512-jRYctvR/BBIVCRP0dQzialDcJl+lI217ENBpL3RG2xPwGKxJJsEQ5DZMnNk2dlE5JPWOszcPIszFeVWZZAuoWw==}
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       dm-fabric: 5.1.17
       mutable-promise: 1.1.14
@@ -5994,15 +5932,9 @@ snapshots:
     engines: {node: '>=0.10.0'}
     dev: true
 
-<<<<<<< HEAD
   eventemitter3@4.0.7: {}
 
   extend@3.0.2: {}
-=======
-  /extend@3.0.2:
-    resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
-    dev: false
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
 
   /extsprintf@1.3.0:
     resolution: {integrity: sha512-11Ndz7Nv+mvAC1j0ktTa7fAb0vLyGGX+rMHNBYQviQDGU0Hw7lhctJANqbPhu9nV9/izT/IntTgZ7Im/9LJs9g==}
@@ -6012,15 +5944,9 @@ snapshots:
   /fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
-<<<<<<< HEAD
   fast-equals@5.0.1: {}
 
   fast-glob@3.3.2:
-=======
-  /fast-glob@3.3.2:
-    resolution: {integrity: sha512-oX2ruAFQwf/Orj8m737Y5adxDQO0LAB7/S5MnxCdTNDd4p6BsyIVsv9JQsATbTSq8KHRpLwIHbVlUNatxd+1Ow==}
-    engines: {node: '>=8.6.0'}
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       '@nodelib/fs.stat': 2.0.5
       '@nodelib/fs.walk': 1.2.8
@@ -6459,14 +6385,9 @@ snapshots:
       side-channel: 1.0.6
     dev: true
 
-<<<<<<< HEAD
   internmap@2.0.3: {}
 
   invariant@2.2.4:
-=======
-  /invariant@2.2.4:
-    resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       loose-envify: 1.4.0
     dev: false
@@ -7546,21 +7467,9 @@ snapshots:
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
-<<<<<<< HEAD
   react-is@18.3.1: {}
 
   react-remove-scroll-bar@2.3.6(@types/react@18.3.10)(react@18.3.1):
-=======
-  /react-remove-scroll-bar@2.3.6(@types/react@18.3.10)(react@18.3.1):
-    resolution: {integrity: sha512-DtSYaao4mBmX+HDo5YWYdBWQwYIQQshUV/dVxFxK+KM26Wjwp1gZ6rv6OC3oujI6Bfu6Xyg3TwK533AQutsn/g==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       '@types/react': 18.3.10
       react: 18.3.1
@@ -7606,7 +7515,6 @@ snapshots:
       use-sidecar: 1.1.2(@types/react@18.3.10)(react@18.3.1)
     dev: false
 
-<<<<<<< HEAD
   react-smooth@4.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       fast-equals: 5.0.1
@@ -7616,17 +7524,6 @@ snapshots:
       react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   react-style-singleton@2.2.1(@types/react@18.3.10)(react@18.3.1):
-=======
-  /react-style-singleton@2.2.1(@types/react@18.3.10)(react@18.3.1):
-    resolution: {integrity: sha512-ZWj0fHEMyWkHzKYUr2Bs/4zU6XLmq9HsgBURm7g5pAVfyn49DgUiNgY2d4lXRlYSiCif9YBGpQleewkcqddc7g==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       '@types/react': 18.3.10
       get-nonce: 1.0.1
@@ -7635,7 +7532,6 @@ snapshots:
       tslib: 2.7.0
     dev: false
 
-<<<<<<< HEAD
   react-transition-group@4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.25.7
@@ -7646,11 +7542,6 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   react@18.3.1:
-=======
-  /react@18.3.1:
-    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
-    engines: {node: '>=0.10.0'}
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       loose-envify: 1.4.0
     dev: false
@@ -7671,7 +7562,6 @@ snapshots:
     dependencies:
       picomatch: 2.3.1
 
-<<<<<<< HEAD
   recharts-scale@0.4.5:
     dependencies:
       decimal.js-light: 2.5.1
@@ -7690,11 +7580,6 @@ snapshots:
       victory-vendor: 36.9.2
 
   reflect.getprototypeof@1.0.6:
-=======
-  /reflect.getprototypeof@1.0.6:
-    resolution: {integrity: sha512-fmfw4XgoDke3kdI6h4xcUz1dG8uaiv5q9gcEwLS4Pnth2kxT+GZ7YehS1JTMGBQmtV7Y4GFGbs2re2NqhdozUg==}
-    engines: {node: '>= 0.4'}
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
@@ -8153,15 +8038,9 @@ snapshots:
     resolution: {integrity: sha512-Eet/eeMhkO6TX8mnUteS9zgPbUMQa4I6Kkp5ORiBD5476/m+PIRiumP5tmh5ioJpH7k51Kehawy2UDfsnxxY8Q==}
     dev: false
 
-<<<<<<< HEAD
   tiny-invariant@1.3.3: {}
 
   tiny-warning@1.0.3: {}
-=======
-  /tiny-warning@1.0.3:
-    resolution: {integrity: sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==}
-    dev: false
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
 
   /to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
@@ -8415,7 +8294,6 @@ snapshots:
       extsprintf: 1.3.0
     dev: false
 
-<<<<<<< HEAD
   victory-vendor@36.9.2:
     dependencies:
       '@types/d3-array': 3.2.1
@@ -8434,12 +8312,6 @@ snapshots:
       d3-timer: 3.0.1
 
   web-streams-polyfill@3.3.3: {}
-=======
-  /web-streams-polyfill@3.3.3:
-    resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
-    engines: {node: '>= 8'}
-    dev: false
->>>>>>> f601a7fa2d79a8a6e767baa6b844f9a532690015
 
   /webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}

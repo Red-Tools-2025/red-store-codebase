@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { BackButton } from "./back-button";
 import { Header } from "./header";
 import { Social } from "./Social";
@@ -21,23 +20,29 @@ export const CardWrapper = ({
   backButtonLabel,
   backButtonHref,
   showSocial,
+  
 }: CardWrapperProps) => {
   return (
-    <Card className="w-[400px]">
-      <CardHeader>
-        <Header label={headerLabel} heading={headerHeading}></Header>
-      </CardHeader>
-      <CardContent>{children}</CardContent>
+    <div className="w-full mx-auto  max-w-[400px]">
+      {/* Header Section */}
+      <div className="mb-6">
+        <Header label={headerLabel} heading={headerHeading} />
+      </div>
 
+      {/* Form Content */}
+      <div>{children}</div>
+
+      {/* Social Section */}
       {showSocial && (
-        <CardFooter>
-          <Social></Social>
-        </CardFooter>
+        <div className="mt-4">
+          <Social />
+        </div>
       )}
 
-      <CardFooter>
-        <BackButton label={backButtonLabel} href={backButtonHref}></BackButton>
-      </CardFooter>
-    </Card>
+      {/* Back Button Section */}
+      <div className="mt-6">
+        <BackButton label={backButtonLabel} href={backButtonHref} />
+      </div>
+    </div>
   );
 };

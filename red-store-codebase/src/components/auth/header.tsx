@@ -8,14 +8,20 @@ const font = Poppins({
 });
 
 interface HeaderProps {
-  label: String;
-  heading:String
+  label: string; // Changed to lowercase `string`
+  heading: string; // Changed to lowercase `string`
 }
+
 export const Header = ({ label, heading }: HeaderProps) => {
   return (
-    <div className="w-full flex flex-col gap-y-4 items-center justify-center">
-      <h1 className={cn("text-3xl font-semibold", font.className)}> {heading}</h1>
-      <p className="text-muted-foreground text-sm">{label}</p>
+    <div className="w-full flex flex-col gap-y-2">
+      {/* Heading aligned to the left */}
+      <h1 className={cn("text-3xl font-semibold text-left", font.className)}>
+        {heading}
+      </h1>
+
+      {/* Label with grey color and smaller font size */}
+      <p className="text-gray-500 text-sm text-left">{label}</p>
     </div>
   );
 };
