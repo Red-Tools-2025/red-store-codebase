@@ -1,62 +1,41 @@
+// components/InventoryControlPanel.tsx
 "use client";
+import { useState } from "react";
 import InventoryDataTable from "@/components/feature/sales/feature-component/Tables/InventoryDataTable";
-import { useState, useEffect } from "react";
 import { DatePickerWithRange } from "@/components/feature/sales/feature-component/DatePicker/DatePickerWithRange";
-import "../../../../../styles/global.css";
+import useInventoryData from "@/app/hooks/sales/useInventoryData";
+import useDateRange from "@/hooks/useDateRange";
 import { useSales } from "@/app/contexts/sales/SalesContext";
 
 const InventoryControlPanel = () => {
   const { selectedStore } = useSales();
-
   const currentDate = new Date();
   const endDate = currentDate.toISOString().split("T")[0];
   const startDate = new Date();
   startDate.setMonth(currentDate.getMonth() - 1);
   const defaultStartDate = startDate.toISOString().split("T")[0];
 
-  const [startDateState, setStartDate] = useState(defaultStartDate);
-  const [endDateState, setEndDate] = useState(endDate);
-  const [inventoryData, setInventoryData] = useState([]);
+  const { startDateState, endDateState, handleDateChange } = useDateRange(
+    defaultStartDate,
+    endDate
+  );
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
   const itemsPerPage = 13;
 
-  const fetchInventoryData = async (page: number, selectedStoreId: number) => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/inventory/timeseries?store_id=${selectedStoreId}&startDate=${startDateState}&endDate=${endDateState}&page=${page}&pageSize=${itemsPerPage}`
-      );
-      const data = await response.json();
-      setInventoryData(data.data);
-      setTotalPages(data.total_pages);
-      setCurrentPage(data.current_page);
-    } catch (error) {
-      console.error("Error fetching inventory data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const selectedStoreId = selectedStore?.storeId as number;
-    fetchInventoryData(currentPage, selectedStoreId);
-  }, [currentPage, startDateState, endDateState, selectedStore]);
-
-  const handleDateChange = (dateRange: any) => {
-    if (dateRange && dateRange.from && dateRange.to) {
-      setStartDate(dateRange.from.toISOString().split("T")[0]);
-      setEndDate(dateRange.to.toISOString().split("T")[0]);
-    }
-    setCurrentPage(1);
-  };
+  const selectedStoreId = selectedStore?.storeId as number;
+  const { inventoryData, totalPages, loading } = useInventoryData(
+    currentPage,
+    startDateState,
+    endDateState,
+    selectedStoreId,
+    itemsPerPage
+  );
 
   const handlePageSelectChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const selectedPage = Number(event.target.value);
-    setCurrentPage(selectedPage);
+    setCurrentPage(Number(event.target.value));
   };
 
   return (

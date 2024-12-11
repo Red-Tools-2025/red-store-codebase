@@ -140,7 +140,7 @@ const [phone, setPhone] = useState<string>("");
             </div>
             <FormError message={error} />
             <FormSuccess message={success} />
-            <Button type="submit" className="w-full mt-4" disabled={isPending}>
+            <Button type="submit" className="w-full  font-inter mt-4" disabled={isPending}>
               Create an Account
             </Button>
           </form>

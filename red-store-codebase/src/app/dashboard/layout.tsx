@@ -1,11 +1,13 @@
 import React from "react";
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
+
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   return (
-    <div className="flex items-start justify-between">
-      <main className="w-full h-full">{children}</main>
+    <div className="flex items-center justify-center min-h-screen">
+      <main className="w-full">{children}</main>
     </div>
   );
 };

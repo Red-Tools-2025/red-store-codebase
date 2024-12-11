@@ -25,21 +25,21 @@ const InfoCard: React.FC<InfoCardProps> = ({
     <Card className="flex flex-col p-1 sm:p-1 border border-gray-200 shadow-md rounded-md hover:shadow-lg transition-shadow duration-200 my-5 bg-[#F9FAFB]">
       <CardHeader className="flex flex-col">
         <div className="flex items-center justify-center w-10 h-10 sm:w-10 sm:h-10 bg-slate-900 rounded-full mb-1">
-          <Icon className="text-lg sm:text-lg text-white" />
+          <Icon className="text-lg sm:text-lg text-white " />
         </div>
-        <h3 className="text-base sm:text-lg md:text-xl lg:text-3xl text-gray-500">
+        <h3 className="text-base sm:text-lg font-inter md:text-xl lg:text-3xl text-gray-500">
           {heading}
         </h3>
       </CardHeader>
       <CardContent className="relative">
-        <p className="text-sm text-gray-700 sm:text-3xl">
+        <p className="text-sm font-inter text-gray-700 sm:text-3xl">
           {/* Show the number */}
-          <span className="relative">
+          <span className="relative font-inter">
             {description.split(" ")[0]} {/* Show the number */}
             {/* Check for units and position them at the bottom-right */}
             {heading === "Total Stock Quantity" &&
               description.includes("units") && (
-                <span className="absolute bottom-[-4px] right-[-40px] text-lg text-gray-500">
+                <span className="absolute font-inter  bottom-[-4px] right-[-40px] text-lg text-gray-500">
                   units
                 </span>
               )}
