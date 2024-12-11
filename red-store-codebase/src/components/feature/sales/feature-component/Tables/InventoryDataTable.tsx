@@ -3,7 +3,13 @@ import TableLayout from "@/components/feature/management/layouts/TableLayout";
 import { useMemo } from "react";
 
 // Helper function to format numbers with commas
-const formatNumberWithCommas = (num: number, fixed: number = 0) => {
+const formatNumberWithCommas = (
+  num: number | undefined | null,
+  fixed: number = 0
+) => {
+  if (num === null || num === undefined || isNaN(num)) {
+    return "-"; // Return a fallback value if the number is invalid
+  }
   const formattedNumber = num.toFixed(fixed); // Ensure we respect decimal places
   return new Intl.NumberFormat().format(Number(formattedNumber)); // Format number with commas
 };

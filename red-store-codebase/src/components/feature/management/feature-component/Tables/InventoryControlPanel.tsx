@@ -1,5 +1,4 @@
-// components/InventoryControlPanel.tsx
-"use client";
+"use client"
 import { useState } from "react";
 import InventoryDataTable from "@/components/feature/sales/feature-component/Tables/InventoryDataTable";
 import { DatePickerWithRange } from "@/components/feature/sales/feature-component/DatePicker/DatePickerWithRange";
@@ -65,14 +64,21 @@ const InventoryControlPanel = () => {
         <div className="flex gap-4 items-center">
           <button
             onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
-            disabled={currentPage === 1}
+            disabled={
+              currentPage === 1 || !inventoryData || inventoryData.length === 0
+            }
             className="px-6 py-2 bg-white text-black border border-gray-300 rounded-xl disabled:opacity-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
           >
             Previous
           </button>
+
           <button
             onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-            disabled={currentPage === totalPages}
+            disabled={
+              currentPage === totalPages ||
+              !inventoryData ||
+              inventoryData.length === 0
+            }
             className="px-6 py-2 bg-white text-black border border-gray-300 rounded-xl disabled:opacity-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
           >
             Next
