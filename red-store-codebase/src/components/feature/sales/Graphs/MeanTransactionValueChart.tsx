@@ -28,6 +28,15 @@ const MeanTransactionChart = ({ storeId }: MeanTransactionChartProps) => {
 
   if (error) return <div>{error}</div>;
 
+  // Check if chartData is empty
+  if (!chartData || chartData.length === 0) {
+    return (
+      <div className="flex justify-center items-center p-4 text-gray-500 font-inter">
+        No data available for this store.
+      </div>
+    );
+  }
+
   const chartConfig = {
     avg: {
       label: "Average Transaction Value",

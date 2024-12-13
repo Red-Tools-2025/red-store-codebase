@@ -85,7 +85,7 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
           empStatus: values.empStatus,
           storeManagerId: values.storeManagerId,
         };
-
+    
         const { data } = await axios.post<AddEmployeeResponse>(
           "/api/management/employees",
           requestBody,

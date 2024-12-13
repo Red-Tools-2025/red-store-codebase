@@ -34,6 +34,15 @@ const StoreRevenueChart = ({ storeId }: { storeId: number }) => {
 
   if (error) return <div>{error}</div>;
 
+  // Check if there is no data
+  if (!chartData || chartData.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-[30vh] w-full text-gray-500">
+        No data available for this store.
+      </div>
+    );
+  }
+
   const chartConfig = {
     revenue: {
       label: "Revenue",

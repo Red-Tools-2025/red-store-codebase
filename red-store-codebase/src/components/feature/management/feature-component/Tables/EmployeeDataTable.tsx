@@ -67,7 +67,7 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
         <TableCell className="w-auto">{employee.empId}</TableCell>
         <TableCell className="w-auto">{employee.empName}</TableCell>
         <TableCell className="w-auto">
-          {roleValues[employee.roleId]}
+          {roleValues[employee.roleId-1]}
         </TableCell>{" "}
         <TableCell className="w-auto">
           {employee.empStatus ? (

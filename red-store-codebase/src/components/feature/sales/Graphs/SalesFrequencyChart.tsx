@@ -27,6 +27,15 @@ const SalesFrequencyChart = ({ storeId }: { storeId: number }) => {
 
   if (error) return <div>{error}</div>;
 
+  // Check if salesFrequencyData is empty
+  if (!salesFrequencyData || salesFrequencyData.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-[25vh] w-full text-gray-500">
+        No data available for this store.
+      </div>
+    );
+  }
+
   const chartConfig = {
     freq: {
       label: "Item Sold",

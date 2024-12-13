@@ -37,6 +37,18 @@ const TopBottomProductList = ({ storeId }: { storeId: number }) => {
 
   if (error) return <div>{error}</div>;
 
+  // Check if there is no data in both top and bottom products
+  if (
+    (showTopProducts && topProducts.length === 0) ||
+    (!showTopProducts && bottomProducts.length === 0)
+  ) {
+    return (
+      <div className="flex justify-center items-center p-4 text-gray-500 font-inter">
+        No data available for the selected store.
+      </div>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
