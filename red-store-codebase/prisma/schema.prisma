@@ -89,6 +89,7 @@ model Store {
   storeManagerId String      @map("storemanagerid")
   storeStatus    Boolean     @map("storestatus")
   createdAt      DateTime?   @default(now()) @map("createdat") @db.Timestamptz(6)
+  customfields   Json?
   inventory      Inventory[]
   User           User        @relation(fields: [storeManagerId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
