@@ -1,6 +1,16 @@
 import { Button } from "@/components/ui/button";
+import { Dispatch, SetStateAction } from "react";
 import { BsDatabaseAdd } from "react-icons/bs";
-const InventoryEmptyState = () => {
+interface InventoryEmptyStateProps {
+  handleOpenModal: (
+    setModalType: React.Dispatch<SetStateAction<boolean>>
+  ) => void;
+  setIsDefineStoreModalOpen: Dispatch<React.SetStateAction<boolean>>;
+}
+const InventoryEmptyState: React.FC<InventoryEmptyStateProps> = ({
+  handleOpenModal,
+  setIsDefineStoreModalOpen,
+}) => {
   return (
     <div className="py-10 flex items-center justify-center font-inter">
       <div className="flex flex-col items-center">
@@ -18,7 +28,12 @@ const InventoryEmptyState = () => {
             !!.
           </p>
           <div className="flex gap-2 mt-3">
-            <Button variant="primary">Start Adding</Button>
+            <Button
+              onClick={() => handleOpenModal(setIsDefineStoreModalOpen)}
+              variant="primary"
+            >
+              Start Adding
+            </Button>
             <Button variant="secondary">Pick a template</Button>
           </div>
         </div>

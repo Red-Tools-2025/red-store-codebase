@@ -17,6 +17,7 @@ import RestockProductModal from "@/components/feature/inventory/feature-componen
 import { Inventory } from "@prisma/client";
 import InventoryControlPanel from "@/components/feature/inventory/feature-component/Panels/InventoryControlPanel";
 import InventoryEmptyState from "@/components/feature/inventory/feature-component/DisplayStates/InventoryEmptyState";
+import DefineStoreModal from "@/components/feature/inventory/feature-component/FormModals/DefineStoreModal";
 
 interface JsonRenderProps {
   item: Inventory;
@@ -185,6 +186,8 @@ const InventoryPage = () => {
     useState<boolean>(false);
   const [isRestockProdModalOpen, setIsRestockProdModalOpen] =
     useState<boolean>(false);
+  const [isDefineStoreModalOpen, setIsDefineStoreModalOpen] =
+    useState<boolean>(false);
 
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
@@ -235,6 +238,10 @@ const InventoryPage = () => {
         ]}
         onClose={() => handleCloseModal(setIsAddProdModalOpen)}
       />
+      <DefineStoreModal
+        isOpen={isDefineStoreModalOpen}
+        onClose={() => handleCloseModal(setIsDefineStoreModalOpen)}
+      />
 
       {/* Inventory Control Panel */}
       <InventoryControlPanel
@@ -256,7 +263,12 @@ const InventoryPage = () => {
             {!inventoryItems ? (
               <div>Issue in Rendering Inventory Items</div>
             ) : inventoryItems.length === 0 ? (
-              <InventoryEmptyState />
+              <InventoryEmptyState
+                handleOpenModal={() =>
+                  handleOpenModal(setIsDefineStoreModalOpen)
+                }
+                setIsDefineStoreModalOpen={setIsDefineStoreModalOpen}
+              />
             ) : (
               <InventoryDisplay
                 displayState={displayState as "list" | "grid"}
