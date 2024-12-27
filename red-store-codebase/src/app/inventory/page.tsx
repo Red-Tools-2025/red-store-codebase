@@ -28,43 +28,7 @@ import { Toaster } from "@/components/ui/toaster";
 import DeleteProductModal from "@/components/feature/inventory/feature-component/FormModals/DeleteProductsModal";
 import RestockProductModal from "@/components/feature/inventory/feature-component/FormModals/RestockProductModal";
 import { Inventory } from "@prisma/client";
-
-// Inventory Actions Dropdown
-interface InventoryActionsCTAProps {
-  openDeleteModal: () => void;
-  openRestockModal: () => void;
-}
-
-const InventoryActionsCTA: React.FC<InventoryActionsCTAProps> = ({
-  openDeleteModal,
-  openRestockModal,
-}) => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={"secondary"}>
-          <SlOptionsVertical />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-40">
-        <DropdownMenuGroup>
-          <DropdownMenuItem onClick={openDeleteModal} className="text-red-600">
-            <Trash className="mr-2 h-4 w-4 text-red-600" />
-            Delete
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={openRestockModal}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Restock
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Edit className="mr-2 h-4 w-4" />
-            Update
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
+import InventoryControlPanel from "@/components/feature/inventory/feature-component/Panels/InventoryControlPanel";
 
 interface JsonRenderProps {
   item: Inventory;
@@ -284,70 +248,16 @@ const InventoryPage = () => {
         onClose={() => handleCloseModal(setIsAddProdModalOpen)}
       />
 
-      {/* Control Panel */}
-      <div className="my-5 flex items-center justify-between">
-        <div className="flex w-2/4 items-center space-x-4">
-          <Input
-            type="text"
-            placeholder="Search Product"
-            className="transition-all duration-300 ease-in-out"
-          />
-          <div className="flex space-x-1">
-            {/* Grid Icon */}
-            <div
-              className={`flex items-center justify-center p-1.5 rounded-sm border cursor-pointer 
-              ${
-                displayState === "grid"
-                  ? "bg-green-200 border-green-500"
-                  : "bg-gray-300 border-gray-500 opacity-50"
-              } transition-all duration-300 ease-in-out`}
-              onClick={() => setDisplayState("grid")}
-            >
-              <IoGrid
-                className={`text-md ${
-                  displayState === "grid" ? "text-green-500" : "text-gray-500"
-                } transition-all duration-300 ease-in-out`}
-              />
-            </div>
-            {/* List Icon */}
-            <div
-              className={`flex items-center justify-center p-1.5 rounded-sm border cursor-pointer 
-              ${
-                displayState === "list"
-                  ? "bg-green-200 border-green-500"
-                  : "bg-gray-300 border-gray-500 opacity-50"
-              }`}
-              onClick={() => setDisplayState("list")}
-            >
-              <FaListUl
-                className={`text-md ${
-                  displayState === "list" ? "text-green-500" : "text-gray-500"
-                }`}
-              />
-            </div>
-          </div>
-          <Button onClick={handleRefresh} variant={"secondary"}>
-            <div className="flex items-center ">
-              <RefreshCw className="mr-2 h-3 w-3" />
-              <p>Refresh</p>
-            </div>
-          </Button>
-        </div>
-
-        {/* Other Options */}
-        <div className="flex space-x-2">
-          <InventoryActionsCTA
-            openRestockModal={() => handleOpenModal(setIsRestockProdModalOpen)}
-            openDeleteModal={() => handleOpenModal(setIsDeleteProdModalOpen)}
-          />
-          <Button
-            onClick={() => handleOpenModal(setIsAddProdModalOpen)}
-            variant={"secondary"}
-          >
-            Add Product
-          </Button>
-        </div>
-      </div>
+      {/* Inventory Control Panel */}
+      <InventoryControlPanel
+        displayState={displayState}
+        handleOpenModal={handleOpenModal}
+        handleRefresh={handleRefresh}
+        setDisplayState={setDisplayState}
+        setIsAddProdModalOpen={setIsAddProdModalOpen}
+        setIsDeleteProdModalOpen={setIsDeleteProdModalOpen}
+        setIsRestockProdModalOpen={setIsRestockProdModalOpen}
+      />
 
       {/* Inventory Render */}
       <div>
