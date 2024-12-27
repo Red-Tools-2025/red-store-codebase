@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { addDays, addMonths, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
+
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,13 +20,24 @@ interface DatePickerWithRangeProps {
   onDateSelect?: (dateRange: DateRange) => void; // Callback function when a date is selected
 }
 
+// Helper function to format dates
+const formatDate = (date: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  };
+  return date.toLocaleDateString("en-US", options);
+};
+
 export function DatePickerWithRange({
   className,
   onDateSelect,
 }: DatePickerWithRangeProps) {
   // Set the initial date range to current date and current date - 1 month
   const currentDate = new Date();
-  const lastMonth = addMonths(currentDate, -1);
+  const lastMonth = new Date(currentDate);
+  lastMonth.setMonth(currentDate.getMonth() - 1);
 
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: lastMonth,
@@ -55,11 +66,10 @@ export function DatePickerWithRange({
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {formatDate(date.from)} - {formatDate(date.to)}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                formatDate(date.from)
               )
             ) : (
               <span>Pick a date</span>

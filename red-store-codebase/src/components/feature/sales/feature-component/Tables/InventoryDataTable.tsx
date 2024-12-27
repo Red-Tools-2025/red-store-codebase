@@ -1,9 +1,16 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import TableLayout from "@/components/feature/management/layouts/TableLayout";
 import { useMemo } from "react";
+import { motion } from "framer-motion"; // Import motion for animation
 
 // Helper function to format numbers with commas
-const formatNumberWithCommas = (num: number, fixed: number = 0) => {
+const formatNumberWithCommas = (
+  num: number | undefined | null,
+  fixed: number = 0
+) => {
+  if (num === null || num === undefined || isNaN(num)) {
+    return "-"; // Return a fallback value if the number is invalid
+  }
   const formattedNumber = num.toFixed(fixed); // Ensure we respect decimal places
   return new Intl.NumberFormat().format(Number(formattedNumber)); // Format number with commas
 };
@@ -54,33 +61,37 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({
   }, [inventoryData, startDate, endDate]);
 
   const tableRows = filteredData.map((entry, index) => (
-    <TableRow
+    <motion.tr
       key={index}
-      className={index % 2 === 0 ? "bg-white" : "bg-gray-50"} // Alternate row colors
+      className={`cursor-pointer ${
+        index % 2 === 0 ? "bg-white" : "bg-gray-100"
+      }`}
+      whileHover={{ backgroundColor: "#cdffcd" }} // Green hover effect
+      transition={{ duration: 0.3 }}
     >
-      <TableCell className="font-semibold">
+      <TableCell className="font-inter">
         {new Date(entry.time).toLocaleDateString()}
       </TableCell>
-      <TableCell className="pl-6 font-semibold">{entry.product_id}</TableCell>
-      <TableCell className="pl-6 font-semibold">
+      <TableCell className="pl-6 font-inter">{entry.product_id}</TableCell>
+      <TableCell className="pl-6 font-inter">
         {formatNumberWithCommas(entry.opening_stock)}
       </TableCell>
-      <TableCell className="pl-6 font-semibold">
+      <TableCell className="pl-6 font-inter">
         {formatNumberWithCommas(entry.received_stock)}
       </TableCell>
-      <TableCell className="pl-6 font-semibold">
+      <TableCell className="pl-6 font-inter">
         {formatNumberWithCommas(entry.closing_stock)}
       </TableCell>
-      <TableCell className="pl-6 font-semibold">
+      <TableCell className="pl-6 font-inter">
         {formatNumberWithCommas(entry.sales)}
       </TableCell>
-      <TableCell className="pl-6 font-semibold">
+      <TableCell className="pl-6 font-inter">
         ₹ {formatNumberWithCommas(entry.mrp_per_bottle, 2)}
       </TableCell>
-      <TableCell className="pl-6 font-semibold">
+      <TableCell className="pl-6 font-inter">
         ₹ {formatNumberWithCommas(entry.sale_amount, 2)}
       </TableCell>
-    </TableRow>
+    </motion.tr>
   ));
 
   return (

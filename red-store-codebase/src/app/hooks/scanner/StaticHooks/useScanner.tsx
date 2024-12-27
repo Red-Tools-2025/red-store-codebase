@@ -1,0 +1,90 @@
+import { TextResult } from "dynamsoft-javascript-barcode";
+import { FormikHelpers } from "formik";
+import { useEffect, useState } from "react";
+import { AddProductModalValues } from "@/lib/formik/formikValueTypes";
+import { DBR_LICENSE } from "@/lib/dynamsoft/env";
+
+const useScanner = () => {
+  const [openScanner, setOpenScanner] = useState<boolean>(false);
+  const [initializedScanner, setInitializedScanner] = useState(false);
+  const [license, setLicense] = useState<string>("");
+
+  useEffect(() => {
+    const loadLicense = async () => {
+      const fetchedLicense = await fetchLicense();
+      setLicense(fetchedLicense);
+    };
+    loadLicense();
+  }, []);
+
+  const toggleScanning = () => setOpenScanner(!openScanner);
+  const closeScanner = () => setOpenScanner(false);
+
+  // function for fetching license authorization
+  async function fetchLicense() {
+    let license: string | undefined = DBR_LICENSE;
+    if (license === undefined) {
+      license = "";
+    }
+    return license;
+  }
+
+  // basic scanned function for testing
+  const onScanned = (results: TextResult[]) => {
+    if (results.length > 0) {
+      let text = "";
+      for (let index = 0; index < results.length; index++) {
+        const result = results[index];
+        text =
+          text + result.barcodeFormatString + ": " + result.barcodeText + "\n";
+      }
+      alert(text);
+      setOpenScanner(false);
+    }
+  };
+
+  // function for scanning barcode and populating field
+  const onScannedAddProduct = (
+    results: TextResult[],
+    setValue: FormikHelpers<AddProductModalValues>["setFieldValue"]
+  ) => {
+    if (results.length > 0) {
+      const scannedResult = results[0];
+      const barcodeText = scannedResult.barcodeText;
+
+      if (setValue) {
+        setValue("invItemBarcode", barcodeText, true);
+      } else {
+        alert(`${scannedResult.barcodeFormatString}: ${barcodeText}`);
+      }
+      setOpenScanner(false);
+    }
+  };
+
+  // function for scanning barcodes for the purpose of finding items
+  const onScannedSearchProduct = (
+    results: TextResult[],
+    handleSearch: (searchBarcode: string) => void
+  ) => {
+    if (results.length > 0) {
+      const scannedResult = results[0];
+      const barcodeText = scannedResult.barcodeText;
+      handleSearch(barcodeText);
+      setOpenScanner(false);
+    }
+  };
+
+  return {
+    onScanned,
+    onScannedAddProduct,
+    onScannedSearchProduct,
+    toggleScanning,
+    closeScanner,
+    setInitializedScanner,
+    openScanner,
+    initializedScanner,
+    license,
+  };
+};
+
+export default useScanner;

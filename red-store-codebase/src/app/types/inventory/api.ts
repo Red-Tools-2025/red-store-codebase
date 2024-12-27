@@ -53,6 +53,14 @@ export interface DeleteProductBatchRequestBody {
   }[];
 }
 
+export interface UpdateProductBatchRequestBody {
+  productBatch: {
+    productId: number;
+    storeId: number;
+    recievedStock: number;
+  }[];
+}
+
 export interface ProcessCartRequestBody {
   cartItems: {
     product_id: number;

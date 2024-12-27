@@ -14,13 +14,13 @@ interface InfoCardProps {
   description: string;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({
+export const InfoCard: React.FC<InfoCardProps> = ({
   icon: Icon,
   heading,
   description,
 }) => {
   return (
-    <Card className="flex flex-col p-1 sm:p-1 border border-gray-200 shadow-md rounded-md hover:shadow-lg transition-shadow duration-200 my-5">
+    <Card className="flex flex-col p-1 sm:p-1 border bg-[#F9FAFB] border-gray-200 shadow-md rounded-md hover:shadow-lg transition-shadow duration-200 my-5">
       <CardHeader className="flex flex-col">
         <div className="flex items-center justify-center w-10 h-10 sm:w-10 sm:h-10 bg-slate-900 rounded-full mb-1">
           <Icon className="text-lg sm:text-lg text-white" />

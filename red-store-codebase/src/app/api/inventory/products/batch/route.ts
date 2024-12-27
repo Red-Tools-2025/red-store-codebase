@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   AddBatchRequestBody,
   DeleteProductBatchRequestBody,
+  UpdateProductBatchRequestBody,
 } from "@/app/types/inventory/api";
 
 // batch addition upload to inventory
@@ -126,6 +127,68 @@ export async function DELETE(req: Request) {
     return NextResponse.json(
       {
         error: `An error occurred while deleting inventory items: ${errMessage}`,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const body: UpdateProductBatchRequestBody = await req.json();
+    const { productBatch } = body;
+
+    console.log(productBatch);
+
+    const idsToUpdate = productBatch.map((p) => ({
+      storeId: p.storeId,
+      invId: p.productId,
+    }));
+
+    // Validate existence of products before removal, through composite key
+    const existingProducts = await db.inventory.findMany({
+      where: {
+        OR: idsToUpdate.map(({ storeId, invId }) => ({ storeId, invId })),
+      },
+    });
+
+    if (existingProducts.length !== productBatch.length) {
+      return NextResponse.json(
+        { error: "Some products do not exist in the inventory." },
+        { status: 404 }
+      );
+    }
+
+    // Perform individual updates for each product
+    const updatePromises = productBatch.map((product) =>
+      db.inventory.update({
+        where: {
+          storeId_invId: {
+            storeId: product.storeId,
+            invId: product.productId,
+          },
+        },
+        data: {
+          invItemStock: {
+            increment: product.recievedStock,
+          },
+        },
+      })
+    );
+
+    const updatedProducts = await Promise.all(updatePromises);
+
+    return NextResponse.json({
+      message: "Products updated successfully",
+      updatedProducts,
+    });
+  } catch (err) {
+    console.error("Error updating items in inventory:", err);
+    const errMessage =
+      err instanceof Error ? err.message : "An unknown error occurred";
+    return NextResponse.json(
+      {
+        error: `An error occurred while updating inventory items: ${errMessage}`,
       },
       { status: 500 }
     );
