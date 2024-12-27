@@ -6,6 +6,7 @@ import { IoGrid } from "react-icons/io5";
 import InventoryActionsCTA from "./InventoryActionsCTA";
 import { Dispatch, SetStateAction } from "react";
 import InventroySearch from "./InventorySearch";
+import { useInventory } from "@/app/contexts/inventory/InventoryContext";
 
 interface InventoryControlPanelProps {
   displayState: string;
@@ -26,6 +27,7 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
   setIsDeleteProdModalOpen,
   setIsRestockProdModalOpen,
 }) => {
+  const { inventoryItems } = useInventory();
   return (
     <div className="my-5 flex items-center justify-between">
       <div className="flex w-2/4 items-center space-x-4">
@@ -75,12 +77,16 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
       {/* Other Options */}
       <div className="flex space-x-2">
         <InventoryActionsCTA
+          inventoryItems={inventoryItems}
           openRestockModal={() => handleOpenModal(setIsRestockProdModalOpen)}
           openDeleteModal={() => handleOpenModal(setIsDeleteProdModalOpen)}
         />
         <Button
           onClick={() => handleOpenModal(setIsAddProdModalOpen)}
           variant={"secondary"}
+          disabled={
+            !inventoryItems || inventoryItems.length === 0 ? true : false
+          }
         >
           Add Product
         </Button>

@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Inventory } from "@prisma/client";
 import { Edit, RefreshCw, Trash } from "lucide-react";
 import { SlOptionsVertical } from "react-icons/sl";
 
@@ -13,16 +14,23 @@ import { SlOptionsVertical } from "react-icons/sl";
 interface InventoryActionsCTAProps {
   openDeleteModal: () => void;
   openRestockModal: () => void;
+  inventoryItems: Inventory[] | null;
 }
 
 const InventoryActionsCTA: React.FC<InventoryActionsCTAProps> = ({
   openDeleteModal,
   openRestockModal,
+  inventoryItems,
 }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"secondary"}>
+        <Button
+          variant={"secondary"}
+          disabled={
+            !inventoryItems || inventoryItems.length === 0 ? true : false
+          }
+        >
           <SlOptionsVertical />
         </Button>
       </DropdownMenuTrigger>

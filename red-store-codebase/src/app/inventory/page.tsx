@@ -1,10 +1,5 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { IoGrid } from "react-icons/io5";
-import { FaListUl } from "react-icons/fa";
-import { SlOptionsVertical } from "react-icons/sl";
 import React, { SetStateAction, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useInventory } from "../contexts/inventory/InventoryContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,14 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Trash, RefreshCw, Edit } from "lucide-react";
 import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
 import { Toaster } from "@/components/ui/toaster";
 import DeleteProductModal from "@/components/feature/inventory/feature-component/FormModals/DeleteProductsModal";
