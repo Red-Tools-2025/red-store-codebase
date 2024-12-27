@@ -18,7 +18,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { MdRemoveCircle } from "react-icons/md";
-import { Switch } from "@/components/ui/switch";
 
 interface DefineStoreFormProps {
   isOpen: boolean;
@@ -81,6 +80,32 @@ const StoreDataTypeBox: React.FC<StoreDataTypeBoxProps> = ({
         {title}
       </p>
     </div>
+  );
+};
+
+const ConfirmDialog: React.FC<{
+  isOpen: boolean;
+  handleModalClose: () => void;
+}> = ({ handleModalClose, isOpen }) => {
+  return (
+    <Dialog open={isOpen} onOpenChange={handleModalClose}>
+      <DialogContent className="max-w-[500px] font-inter ">
+        <DialogHeader>
+          <DialogTitle>Confirm Store Definitions</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to declare this as your additional inventory
+            fields ? As this action is irreversible. We would recommend you to
+            go back and confirm everything once
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex justify-end gap-2 mt-4">
+          <Button variant="secondary" onClick={handleModalClose}>
+            Go back
+          </Button>
+          <Button variant="primary">Proceed & Confirm</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -218,6 +243,8 @@ const DefineStoreModal: React.FC<DefineStoreFormProps> = ({
   isOpen,
   onClose,
 }) => {
+  const [openConfirmDefinitionsModal, setOpenConfirmDefinitionsModal] =
+    useState<boolean>(false);
   const [selectedDataType, setSelectedDataType] =
     React.useState<string>("text");
   const [storeDefination, setStoreDefination] = React.useState<
@@ -235,6 +262,10 @@ const DefineStoreModal: React.FC<DefineStoreFormProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[900px] font-inter flex gap-6 items-start">
+        <ConfirmDialog
+          isOpen={openConfirmDefinitionsModal}
+          handleModalClose={() => setOpenConfirmDefinitionsModal(false)}
+        />
         {/* Left Section: Dialog Form */}
         <div className="w-2/3 pr-4 border-r flex flex-col justify-between space-y-6">
           <div className="space-y-4">
@@ -286,7 +317,10 @@ const DefineStoreModal: React.FC<DefineStoreFormProps> = ({
             <Button onClick={onClose} variant="secondary">
               Cancel
             </Button>
-            <Button onClick={onClose} variant="primary">
+            <Button
+              onClick={() => setOpenConfirmDefinitionsModal(true)}
+              variant="primary"
+            >
               Proceed to Add
             </Button>
           </div>
