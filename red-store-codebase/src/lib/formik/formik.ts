@@ -1,4 +1,3 @@
-import { all } from "axios";
 import * as Yup from "yup";
 
 export const AddProductFormValidation = Yup.object({

@@ -17,6 +17,8 @@ import {
 } from "@/lib/formik/formik";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { MdRemoveCircle } from "react-icons/md";
+import { Switch } from "@/components/ui/switch";
 
 interface DefineStoreFormProps {
   isOpen: boolean;
@@ -82,7 +84,10 @@ const StoreDataTypeBox: React.FC<StoreDataTypeBoxProps> = ({
   );
 };
 
-const StoreDataTypeDetails: React.FC<{ type: string }> = ({ type }) => {
+const StoreDataTypeDetails: React.FC<{
+  type: string;
+  handleDataTypeAdd: (newDataType: StoreDefination) => void;
+}> = ({ type, handleDataTypeAdd }) => {
   const [allowedValues, setAllowedValues] = useState<string[]>([]);
   const [allowedValueEntry, setAllowedValueEntry] = useState<string>("");
 
@@ -98,8 +103,7 @@ const StoreDataTypeDetails: React.FC<{ type: string }> = ({ type }) => {
         ? DefineStoreFormValidationSelect
         : DefineStoreFormValidation,
     onSubmit: (values) => {
-      console.log(values);
-      console.log(type);
+      handleDataTypeAdd(values);
     },
   });
 
@@ -141,20 +145,6 @@ const StoreDataTypeDetails: React.FC<{ type: string }> = ({ type }) => {
           )}
         </div>
 
-        {/* Dynamically Generated Field Name */}
-        <div className="col-span-1">
-          <Label htmlFor="fieldName">Field Name (Programmatic)</Label>
-          <Input
-            id="fieldName"
-            name="fieldName"
-            type="text"
-            value={formik.values.fieldName}
-            disabled
-            readOnly
-            placeholder="Field name will be generated here"
-          />
-        </div>
-
         {type === "select" && (
           <div className="col-span-1">
             <Label htmlFor="allowedValues">Allowed Values</Label>
@@ -188,7 +178,7 @@ const StoreDataTypeDetails: React.FC<{ type: string }> = ({ type }) => {
               {allowedValues.map((value, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-1 bg-gray-200 px-2 py-1 rounded"
+                  className="flex text-xs items-center text-blue-600 gap-1 bg-blue-100 border border-1 border-blue-500 px-2 py-1 rounded"
                 >
                   <span>{value}</span>
                   <button
@@ -200,7 +190,7 @@ const StoreDataTypeDetails: React.FC<{ type: string }> = ({ type }) => {
                       setAllowedValues(newValues);
                       formik.setFieldValue("allowedValues", newValues);
                     }}
-                    className="text-red-500 font-bold"
+                    className="text-blue-500 font-bold"
                   >
                     ×
                   </button>
@@ -238,51 +228,114 @@ const DefineStoreModal: React.FC<DefineStoreFormProps> = ({
     setStoreDefination([...storeDefination, newDefination]);
   };
 
+  const handleRemoveStoreDefination = (index: number) => {
+    setStoreDefination(storeDefination.filter((_, i) => i !== index));
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[600px] font-inter">
-        <DialogHeader>
-          <DialogTitle>Define Your Store</DialogTitle>
-          <DialogDescription>
-            Store definations allow you to customize your inventory as your own
-            along with the base definations we provide to store your data
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-[900px] font-inter flex gap-6 items-start">
+        {/* Left Section: Dialog Form */}
+        <div className="w-2/3 pr-4 border-r flex flex-col justify-between space-y-6">
+          <div className="space-y-4">
+            <DialogHeader className="mt-1">
+              <DialogTitle>Define Your Store</DialogTitle>
+              <DialogDescription>
+                Store definitions allow you to customize your inventory with
+                your own fields alongside the base definitions we provide.
+              </DialogDescription>
+            </DialogHeader>
 
-        <div className="flex flex-col space-y-4">
-          <p className="font-[600]">Pick a data type</p>
-          <div className="flex gap-4">
-            <StoreDataTypeBox
-              selectedDataType={selectedDataType}
-              setDataType={setSelectedDataType}
-              dataType="text"
-              title="Text"
-              icon={LetterText}
-            />
-            <StoreDataTypeBox
-              selectedDataType={selectedDataType}
-              setDataType={setSelectedDataType}
-              dataType="select"
-              title="Select"
-              icon={BsBorderWidth}
-            />
-            <StoreDataTypeBox
-              selectedDataType={selectedDataType}
-              setDataType={setSelectedDataType}
-              dataType="number"
-              title="Number"
-              icon={Sigma}
+            {/* Data Type Selection */}
+            <div className="flex flex-col space-y-4">
+              <p className="font-semibold">Pick a data type</p>
+              <div className="flex gap-4">
+                <StoreDataTypeBox
+                  selectedDataType={selectedDataType}
+                  setDataType={setSelectedDataType}
+                  dataType="text"
+                  title="Text"
+                  icon={LetterText}
+                />
+                <StoreDataTypeBox
+                  selectedDataType={selectedDataType}
+                  setDataType={setSelectedDataType}
+                  dataType="select"
+                  title="Select"
+                  icon={BsBorderWidth}
+                />
+                <StoreDataTypeBox
+                  selectedDataType={selectedDataType}
+                  setDataType={setSelectedDataType}
+                  dataType="number"
+                  title="Number"
+                  icon={Sigma}
+                />
+              </div>
+            </div>
+
+            {/* Data Type Details */}
+            <StoreDataTypeDetails
+              handleDataTypeAdd={handleAddStoreDefination}
+              type={selectedDataType}
             />
           </div>
+
+          {/* Form Actions */}
+          <div className="flex justify-end mt-4 gap-2">
+            <Button onClick={onClose} variant="secondary">
+              Cancel
+            </Button>
+            <Button onClick={onClose} variant="primary">
+              Proceed to Add
+            </Button>
+          </div>
         </div>
-        <StoreDataTypeDetails type={selectedDataType} />
-        <div className="flex justify-end mt-4 gap-2">
-          <Button onClick={onClose} variant="secondary">
-            Proceed to Add
-          </Button>
-          <Button onClick={onClose} variant="primary">
-            Cancel
-          </Button>
+
+        {/* Right Section: Display Added Fields */}
+        <div className="w-2/3 flex flex-col space-y-4">
+          <div className="space-y-1">
+            <h3 className="text-lg font-semibold leading-tight">
+              Defined Data Types
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Your defined data types will be visible below where you can remove
+              and add them again as well.
+            </p>
+          </div>
+          {storeDefination.length === 0 ? (
+            <p className="text-gray-500">No fields added yet.</p>
+          ) : (
+            <ul className="space-y-3 text-sm">
+              {storeDefination.map((field, index) => (
+                <li
+                  key={index}
+                  className="flex py-1 border-b-2 border-gray-200 items-center justify-between"
+                >
+                  <p className="">
+                    {field.label}
+                    {field.allowedValues && field.allowedValues.length > 0 ? (
+                      <span className="text-xs ml-1 text-black rounded-md">
+                        {`(${field.allowedValues?.length})`}
+                      </span>
+                    ) : null}
+                    <span className="text-xs italic text-gray-400 ml-2">
+                      {`{${field.fieldName}}`}
+                    </span>
+                  </p>
+                  <div className="flex gap-2">
+                    <p className="text-xs font-[600] text-blue-500">
+                      {field.type}
+                    </p>
+                    <MdRemoveCircle
+                      onClick={() => handleRemoveStoreDefination(index)}
+                      className="text-red-500 cursor-pointer"
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </DialogContent>
     </Dialog>
