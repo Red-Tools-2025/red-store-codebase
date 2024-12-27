@@ -29,6 +29,7 @@ import DeleteProductModal from "@/components/feature/inventory/feature-component
 import RestockProductModal from "@/components/feature/inventory/feature-component/FormModals/RestockProductModal";
 import { Inventory } from "@prisma/client";
 import InventoryControlPanel from "@/components/feature/inventory/feature-component/Panels/InventoryControlPanel";
+import InventoryEmptyState from "@/components/feature/inventory/feature-component/DisplayStates/InventoryEmptyState";
 
 interface JsonRenderProps {
   item: Inventory;
@@ -268,7 +269,7 @@ const InventoryPage = () => {
             {!inventoryItems ? (
               <div>Issue in Rendering Inventory Items</div>
             ) : inventoryItems.length === 0 ? (
-              <div>Let's begin adding products to your inventory</div>
+              <InventoryEmptyState />
             ) : (
               <InventoryDisplay
                 displayState={displayState as "list" | "grid"}
