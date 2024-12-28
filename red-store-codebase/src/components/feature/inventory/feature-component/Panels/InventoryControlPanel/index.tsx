@@ -38,14 +38,14 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
             className={`flex items-center justify-center p-1.5 rounded-sm border cursor-pointer 
           ${
             displayState === "grid"
-              ? "bg-green-200 border-green-500"
+              ? "bg-blue-200 border-blue-500"
               : "bg-gray-300 border-gray-500 opacity-50"
           } transition-all duration-300 ease-in-out`}
             onClick={() => setDisplayState("grid")}
           >
             <IoGrid
               className={`text-md ${
-                displayState === "grid" ? "text-green-500" : "text-gray-500"
+                displayState === "grid" ? "text-blue-500" : "text-gray-500"
               } transition-all duration-300 ease-in-out`}
             />
           </div>
@@ -54,14 +54,14 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
             className={`flex items-center justify-center p-1.5 rounded-sm border cursor-pointer 
           ${
             displayState === "list"
-              ? "bg-green-200 border-green-500"
+              ? "bg-blue-200 border-blue-500"
               : "bg-gray-300 border-gray-500 opacity-50"
           }`}
             onClick={() => setDisplayState("list")}
           >
             <FaListUl
               className={`text-md ${
-                displayState === "list" ? "text-green-500" : "text-gray-500"
+                displayState === "list" ? "text-blue-500" : "text-gray-500"
               }`}
             />
           </div>
