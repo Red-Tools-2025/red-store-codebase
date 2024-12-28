@@ -129,6 +129,8 @@ const StoreDataTypeDetails: React.FC<{
         : DefineStoreFormValidation,
     onSubmit: (values) => {
       handleDataTypeAdd(values);
+      formik.resetForm();
+      setAllowedValues([]);
     },
   });
 
@@ -320,6 +322,7 @@ const DefineStoreModal: React.FC<DefineStoreFormProps> = ({
             <Button
               onClick={() => setOpenConfirmDefinitionsModal(true)}
               variant="primary"
+              disabled={storeDefination.length === 0}
             >
               Proceed to Add
             </Button>
