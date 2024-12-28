@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import React, { useEffect, useState } from "react";
-import { LetterText, LucideProps, Sigma } from "lucide-react";
+import { LetterText, Loader, LucideProps, Sigma } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFormik } from "formik";
 import {
@@ -18,6 +18,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { MdRemoveCircle } from "react-icons/md";
+import useStoreActions from "@/app/hooks/inventory/StaticHooks/useStoreActions";
+import { useInventory } from "@/app/contexts/inventory/InventoryContext";
+import { InventoryCustomFieldsRequestBody } from "@/app/types/inventory/api";
 
 interface DefineStoreFormProps {
   isOpen: boolean;
@@ -86,6 +89,8 @@ const StoreDataTypeBox: React.FC<StoreDataTypeBoxProps> = ({
 const ConfirmDialog: React.FC<{
   isOpen: boolean;
   handleModalClose: () => void;
+  handleProceed: () => void;
+  isCreatingStoreDefinitions: boolean;
 }> = ({ handleModalClose, isOpen }) => {
   return (
     <Dialog open={isOpen} onOpenChange={handleModalClose}>
@@ -102,7 +107,9 @@ const ConfirmDialog: React.FC<{
           <Button variant="secondary" onClick={handleModalClose}>
             Go back
           </Button>
-          <Button variant="primary">Proceed & Confirm</Button>
+          <Button variant="primary">
+            <Loader />
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -245,6 +252,10 @@ const DefineStoreModal: React.FC<DefineStoreFormProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { selectedStore } = useInventory();
+  const { handleCreateStoreDefinitions } = useStoreActions();
+  const [creatingDefinitions, setCreatingDefinitions] =
+    useState<boolean>(false);
   const [openConfirmDefinitionsModal, setOpenConfirmDefinitionsModal] =
     useState<boolean>(false);
   const [selectedDataType, setSelectedDataType] =
@@ -261,12 +272,29 @@ const DefineStoreModal: React.FC<DefineStoreFormProps> = ({
     setStoreDefination(storeDefination.filter((_, i) => i !== index));
   };
 
+  const handleProceed = () => {
+    if (!selectedStore) return;
+    const request_body: InventoryCustomFieldsRequestBody = {
+      customfields: storeDefination,
+      storeId: selectedStore?.storeId,
+      storeManagerId: selectedStore?.storeManagerId,
+    };
+    handleCreateStoreDefinitions(
+      request_body,
+      setCreatingDefinitions,
+      () => setOpenConfirmDefinitionsModal(false),
+      onClose
+    ).catch((err) => console.log(err));
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[900px] font-inter flex gap-6 items-start">
         <ConfirmDialog
+          isCreatingStoreDefinitions={creatingDefinitions}
           isOpen={openConfirmDefinitionsModal}
           handleModalClose={() => setOpenConfirmDefinitionsModal(false)}
+          handleProceed={handleProceed}
         />
         {/* Left Section: Dialog Form */}
         <div className="w-2/3 pr-4 border-r flex flex-col justify-between space-y-6">
