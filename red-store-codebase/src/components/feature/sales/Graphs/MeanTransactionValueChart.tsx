@@ -1,14 +1,13 @@
 "use client";
 
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
+import { PieChart, Pie, Sector, Label } from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
 } from "@/components/ui/chart";
 import useMeanTransactionData from "@/app/hooks/dashboard/useMeanTransactionData"; // Import the custom hook
+import { useState } from "react";
 
 interface MeanTransactionChartProps {
   storeId: number;
@@ -16,6 +15,10 @@ interface MeanTransactionChartProps {
 
 const MeanTransactionChart = ({ storeId }: MeanTransactionChartProps) => {
   const { chartData, loading, error } = useMeanTransactionData(storeId);
+
+  // State to track the hovered sector
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [activeValue, setActiveValue] = useState<string>("");
 
   if (loading)
     return (
@@ -44,21 +47,97 @@ const MeanTransactionChart = ({ storeId }: MeanTransactionChartProps) => {
     },
   };
 
+  const handleMouseEnter = (data: any, index: number) => {
+    setActiveIndex(index);
+    setActiveValue(data.value);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveIndex(null);
+    setActiveValue("");
+  };
+const activeShape = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+  value,
+  ...props
+}: any) => {
+  const RADIAN = Math.PI / 180;
+  const sin = Math.sin(-RADIAN * midAngle);
+  const cos = Math.cos(-RADIAN * midAngle);
+  const sx = cx + (outerRadius + 10) * cos;
+  const sy = cy + (outerRadius + 10) * sin;
+  const mx = cx + (outerRadius + 30) * cos;
+  const my = cy + (outerRadius + 30) * sin;
+  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+  const ey = my;
+  const textAnchor = cos >= 0 ? "start" : "end";
+
   return (
-    <ChartContainer className="h-[30vh] w-full max-h-full" config={chartConfig}>
-      <BarChart
-        data={chartData}
-        width={650}
-        height={300}
-        margin={{ top: 20, right: 20, left: 10, bottom: 20 }}
+    <g>
+      <text x={cx} y={cy} dy={8} textAnchor="middle" fill="#333" fontSize={14}>
+        {`${value.toFixed(2)}`} {/* Format value to 2 decimal places */}
+      </text>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        startAngle={props.startAngle}
+        endAngle={props.endAngle}
+        fill={chartConfig.avg.color}
+      />
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={outerRadius + 6}
+        outerRadius={outerRadius + 10}
+        startAngle={props.startAngle}
+        endAngle={props.endAngle}
+        fill={chartConfig.avg.color}
+      />
+      <path
+        d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
+        stroke={chartConfig.avg.color}
+        fill="none"
+      />
+      <circle cx={ex} cy={ey} r={2} fill={chartConfig.avg.color} />
+      <text
+        x={ex + (cos >= 0 ? 1 : -1) * 12}
+        y={ey}
+        textAnchor={textAnchor}
+        fill="#333"
       >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="day" />
-        <YAxis />
+        {`${(percent * 100).toFixed(2)}%`}{" "}
+        {/* Format percentage to 2 decimal places */}
+      </text>
+    </g>
+  );
+};
+  return (
+    <ChartContainer className="h-[15vh] w-3/6  max-h-full" config={chartConfig}>
+      <PieChart width={650} height={300}>
         <ChartTooltip content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent />} />
-        <Bar dataKey="avg" fill={chartConfig.avg.color} radius={[5, 5, 0, 0]} />
-      </BarChart>
+        <Pie
+          data={chartData}
+          dataKey="avg"
+          nameKey="month"
+          cx="50%"
+          cy="50%"
+          innerRadius={40}
+          outerRadius={60}
+          fill={chartConfig.avg.color}
+          activeShape={activeShape}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {/*   {activeValue || <Label position="center" fill="#333" fontSize={16}>Mean Transaction</Label>} */}
+        </Pie>
+      </PieChart>
     </ChartContainer>
   );
 };
