@@ -1,3 +1,4 @@
+import { JsonValue } from "@prisma/client/runtime/library";
 import { Database } from "../../../../supabase/database.types";
 
 //interface for the incoming request body for adding inventory
@@ -74,3 +75,27 @@ export interface ProcessCartRequestBody {
 
 export type TimeSeries =
   Database["public"]["Tables"]["inventory_timeseries"]["Row"];
+
+export interface InventoryCustomFieldsRequestBody {
+  storeId: number;
+  storeManagerId: string;
+  customfields: {
+    fieldName: string;
+    label: string;
+    type: string;
+    allowedValues?: string[];
+  }[];
+}
+
+export interface InventoryCustomFieldsResponseBody {
+  message: string;
+  store: {
+    storeId: number;
+    storeName: string;
+    storeLocation: string | null;
+    storeManagerId: string;
+    storeStatus: boolean;
+    createdAt: Date | null;
+    customfields: JsonValue | null;
+  };
+}
