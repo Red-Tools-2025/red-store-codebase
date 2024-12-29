@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Inventory } from "@prisma/client";
 
-export const columns: ColumnDef<Inventory>[] = [
+export const InventoryDataTableColumns: ColumnDef<Inventory>[] = [
   {
     accessorKey: "invId",
     header: "ID",

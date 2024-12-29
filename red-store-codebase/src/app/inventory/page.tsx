@@ -18,6 +18,8 @@ import { Inventory } from "@prisma/client";
 import InventoryControlPanel from "@/components/feature/inventory/feature-component/Panels/InventoryControlPanel";
 import InventoryEmptyState from "@/components/feature/inventory/feature-component/DisplayStates/InventoryEmptyState";
 import DefineStoreModal from "@/components/feature/inventory/feature-component/FormModals/DefineStoreModal";
+import { InventoryDataTableColumns } from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable/InventoryDataTableColumns";
+import InventoryDataTable from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable";
 
 interface JsonRenderProps {
   item: Inventory;
@@ -67,55 +69,10 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
 
   if (displayState === "list") {
     return (
-      <motion.div initial="hidden" animate="visible" variants={listVariants}>
-        <Table className="w-full border border-gray-200">
-          <TableHeader>
-            <TableRow>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                ID
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Product
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Brand
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Type
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Quantity
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Price
-              </TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <AnimatePresence>
-              {inventoryItems.map((item, index) => (
-                <motion.tr
-                  key={item.invId}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  variants={itemVariants}
-                  className={`border-b border-gray-200 hover:bg-green-100 cursor-pointer ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
-                >
-                  <TableCell>{`#${item.invId}`}</TableCell>
-                  <TableCell>{`${item.invItem}`}</TableCell>
-                  <TableCell>{item.invItemBrand}</TableCell>
-                  <TableCell>{item.invItemType}</TableCell>
-                  <TableCell>{item.invItemStock}</TableCell>
-                  <TableCell>₹{item.invItemPrice}</TableCell>
-                </motion.tr>
-              ))}
-            </AnimatePresence>
-          </TableBody>
-        </Table>
-      </motion.div>
+      <InventoryDataTable
+        columns={InventoryDataTableColumns}
+        data={inventoryItems}
+      />
     );
   }
 
