@@ -178,6 +178,7 @@ const InventoryPage = () => {
     isLoading: isLoadingProducts,
     intializedScanner,
     license,
+    selectedStore,
     handleRefresh,
   } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
@@ -264,10 +265,10 @@ const InventoryPage = () => {
               <div>Issue in Rendering Inventory Items</div>
             ) : inventoryItems.length === 0 ? (
               <InventoryEmptyState
-                handleOpenModal={() =>
-                  handleOpenModal(setIsDefineStoreModalOpen)
-                }
+                selectedStore={selectedStore}
+                handleOpenModal={handleOpenModal}
                 setIsDefineStoreModalOpen={setIsDefineStoreModalOpen}
+                setIsAddProdModalOpen={setIsAddProdModalOpen}
               />
             ) : (
               <InventoryDisplay

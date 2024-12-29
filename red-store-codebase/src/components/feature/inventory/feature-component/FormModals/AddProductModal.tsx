@@ -210,7 +210,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[500px]">
+      <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
           <DialogDescription>
