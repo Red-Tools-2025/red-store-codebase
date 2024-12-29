@@ -34,8 +34,6 @@ interface AddProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   productTypes: string[];
-  amountMeasurements: string[];
-  productCategories: string[];
 }
 
 interface StoreDefination {
@@ -59,8 +57,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   isOpen,
   onClose,
   productTypes,
-  amountMeasurements,
-  productCategories,
 }) => {
   const { toast } = useToast();
   const {
@@ -263,7 +259,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             )}
           </div>
           <div className="col-span-1">
-            <Label htmlFor="invItemType">Product Type</Label>
+            <Label htmlFor="invItemType">Package Type</Label>
             <Select
               name="invItemType"
               onValueChange={(value) =>
@@ -272,7 +268,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               value={formik.values.invItemType}
             >
               <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
-                <SelectValue placeholder="Select product type" />
+                <SelectValue placeholder="Select package type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>

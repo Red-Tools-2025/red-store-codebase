@@ -220,23 +220,11 @@ const InventoryPage = () => {
       />
       <AddProductModal
         isOpen={isAddProdModalOpen}
-        productTypes={["L", "M", "N", "P", "Q"]}
-        amountMeasurements={["ml", "L"]}
-        productCategories={[
-          "Beer",
-          "Wine",
-          "Whiskey",
-          "Vodka",
-          "Rum",
-          "Gin",
-          "Tequila",
-          "Brandy",
-          "Liqueur",
-          "Cider",
-          "Perry",
-          "Hard Seltzer",
-          "Other",
-        ]}
+        productTypes={["G", "P", "C"]}
+        // G - Glass
+        // C - Can
+        // P - PET Bottles
+
         onClose={() => handleCloseModal(setIsAddProdModalOpen)}
       />
       <DefineStoreModal
