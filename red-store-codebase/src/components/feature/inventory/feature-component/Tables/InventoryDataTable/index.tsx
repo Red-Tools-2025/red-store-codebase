@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,10 +28,16 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({
   columns,
   data,
 }) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting,
+    },
   });
 
   const listVariants = {
