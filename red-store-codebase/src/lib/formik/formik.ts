@@ -7,10 +7,6 @@ export const AddProductFormValidation = Yup.object({
   invItemPrice: Yup.number().required("Price is required"),
   invItemStock: Yup.number().required("Stock is required"),
   invItemBarcode: Yup.string().nullable(),
-  invItemSize: Yup.number().nullable(),
-  category: Yup.string().required("Category is required"),
-  amount: Yup.string().required("Bottle Amount is required"),
-  measurement: Yup.string().required("Measurement is required"),
 });
 
 export const DefineStoreFormValidation = Yup.object({

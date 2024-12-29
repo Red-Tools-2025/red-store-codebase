@@ -21,6 +21,7 @@ import { MdRemoveCircle } from "react-icons/md";
 import useStoreActions from "@/app/hooks/inventory/StaticHooks/useStoreActions";
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
 import { InventoryCustomFieldsRequestBody } from "@/app/types/inventory/api";
+import { Spinner } from "@/components/ui/spinner";
 
 interface DefineStoreFormProps {
   isOpen: boolean;
@@ -91,7 +92,12 @@ const ConfirmDialog: React.FC<{
   handleModalClose: () => void;
   handleProceed: () => void;
   isCreatingStoreDefinitions: boolean;
-}> = ({ handleModalClose, isOpen }) => {
+}> = ({
+  handleModalClose,
+  isOpen,
+  handleProceed,
+  isCreatingStoreDefinitions,
+}) => {
   return (
     <Dialog open={isOpen} onOpenChange={handleModalClose}>
       <DialogContent className="max-w-[500px] font-inter ">
@@ -107,8 +113,8 @@ const ConfirmDialog: React.FC<{
           <Button variant="secondary" onClick={handleModalClose}>
             Go back
           </Button>
-          <Button variant="primary">
-            <Loader />
+          <Button onClick={handleProceed} variant="primary">
+            {isCreatingStoreDefinitions ? <Spinner /> : "Confirm & Proceed"}
           </Button>
         </div>
       </DialogContent>
