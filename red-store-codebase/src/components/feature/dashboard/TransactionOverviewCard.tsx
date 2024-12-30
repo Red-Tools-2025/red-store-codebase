@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -42,19 +36,18 @@ const TransactionOverviewCard: React.FC<TransactionOverviewCardProps> = ({
   };
 
   return (
-    <Card className="max-w-mdborder-hidden ml-4">
+    <Card className="max-w-mdborder-hidden ml-4 h-full">
       <CardHeader>
         <CardTitle className="text-lg text-gray-500 font-inter flex items-center justify-between">
-     
           <div className="w-full">
-            <Select 
+            <Select
               onValueChange={handleMonthChange}
               defaultValue={selectedMonth}
             >
               <SelectTrigger>
-                <SelectValue   placeholder="Select a month" />
+                <SelectValue placeholder="Select a month" />
               </SelectTrigger>
-              <SelectContent  >
+              <SelectContent>
                 {chartData.map((item) => (
                   <SelectItem key={item.month} value={item.month}>
                     {item.month}
@@ -65,7 +58,7 @@ const TransactionOverviewCard: React.FC<TransactionOverviewCardProps> = ({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col h-full">
         {/* Show loading animation or "Store ID is unavailable" */}
         {storeId === null || storeId === undefined ? (
           <div className="flex justify-center items-center w-full text-gray-500">
@@ -78,24 +71,16 @@ const TransactionOverviewCard: React.FC<TransactionOverviewCardProps> = ({
             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-400"></div>
           </div>
         ) : currentTransactions ? (
-          <div className="flex flex-col ">
-         
-            <div className="flex flex-row w-full font-inter  ">
-              <div className="text-sm">
-               
-              
+          <div className="flex flex-col flex-grow w-full">
+            <div className="flex flex-row w-full font-inter flex-grow">
+              <div className="flex-grow text-sm">
+                <div>Highest Transaction: </div> ${currentTransactions.highest}
               </div>
-              <div className="text-sm">
-                <div>Highest Transaction: </div> $
-                {currentTransactions.highest}
+              <div className="flex-grow text-sm">
+                <div>Lowest Transaction: </div> ${currentTransactions.lowest}
               </div>
-              <div className="text-sm">
-                <div>Lowest Transaction: </div> $
-                {currentTransactions.lowest}
-              </div>
-              <div className="text-sm">
-                <div>Total Transactions: </div>{" "}
-                {currentTransactions.total}
+              <div className="flex-grow text-sm">
+                <div>Total Transactions: </div> {currentTransactions.total}
               </div>
             </div>
           </div>
@@ -105,7 +90,6 @@ const TransactionOverviewCard: React.FC<TransactionOverviewCardProps> = ({
           </div>
         )}
       </CardContent>
-     
     </Card>
   );
 };

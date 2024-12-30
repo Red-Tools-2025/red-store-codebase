@@ -43,7 +43,7 @@ const MeanTransactionChart = ({ storeId }: MeanTransactionChartProps) => {
   const chartConfig = {
     avg: {
       label: "Average Transaction Value",
-      color: "#000000",
+      color: "#2196F3",
     },
   };
 
@@ -79,7 +79,14 @@ const activeShape = ({
 
   return (
     <g>
-      <text x={cx} y={cy} dy={8} textAnchor="middle" fill="#333" fontSize={14}>
+      <text
+        x={cx}
+        y={cy}
+        dy={8}
+        textAnchor="middle"
+        fill="#2196F3"
+        fontSize={14}
+      >
         {`${value.toFixed(2)}`} {/* Format value to 2 decimal places */}
       </text>
       <Sector
@@ -119,7 +126,7 @@ const activeShape = ({
   );
 };
   return (
-    <ChartContainer className="h-[15vh] w-3/6  max-h-full" config={chartConfig}>
+    <ChartContainer className="h-[25vh] w-full  max-h-full" config={chartConfig}>
       <PieChart width={650} height={300}>
         <ChartTooltip content={<ChartTooltipContent />} />
         <Pie
@@ -128,8 +135,8 @@ const activeShape = ({
           nameKey="month"
           cx="50%"
           cy="50%"
-          innerRadius={40}
-          outerRadius={60}
+          innerRadius={50}
+          outerRadius={70}
           fill={chartConfig.avg.color}
           activeShape={activeShape}
           onMouseEnter={handleMouseEnter}

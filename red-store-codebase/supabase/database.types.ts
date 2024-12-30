@@ -50,6 +50,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_inventory_worth: {
+        Args: {
+          store_id_input: number
+        }
+        Returns: {
+          total_worth: number
+          previous_month_worth: number
+          increase_amount: number
+          increase_percentage: number
+        }[]
+      }
       calculate_monthly_transaction_metrics: {
         Args: {
           store_id_input: number
@@ -60,6 +71,18 @@ export type Database = {
           total_transactions: number
           highest_transaction: number
           lowest_transaction: number
+        }[]
+      }
+      calculate_restock_data: {
+        Args: {
+          store_id_input: number
+        }
+        Returns: {
+          current_month_total_value: number
+          previous_month_total_value: number
+          percentage_change: number
+          current_month_frequency: number
+          previous_month_frequency: number
         }[]
       }
       calculate_store_revenue: {

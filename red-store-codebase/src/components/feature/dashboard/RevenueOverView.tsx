@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import {
   Select,
@@ -45,10 +45,10 @@ export const SalesOverviewCard: React.FC<SalesOverviewCardProps> = ({
     const fetchSales = async () => {
       if (storeId === null || storeId === undefined) return;
 
-      setLoading(true); // Set loading to true when fetching starts
+      setLoading(true);
       const data = await fetchData(storeId);
       setSalesData(data);
-      setLoading(false); // Set loading to false once data is fetched
+      setLoading(false);
 
       const latestMonthSales = data.find(
         (item) => item.month === selectedMonth
@@ -71,7 +71,7 @@ export const SalesOverviewCard: React.FC<SalesOverviewCardProps> = ({
   const getPreviousMonth = (currentMonth: string) => {
     const currentDate = new Date(currentMonth);
     currentDate.setMonth(currentDate.getMonth() - 1);
-    return currentDate.toISOString().split("T")[0]; // YYYY-MM-DD format
+    return currentDate.toISOString().split("T")[0];
   };
 
   const salesDifference =
@@ -82,89 +82,74 @@ export const SalesOverviewCard: React.FC<SalesOverviewCardProps> = ({
       : null;
 
   return (
-    <Card className="max-w-md p-4 ml-4">
-      <CardHeader>
-        <CardTitle className="text-lg text-black  font-inter  flex items-center justify-between">
-          <div className="w-3/5 text-base">Monthly Sales Overview</div>
-
-          <div className="w-2/5">
-            <Select
-              onValueChange={handleMonthChange}
-              defaultValue={selectedMonth}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a month" />
-              </SelectTrigger>
-              <SelectContent>
-                {salesData.map((item) => (
-                  <SelectItem key={item.month} value={item.month}>
-                    {new Date(item.month).toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardTitle>
+    <Card className="p-4  w-full  lg:w-1/4 bg-white shadow-sm rounded-lg border border-gray-300">
+      <CardHeader className="flex flex-row font-inter font-semibold justify-between items-center p-0 border-b border-gray-200 pb-2">
+        <div>Monthly Sales Overview</div>
+        <div>
+          <Select
+            onValueChange={handleMonthChange}
+            defaultValue={selectedMonth}
+          >
+            <SelectTrigger className=" w-36 lg:w-24 xl:w-36 text-xs">
+              <SelectValue placeholder="Select a month" />
+            </SelectTrigger>
+            <SelectContent>
+              {salesData.map((item) => (
+                <SelectItem key={item.month} value={item.month}>
+                  {new Date(item.month).toLocaleString("default", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
-      <CardContent>
-        {/* Show loading animation or "Store ID is unavailable" */}
+      <CardContent className="mt-4">
         {storeId === null || storeId === undefined ? (
-          <div className="flex justify-center items-center w-full text-gray-500">
-            Store ID is unavailable.
-          </div>
+          <div className="text-gray-500">Store ID is unavailable.</div>
         ) : loading ? (
-          <div className="flex justify-center space-x-2 items-center w-full">
+          <div className="flex justify-center space-x-2">
             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-200"></div>
             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-400"></div>
           </div>
         ) : (
-          <div className="flex flex-col mt-5 space-y-4">
-            <div className="flex items-center justify-between ">
-              <div className="text-3xl font-bold ">
-                ₹{currentSales}{" "}
-                <span className="text-sm text-gray-500">INR</span>
-              </div>
-
-              {/* Displaying the sales comparison */}
-              {previousSales !== null ? (
-                <div className="text-sm mt-2 font-inter text-right text-gray-500">
-                  <div>
-                    {salesDifference >= 0 ? (
-                      <span className="text-green-500">+{salesDifference}</span>
-                    ) : (
-                      <span className="text-red-500">{salesDifference}</span>
-                    )}{" "}
-                    compared to last month
-                  </div>
-                  <div>
-                    {salesDifference >= 0 ? (
-                      <span className="text-green-500">
-                        (+{salesDifferencePercentage}%) increase
-                      </span>
-                    ) : (
-                      <span className="text-red-500">
-                        ({salesDifferencePercentage}%) decrease
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-sm text-right font-inter text-gray-500">
-                  Previous month Data Unavailable
-                </div>
-              )}
+          <div>
+            <div className=" text-xl lg:text-3xl font-extrabold text-gray-900">
+              ₹{currentSales} <span className="text-sm text-gray-500">INR</span>
             </div>
+            <CardDescription className="text-sm text-gray-500 mt-2">
+              {previousSales !== null ? (
+                <>
+                  {salesDifference >= 0 ? (
+                    <span className="text-green-500">+{salesDifference}</span>
+                  ) : (
+                    <span className="text-red-500">{salesDifference}</span>
+                  )}{" "}
+                  compared to last month
+                  {salesDifferencePercentage !== null && (
+                    <>
+                      {salesDifference >= 0 ? (
+                        <div className="text-green-500">
+                          (+{salesDifferencePercentage}%) increase
+                        </div>
+                      ) : (
+                        <span className="text-red-500">
+                          ({salesDifferencePercentage}%) decrease
+                        </span>
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
+                <span>Previous month data unavailable</span>
+              )}
+            </CardDescription>
           </div>
         )}
       </CardContent>
-      <CardDescription className="text-gray-500 font-inter mt-4 text-center">
-        The total sales revenue for the selected month. Keep track of your
-        monthly performance and make better business decisions.
-      </CardDescription>
     </Card>
   );
 };

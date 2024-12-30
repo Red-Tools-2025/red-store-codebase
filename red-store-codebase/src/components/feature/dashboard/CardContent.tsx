@@ -62,7 +62,7 @@ const CardFirst: React.FC<{ product: Product | null; loading: boolean }> = ({
         </p>
         <div className="h-3 font-inter rounded-full bg-gray-200 mt-2 overflow-hidden">
           <div
-            className="h-3 font-inter rounded-full bg-black"
+            className="h-3 font-inter rounded-full bg-blue-500"
             style={{ width: `${progressWidth}%` }}
           ></div>
         </div>

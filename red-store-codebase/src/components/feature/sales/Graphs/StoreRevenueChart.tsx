@@ -106,7 +106,7 @@ const StoreRevenueChart = ({ storeId }: { storeId: number }) => {
   const chartConfig = {
     revenue: {
       label: "Revenue",
-      color: "#000000",
+      color: "#2196F3",
     },
   };
 
@@ -152,7 +152,7 @@ const StoreRevenueChart = ({ storeId }: { storeId: number }) => {
       </div>
 
       <ChartContainer
-        className="h-[30vh] w-full max-h-full"
+        className="h-[25vh] w-full max-h-full"
         config={chartConfig}
       >
         <ResponsiveContainer width="100%" height="100%">
