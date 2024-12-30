@@ -70,7 +70,7 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className="border-b border-gray-200 p-3 font-bold text-gray-500"
+                  className="border-b border-gray-200 p-3 font-semibold text-gray-500"
                 >
                   {header.isPlaceholder
                     ? null
