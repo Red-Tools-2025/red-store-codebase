@@ -5,6 +5,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
+  Table as TableType,
   useReactTable,
 } from "@tanstack/react-table";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,26 +22,10 @@ import { Inventory } from "@prisma/client";
 import InventoryFilterPanel from "../../Panels/InventoryFilterPanel";
 
 interface InventoryDataTableProps {
-  columns: ColumnDef<Inventory>[]; // Specifically for Inventory type.
-  data: Inventory[];
+  table: TableType<Inventory>;
 }
 
-const InventoryDataTable: React.FC<InventoryDataTableProps> = ({
-  columns,
-  data,
-}) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    state: {
-      sorting,
-    },
-  });
-
+const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
   const listVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -59,7 +44,6 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({
 
   return (
     <>
-      <InventoryFilterPanel data={data} table={table} />
       <motion.div
         initial="hidden"
         animate="visible"

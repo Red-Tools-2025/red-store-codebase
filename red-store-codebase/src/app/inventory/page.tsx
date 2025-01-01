@@ -14,6 +14,9 @@ import DefineStoreModal from "@/components/feature/inventory/feature-component/F
 import { InventoryDataTableColumns } from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable/InventoryDataTableColumns";
 import InventoryDataTable from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable";
 import InventoryPaginationPanel from "@/components/feature/inventory/feature-component/Panels/InventoryPaginationPanel";
+import useInventoryTableHook from "../hooks/inventory/StaticHooks/useInventoryTableHook";
+import { Table } from "@tanstack/react-table";
+import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 
 // interface JsonRenderProps {
 //   item: Inventory;
@@ -36,11 +39,13 @@ import InventoryPaginationPanel from "@/components/feature/inventory/feature-com
 interface InventoryDisplayProps {
   displayState: "list" | "grid";
   inventoryItems: Inventory[];
+  table: Table<Inventory>;
 }
 
 const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
   displayState,
   inventoryItems,
+  table,
 }) => {
   const listVariants = {
     hidden: { opacity: 0 },
@@ -62,12 +67,7 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
   };
 
   if (displayState === "list") {
-    return (
-      <InventoryDataTable
-        columns={InventoryDataTableColumns}
-        data={inventoryItems}
-      />
-    );
+    return <InventoryDataTable table={table} />;
   }
 
   return (
@@ -130,6 +130,10 @@ const InventoryPage = () => {
     total_count,
     handleRefresh,
   } = useInventory();
+  const { sorting, table } = useInventoryTableHook({
+    data: inventoryItems ?? [],
+    columns: InventoryDataTableColumns,
+  });
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
   const [isDeleteProdModalOpen, setIsDeleteProdModalOpen] =
@@ -192,6 +196,8 @@ const InventoryPage = () => {
         setIsRestockProdModalOpen={setIsRestockProdModalOpen}
       />
 
+      <InventoryFilterPanel data={inventoryItems ?? []} table={table} />
+
       {/* Inventory Render */}
       <div>
         {isLoadingProducts ? (
@@ -209,6 +215,7 @@ const InventoryPage = () => {
               />
             ) : (
               <InventoryDisplay
+                table={table}
                 displayState={displayState as "list" | "grid"}
                 inventoryItems={inventoryItems}
               />

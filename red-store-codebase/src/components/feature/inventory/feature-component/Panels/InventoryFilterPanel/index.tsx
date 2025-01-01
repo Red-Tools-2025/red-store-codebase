@@ -8,7 +8,6 @@ interface InventoryFilterPanelProps {
 }
 const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   data,
-  table,
 }) => {
   const brandFilterOptions = Array.from(
     new Set(data.map((item) => item.invItemBrand))
