@@ -15,6 +15,7 @@ export const InventoryDataTableColumns: ColumnDef<Inventory>[] = [
   {
     accessorKey: "invItemBrand",
     header: "Brand",
+    filterFn: "includesString",
   },
   {
     accessorKey: "invItemType",

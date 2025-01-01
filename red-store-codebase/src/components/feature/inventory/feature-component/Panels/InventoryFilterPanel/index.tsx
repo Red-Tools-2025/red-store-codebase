@@ -8,6 +8,7 @@ interface InventoryFilterPanelProps {
 }
 const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   data,
+  table,
 }) => {
   const brandFilterOptions = Array.from(
     new Set(data.map((item) => item.invItemBrand))
@@ -15,7 +16,9 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   return (
     <div className="flex mb-4 gap-4">
       <InventorySelectFilterType
-        filterLabel="Brand"
+        filterValue="invItemBrand"
+        table={table}
+        filterLabel="Stock Brand"
         filterOptions={brandFilterOptions as string[]}
         filterPlaceholder="Filter by brand"
       />

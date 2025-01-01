@@ -1,8 +1,10 @@
 import { Inventory } from "@prisma/client";
 import {
   ColumnDef,
+  ColumnFiltersState,
   FilterFn,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
@@ -22,21 +24,26 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
   };
 
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     state: {
       sorting,
+      columnFilters,
     },
     filterFns: {
       between: betweenFilter,
     },
   });
 
-  return { table, sorting };
+  return { table, sorting, columnFilters, setColumnFilters };
 };
 
 export default useInventoryTableHook;
