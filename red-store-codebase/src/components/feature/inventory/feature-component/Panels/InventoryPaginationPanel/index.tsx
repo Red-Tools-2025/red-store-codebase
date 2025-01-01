@@ -1,4 +1,6 @@
+import { set } from "zod";
 import InventoryPageSizeSelector from "./InventoryPageSizeSelector";
+import { dir } from "console";
 
 interface InventoryPaginationPanelProps {
   currentPage: number;
@@ -15,6 +17,16 @@ const InventoryPaginationPanel: React.FC<InventoryPaginationPanelProps> = ({
   setPageSize,
   total_count,
 }) => {
+  const totalPages = Math.ceil(total_count / pageSize); // Total pages rounded up
+
+  const handleNavigation = (direction: "next" | "previous") => {
+    if (direction === "next" && currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    } else if (direction === "previous" && currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="flex w-full justify-between items-center py-2 px-4 border border-t-0 rounded-b-md">
       <InventoryPageSizeSelector
@@ -23,14 +35,28 @@ const InventoryPaginationPanel: React.FC<InventoryPaginationPanelProps> = ({
         setCurrentPage={setCurrentPage}
         setSelectedPageSize={setPageSize}
       />
-      <div className="mx-auto text-sm">{`${currentPage} of ${
-        total_count / pageSize
-      }`}</div>
+      <div className="mx-auto text-sm">{`${currentPage} of ${totalPages}`}</div>
       <div className="flex gap-2">
-        <button className="border border-gray-300 px-2 py-1 rounded-md text-sm hover:text-blue-500 hover:border-blue-500 transition-colors">
+        <button
+          onClick={() => handleNavigation("previous")}
+          disabled={currentPage === 1}
+          className={`border px-2 py-1 rounded-md text-sm transition-colors ${
+            currentPage === 1
+              ? "border-gray-300 text-gray-400 cursor-not-allowed"
+              : "border-gray-300 hover:text-blue-500 hover:border-blue-500"
+          }`}
+        >
           Previous
         </button>
-        <button className="border border-gray-300 px-2 py-1 rounded-md text-sm hover:text-blue-500 hover:border-blue-500 transition-colors">
+        <button
+          onClick={() => handleNavigation("next")}
+          disabled={currentPage === totalPages}
+          className={`border px-2 py-1 rounded-md text-sm transition-colors ${
+            currentPage === totalPages
+              ? "border-gray-300 text-gray-400 cursor-not-allowed"
+              : "border-gray-300 hover:text-blue-500 hover:border-blue-500"
+          }`}
+        >
           Next
         </button>
       </div>

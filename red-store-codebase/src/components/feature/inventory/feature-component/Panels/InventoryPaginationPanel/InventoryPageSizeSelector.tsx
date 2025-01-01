@@ -21,7 +21,7 @@ const InventoryPageSizeSelector: React.FC<InventoryPageSizeSelectorProps> = ({
   setSelectedPageSize,
 }) => {
   const [pageSizeOptions, setPageSizeOptions] = useState<number[]>([
-    5, 10, 20, 50,
+    5, 10, 15, 20, 50, 100,
   ]);
 
   return (
