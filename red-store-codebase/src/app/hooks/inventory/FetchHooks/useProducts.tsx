@@ -40,7 +40,12 @@ const useProducts = (
         const { data } = await axios.get<FetchProductsServerFetch>(
           "/api/inventory/products",
           {
-            params: { storeId, storeManagerId, page: currentPage, pageSize },
+            params: {
+              storeId,
+              storeManagerId,
+              page: currentPage,
+              pageSize: pageSize,
+            },
           }
         );
         if (data.inventoryItems) {

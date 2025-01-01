@@ -16,6 +16,8 @@ interface InventoryContextType {
   intializedScanner: boolean;
   license: string;
   handleRefresh: () => void;
+  currentPage: number;
+  pageSize: number;
   setCurrentPage: Dispatch<SetStateAction<number>>;
   setPageSize: Dispatch<SetStateAction<number>>;
 }
@@ -35,6 +37,8 @@ export const InventoryProvider = ({
   handleRefresh,
   setCurrentPage,
   setPageSize,
+  pageSize,
+  currentPage,
 }: {
   children: ReactNode;
   sessionData: SessionUserType | null;
@@ -42,6 +46,8 @@ export const InventoryProvider = ({
   selectedStore: Store | null;
   isLoading: boolean;
   intializedScanner: boolean;
+  currentPage: number;
+  pageSize: number;
   license: string;
   handleRefresh: () => void;
   setCurrentPage: Dispatch<SetStateAction<number>>;
@@ -59,6 +65,8 @@ export const InventoryProvider = ({
         handleRefresh,
         setCurrentPage,
         setPageSize,
+        pageSize,
+        currentPage,
       }}
     >
       {children}

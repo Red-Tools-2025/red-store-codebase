@@ -49,12 +49,14 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   } = useProducts(
     selectedStore ? String(selectedStore.storeId) : "",
     sessionUser?.id ?? "",
-    pageSize,
-    currentPage
+    currentPage,
+    pageSize
   );
 
   return (
     <InventoryProvider
+      pageSize={pageSize}
+      currentPage={currentPage}
       setCurrentPage={setCurrentPage}
       setPageSize={setPageSize}
       intializedScanner={initializedScanner}

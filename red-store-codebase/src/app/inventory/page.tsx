@@ -13,6 +13,7 @@ import InventoryEmptyState from "@/components/feature/inventory/feature-componen
 import DefineStoreModal from "@/components/feature/inventory/feature-component/FormModals/DefineStoreModal";
 import { InventoryDataTableColumns } from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable/InventoryDataTableColumns";
 import InventoryDataTable from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable";
+import InventoryPaginationPanel from "@/components/feature/inventory/feature-component/Panels/InventoryPaginationPanel";
 
 interface JsonRenderProps {
   item: Inventory;
@@ -129,6 +130,10 @@ const InventoryPage = () => {
     intializedScanner,
     license,
     selectedStore,
+    setCurrentPage,
+    setPageSize,
+    currentPage,
+    pageSize,
     handleRefresh,
   } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
@@ -219,6 +224,12 @@ const InventoryPage = () => {
       </div>
 
       {/* Inventory Pagination Controls */}
+      <InventoryPaginationPanel
+        currentPage={currentPage}
+        pageSize={pageSize}
+        setCurrentPage={setCurrentPage}
+        setPageSize={setPageSize}
+      />
     </div>
   );
 };
