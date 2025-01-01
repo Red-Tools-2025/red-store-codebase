@@ -5,10 +5,24 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
-export default function InventoryPageSizeSelector() {
-  const [selectedPageSize, setSelectedPageSize] = useState<number>(10);
+interface InventoryPageSizeSelectorProps {
+  total_count: number;
+  pageSize: number;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+  setSelectedPageSize: Dispatch<SetStateAction<number>>;
+}
+
+const InventoryPageSizeSelector: React.FC<InventoryPageSizeSelectorProps> = ({
+  pageSize,
+  total_count,
+  setCurrentPage,
+  setSelectedPageSize,
+}) => {
+  const [pageSizeOptions, setPageSizeOptions] = useState<number[]>([
+    5, 10, 20, 50,
+  ]);
 
   return (
     <div className="flex items-center gap-2">
@@ -16,25 +30,29 @@ export default function InventoryPageSizeSelector() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="text-sm">
-            {selectedPageSize}
+            {pageSize}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-40">
-          <DropdownMenuItem onClick={() => setSelectedPageSize(10)}>
-            10
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setSelectedPageSize(20)}>
-            20
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setSelectedPageSize(50)}>
-            50
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setSelectedPageSize(100)}>
-            100
-          </DropdownMenuItem>
+          {pageSizeOptions.map((size) => {
+            return (
+              <DropdownMenuItem
+                disabled={size > total_count}
+                key={size}
+                onClick={() => {
+                  setCurrentPage(1);
+                  setSelectedPageSize(size);
+                }}
+              >
+                {size}
+              </DropdownMenuItem>
+            );
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
       <p className="text-sm text-gray-500">entries</p>
     </div>
   );
-}
+};
+
+export default InventoryPageSizeSelector;

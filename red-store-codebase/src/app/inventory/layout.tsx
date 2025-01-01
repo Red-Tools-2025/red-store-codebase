@@ -45,6 +45,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     inventoryItems,
     message,
     isLoading: isLoadingProducts,
+    total_count,
     handleRefresh,
   } = useProducts(
     selectedStore ? String(selectedStore.storeId) : "",
@@ -55,6 +56,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
 
   return (
     <InventoryProvider
+      total_count={total_count}
       pageSize={pageSize}
       currentPage={currentPage}
       setCurrentPage={setCurrentPage}

@@ -15,22 +15,22 @@ import { InventoryDataTableColumns } from "@/components/feature/inventory/featur
 import InventoryDataTable from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable";
 import InventoryPaginationPanel from "@/components/feature/inventory/feature-component/Panels/InventoryPaginationPanel";
 
-interface JsonRenderProps {
-  item: Inventory;
-  field: string;
-}
+// interface JsonRenderProps {
+//   item: Inventory;
+//   field: string;
+// }
 
-const JsonRender: React.FC<JsonRenderProps> = ({ item, field }) => {
-  return (
-    <p>
-      {typeof item.invAdditional === "object" &&
-      item.invAdditional !== null &&
-      field in item.invAdditional
-        ? String((item.invAdditional as Record<string, unknown>)[field])
-        : ""}
-    </p>
-  );
-};
+// const JsonRender: React.FC<JsonRenderProps> = ({ item, field }) => {
+//   return (
+//     <p>
+//       {typeof item.invAdditional === "object" &&
+//       item.invAdditional !== null &&
+//       field in item.invAdditional
+//         ? String((item.invAdditional as Record<string, unknown>)[field])
+//         : ""}
+//     </p>
+//   );
+// };
 
 // Inventory Display Component
 interface InventoryDisplayProps {
@@ -92,17 +92,10 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
                   <p className="font-light rounded-sm px-2 py-1 bg-[#F5F7F9] border border-1 border-gray-300">
                     {item.invItemBrand}
                   </p>
-                  <p className="font-light rounded-sm px-2 py-1 bg-[#F5F7F9] border border-1 border-gray-300 flex gap-1 text-gray-500">
-                    <JsonRender field="size" item={item} />
-                    <JsonRender field="measurement" item={item} />
-                  </p>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p className="font-light text-xs text-gray-500 rounded-sm w-fit px-2 py-1 bg-[#F5F7F9] border border-1 border-gray-300">
-                    <JsonRender field="category" item={item} />
-                  </p>
                   <p className="text-xl">{item.invItem}</p>
                   <div className="flex justify-between items-center">
                     <span className="font-semibold text-lg">
@@ -134,6 +127,7 @@ const InventoryPage = () => {
     setPageSize,
     currentPage,
     pageSize,
+    total_count,
     handleRefresh,
   } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
@@ -225,6 +219,7 @@ const InventoryPage = () => {
 
       {/* Inventory Pagination Controls */}
       <InventoryPaginationPanel
+        total_count={total_count}
         currentPage={currentPage}
         pageSize={pageSize}
         setCurrentPage={setCurrentPage}

@@ -18,6 +18,7 @@ interface InventoryContextType {
   handleRefresh: () => void;
   currentPage: number;
   pageSize: number;
+  total_count: number;
   setCurrentPage: Dispatch<SetStateAction<number>>;
   setPageSize: Dispatch<SetStateAction<number>>;
 }
@@ -34,6 +35,7 @@ export const InventoryProvider = ({
   isLoading,
   intializedScanner,
   license,
+  total_count,
   handleRefresh,
   setCurrentPage,
   setPageSize,
@@ -48,6 +50,7 @@ export const InventoryProvider = ({
   intializedScanner: boolean;
   currentPage: number;
   pageSize: number;
+  total_count: number;
   license: string;
   handleRefresh: () => void;
   setCurrentPage: Dispatch<SetStateAction<number>>;
@@ -62,6 +65,7 @@ export const InventoryProvider = ({
         selectedStore,
         intializedScanner,
         license,
+        total_count,
         handleRefresh,
         setCurrentPage,
         setPageSize,
