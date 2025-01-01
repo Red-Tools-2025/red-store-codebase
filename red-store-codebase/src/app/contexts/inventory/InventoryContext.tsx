@@ -1,4 +1,10 @@
-import { createContext, useContext, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  SetStateAction,
+  Dispatch,
+} from "react";
 import { SessionUserType } from "@/app/types/management/context";
 import { Inventory, Store } from "@prisma/client";
 
@@ -10,6 +16,8 @@ interface InventoryContextType {
   intializedScanner: boolean;
   license: string;
   handleRefresh: () => void;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+  setPageSize: Dispatch<SetStateAction<number>>;
 }
 
 const InventoryContext = createContext<InventoryContextType | undefined>(
@@ -25,6 +33,8 @@ export const InventoryProvider = ({
   intializedScanner,
   license,
   handleRefresh,
+  setCurrentPage,
+  setPageSize,
 }: {
   children: ReactNode;
   sessionData: SessionUserType | null;
@@ -34,6 +44,8 @@ export const InventoryProvider = ({
   intializedScanner: boolean;
   license: string;
   handleRefresh: () => void;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+  setPageSize: Dispatch<SetStateAction<number>>;
 }) => {
   return (
     <InventoryContext.Provider
@@ -45,6 +57,8 @@ export const InventoryProvider = ({
         intializedScanner,
         license,
         handleRefresh,
+        setCurrentPage,
+        setPageSize,
       }}
     >
       {children}

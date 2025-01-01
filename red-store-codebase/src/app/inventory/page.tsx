@@ -3,13 +3,6 @@ import React, { SetStateAction, useState } from "react";
 import { useInventory } from "../contexts/inventory/InventoryContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
 import { Toaster } from "@/components/ui/toaster";
 import DeleteProductModal from "@/components/feature/inventory/feature-component/FormModals/DeleteProductsModal";
@@ -224,6 +217,8 @@ const InventoryPage = () => {
           </div>
         )}
       </div>
+
+      {/* Inventory Pagination Controls */}
     </div>
   );
 };

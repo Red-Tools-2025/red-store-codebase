@@ -6,11 +6,14 @@ import { Inventory } from "@prisma/client";
 interface FetchProductsServerFetch {
   message: string | null;
   inventoryItems: Inventory[] | null;
+  total_count: number;
 }
 
 const useProducts = (
   storeId: string,
-  storeManagerId: string
+  storeManagerId: string,
+  currentPage: number,
+  pageSize: number
 ): {
   inventoryItems: Inventory[] | null;
   message: string | null;
@@ -37,7 +40,7 @@ const useProducts = (
         const { data } = await axios.get<FetchProductsServerFetch>(
           "/api/inventory/products",
           {
-            params: { storeId, storeManagerId },
+            params: { storeId, storeManagerId, page: currentPage, pageSize },
           }
         );
         if (data.inventoryItems) {
@@ -53,7 +56,7 @@ const useProducts = (
     };
 
     fetchData();
-  }, [storeId, storeManagerId, refreshInventory]);
+  }, [storeId, storeManagerId, refreshInventory, currentPage, pageSize]);
 
   return { inventoryItems, message, error, isLoading, handleRefresh };
 };

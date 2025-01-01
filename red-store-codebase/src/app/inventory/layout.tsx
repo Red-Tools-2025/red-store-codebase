@@ -22,6 +22,10 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
 
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
 
+  // pagination
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
   // Fetching store data and inventory data
   const {
     data: userStores,
@@ -44,23 +48,15 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     handleRefresh,
   } = useProducts(
     selectedStore ? String(selectedStore.storeId) : "",
-    sessionUser?.id ?? ""
+    sessionUser?.id ?? "",
+    pageSize,
+    currentPage
   );
-
-  const handleOpenModal = (
-    setModalType: React.Dispatch<SetStateAction<boolean>>
-  ) => {
-    setModalType(true);
-  };
-
-  const handleCloseModal = (
-    setModalType: React.Dispatch<SetStateAction<boolean>>
-  ) => {
-    setModalType(false);
-  };
 
   return (
     <InventoryProvider
+      setCurrentPage={setCurrentPage}
+      setPageSize={setPageSize}
       intializedScanner={initializedScanner}
       license={license}
       handleRefresh={handleRefresh}
