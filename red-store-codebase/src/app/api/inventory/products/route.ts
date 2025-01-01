@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       invItemPrice,
       invItemType,
       invItemBarcode,
-      
+
       invAdditional,
     } = body;
 
@@ -116,6 +116,12 @@ export async function GET(req: Request) {
     const storeIdStr = searchParams.get("storeId");
     const storeManagerId = searchParams.get("storeManagerId");
 
+    // pagintaion query params parsing
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "15", 10); // displaying 15 records per page
+
+    const offset = (page - 1) * pageSize;
+
     if (!storeIdStr || !storeManagerId) {
       return NextResponse.json(
         { error: "storeId and storeManagerId are required" },
@@ -126,11 +132,18 @@ export async function GET(req: Request) {
     // Convert storeId to a number
     const storeId = parseInt(storeIdStr, 10);
 
+    // for metric purposes, retyrn the total count of inventory items
+    const total_count = await db.inventory.count({
+      where: { storeId, storeManagerId },
+    });
+
     const inventoryItems = await db.inventory.findMany({
       where: {
         storeId: storeId,
         storeManagerId: storeManagerId,
       },
+      skip: offset,
+      take: pageSize, // LIMIT and OFFSET
     });
 
     if (inventoryItems.length === 0) {
@@ -148,6 +161,7 @@ export async function GET(req: Request) {
       {
         message: "Data retrieved successfully",
         inventoryItems,
+        total_count,
       },
       { status: 200 }
     );
