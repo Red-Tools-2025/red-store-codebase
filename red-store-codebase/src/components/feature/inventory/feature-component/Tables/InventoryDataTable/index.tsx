@@ -92,7 +92,7 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
               // "Oops" message when no rows are found
               <tr>
                 <td colSpan={table.getAllColumns().length}>
-                  <div className="flex flex-col items-center py-10">
+                  <div className="flex flex-col items-center">
                     <div className="p-5 bg-gradient-to-b from-gray-200 to-white rounded-full">
                       <GiEmptyMetalBucketHandle className="text-6xl text-gray-700" />
                     </div>
