@@ -10,6 +10,7 @@ import {
 import { Inventory } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
 import { useState } from "react";
+import { IoIosClose } from "react-icons/io";
 
 interface InventorySelectFilterTypeProps {
   filterLabel: string;
@@ -18,6 +19,7 @@ interface InventorySelectFilterTypeProps {
   filterPlaceholder: string;
   table: Table<Inventory>;
 }
+
 const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
   filterLabel,
   filterValue,
@@ -36,34 +38,47 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
     table.getColumn(filterValue)?.setFilterValue(value);
   };
 
-  const handleDeactivateFilter = (value: string) => {
-    return table.getColumn(filterValue)?.setFilterValue(undefined);
+  const handleDeactivateFilter = () => {
+    setSelectedOption(undefined); // Reset selected option
+    setActiveFilter(false);
+    table.getColumn(filterValue)?.setFilterValue(undefined); // Clear the filter in the table
   };
 
   return (
-    <Select value={selectedOption} onValueChange={handleFilterChange}>
-      <SelectTrigger
-        className={
-          `w-fit px-3 transition-all` +
-          (activeFilter
-            ? ` bg-blue-100 border border-blue-500 text-blue-500`
-            : ``)
-        }
-        onClick={() => handleDeactivateFilter(filterValue)}
+    <div className="flex items-center gap-1">
+      <Select
+        value={selectedOption || ""} // Explicitly set value to an empty string if no option is selected
+        onValueChange={handleFilterChange}
       >
-        <SelectValue placeholder={filterPlaceholder} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>{filterLabel}</SelectLabel>
-          {filterOptions.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+        <SelectTrigger
+          className={
+            `w-fit px-3 transition-all` +
+            (activeFilter
+              ? ` bg-blue-100 border border-blue-500 text-blue-500`
+              : ``)
+          }
+        >
+          <SelectValue placeholder={filterPlaceholder} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>{filterLabel}</SelectLabel>
+            {filterOptions.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      {activeFilter && (
+        <IoIosClose
+          size={20}
+          className="cursor-pointer hover:text-red-500"
+          onClick={handleDeactivateFilter}
+        />
+      )}
+    </div>
   );
 };
 
