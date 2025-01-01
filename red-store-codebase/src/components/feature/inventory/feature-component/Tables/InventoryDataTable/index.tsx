@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Inventory } from "@prisma/client";
+import InventoryFilterPanel from "../../Panels/InventoryFilterPanel";
 
 interface InventoryDataTableProps {
   columns: ColumnDef<Inventory>[]; // Specifically for Inventory type.
@@ -57,56 +58,62 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({
   };
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={listVariants}
-      className="w-full border border-gray-200"
-    >
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  className="border-b border-gray-200 p-3 font-semibold text-gray-500"
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          <AnimatePresence>
-            {table.getRowModel().rows.map((row, index) => (
-              <motion.tr
-                key={row.id}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                variants={rowVariants}
-                className={`border-b border-gray-200 hover:bg-green-100 cursor-pointer ${
-                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                }`}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+    <>
+      <InventoryFilterPanel data={data} table={table} />
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={listVariants}
+        className="w-full border border-gray-200"
+      >
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="border-b border-gray-200 p-3 font-semibold text-gray-500"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
                 ))}
-              </motion.tr>
+              </TableRow>
             ))}
-          </AnimatePresence>
-        </TableBody>
-      </Table>
-    </motion.div>
+          </TableHeader>
+          <TableBody>
+            <AnimatePresence>
+              {table.getRowModel().rows.map((row, index) => (
+                <motion.tr
+                  key={row.id}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  variants={rowVariants}
+                  className={`border-b border-gray-200 hover:bg-green-100 cursor-pointer ${
+                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  }`}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </motion.tr>
+              ))}
+            </AnimatePresence>
+          </TableBody>
+        </Table>
+      </motion.div>
+    </>
   );
 };
 
