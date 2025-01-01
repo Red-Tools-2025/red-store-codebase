@@ -15,6 +15,7 @@ export type Database = {
           mrp_per_bottle: number | null
           opening_stock: number | null
           product_id: number
+          product_name: string
           received_stock: number | null
           sale_amount: number | null
           sales: number | null
@@ -26,6 +27,7 @@ export type Database = {
           mrp_per_bottle?: number | null
           opening_stock?: number | null
           product_id: number
+          product_name: string
           received_stock?: number | null
           sale_amount?: number | null
           sales?: number | null
@@ -37,6 +39,7 @@ export type Database = {
           mrp_per_bottle?: number | null
           opening_stock?: number | null
           product_id?: number
+          product_name?: string
           received_stock?: number | null
           sale_amount?: number | null
           sales?: number | null
