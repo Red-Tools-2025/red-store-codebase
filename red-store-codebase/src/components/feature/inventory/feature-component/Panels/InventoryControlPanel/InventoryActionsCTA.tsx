@@ -9,17 +9,20 @@ import {
 import { Inventory } from "@prisma/client";
 import { Edit, RefreshCw, Trash } from "lucide-react";
 import { SlOptionsVertical } from "react-icons/sl";
+import { GoDatabase } from "react-icons/go";
 
 // Inventory Actions Dropdown
 interface InventoryActionsCTAProps {
   openDeleteModal: () => void;
   openRestockModal: () => void;
+  openTableViewModal: () => void;
   inventoryItems: Inventory[] | null;
 }
 
 const InventoryActionsCTA: React.FC<InventoryActionsCTAProps> = ({
   openDeleteModal,
   openRestockModal,
+  openTableViewModal,
   inventoryItems,
 }) => {
   return (
@@ -47,6 +50,10 @@ const InventoryActionsCTA: React.FC<InventoryActionsCTAProps> = ({
           <DropdownMenuItem>
             <Edit className="mr-2 h-4 w-4" />
             Update
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={openTableViewModal}>
+            <GoDatabase className="mr-2 h-4 w-4" />
+            Table View
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

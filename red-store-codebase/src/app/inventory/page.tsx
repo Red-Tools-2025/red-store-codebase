@@ -17,6 +17,7 @@ import InventoryPaginationPanel from "@/components/feature/inventory/feature-com
 import useInventoryTableHook from "../hooks/inventory/StaticHooks/useInventoryTableHook";
 import { Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
+import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 
 // interface JsonRenderProps {
 //   item: Inventory;
@@ -136,6 +137,8 @@ const InventoryPage = () => {
   });
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
+  const [isTableViewModalOpen, setIsTableViewModalOpen] =
+    useState<boolean>(false);
   const [isDeleteProdModalOpen, setIsDeleteProdModalOpen] =
     useState<boolean>(false);
   const [isRestockProdModalOpen, setIsRestockProdModalOpen] =
@@ -185,6 +188,12 @@ const InventoryPage = () => {
         onClose={() => handleCloseModal(setIsDefineStoreModalOpen)}
       />
 
+      <TableViewModal
+        selectedStore={selectedStore}
+        isOpen={isTableViewModalOpen}
+        onClose={() => handleCloseModal(setIsTableViewModalOpen)}
+      />
+
       {/* Inventory Control Panel */}
       <InventoryControlPanel
         displayState={displayState}
@@ -194,6 +203,7 @@ const InventoryPage = () => {
         setIsAddProdModalOpen={setIsAddProdModalOpen}
         setIsDeleteProdModalOpen={setIsDeleteProdModalOpen}
         setIsRestockProdModalOpen={setIsRestockProdModalOpen}
+        setIsTableViewModalOpen={setIsTableViewModalOpen}
       />
 
       <InventoryFilterPanel data={inventoryItems ?? []} table={table} />
