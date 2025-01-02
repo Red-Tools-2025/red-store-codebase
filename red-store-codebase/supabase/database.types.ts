@@ -118,6 +118,24 @@ export type Database = {
           mean_transaction: number
         }[]
       }
+      get_monthly_inventory_summary: {
+        Args: {
+          store_id_input: number
+          month_input: string
+        }
+        Returns: {
+          product_name: string
+          product_id: number
+          year: number
+          month: number
+          opening_stock: number
+          received_stock: number
+          closing_stock: number
+          sales: number
+          sale_amount: number
+          total_value: number
+        }[]
+      }
       get_monthly_sales: {
         Args: {
           store_id_input: number
