@@ -7,15 +7,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Store } from "@prisma/client";
+import { Inventory, Store } from "@prisma/client";
 import { useState } from "react";
 import { motion } from "framer-motion"; // For smooth animations
 import { IoSave } from "react-icons/io5";
+import { ColumnDef } from "@tanstack/react-table";
 
 interface TableViewModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedStore: Store | null;
+  onSaveChanges: (columns: ColumnDef<Inventory>[]) => void;
 }
 
 interface StoreDefination {
@@ -26,10 +28,13 @@ interface StoreDefination {
   allowedValues?: string[];
 }
 
+type InvAdditional = Record<string, string | number>;
+
 const TableViewModal: React.FC<TableViewModalProps> = ({
   isOpen,
   onClose,
   selectedStore,
+  onSaveChanges,
 }) => {
   const [selectedFields, setSelectedFields] = useState<StoreDefination[]>([]);
   const customFields =
@@ -48,6 +53,20 @@ const TableViewModal: React.FC<TableViewModalProps> = ({
     } else {
       setSelectedFields((prev) => [...prev, field]);
     }
+  };
+
+  const handleSaveTableViews = () => {
+    const newColumns: ColumnDef<Inventory>[] = selectedFields.map((field) => ({
+      accessorKey: field.fieldName,
+      header: field.label,
+      cell: ({ row }) => {
+        const additionalData = row.original.invAdditional as InvAdditional;
+        return additionalData?.[field.fieldName] ?? "N/A";
+      },
+    }));
+
+    onSaveChanges(newColumns);
+    onClose();
   };
 
   const handleCloseModal = () => {
@@ -136,7 +155,7 @@ const TableViewModal: React.FC<TableViewModalProps> = ({
         </motion.div>
 
         <DialogFooter>
-          <Button type="submit">
+          <Button onClick={handleSaveTableViews} type="submit">
             <div className="flex items-center gap-2">
               <IoSave /> <p>Save changes</p>
             </div>

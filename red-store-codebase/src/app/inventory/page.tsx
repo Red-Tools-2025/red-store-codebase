@@ -15,7 +15,7 @@ import { InventoryDataTableColumns } from "@/components/feature/inventory/featur
 import InventoryDataTable from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable";
 import InventoryPaginationPanel from "@/components/feature/inventory/feature-component/Panels/InventoryPaginationPanel";
 import useInventoryTableHook from "../hooks/inventory/StaticHooks/useInventoryTableHook";
-import { Table } from "@tanstack/react-table";
+import { ColumnDef, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 
@@ -118,6 +118,10 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
 
 // Main Inventory Page Component
 const InventoryPage = () => {
+  const [viewableColumns, setViewableColumns] = useState<
+    ColumnDef<Inventory>[]
+  >(InventoryDataTableColumns);
+
   const {
     inventoryItems,
     isLoading: isLoadingProducts,
@@ -133,7 +137,7 @@ const InventoryPage = () => {
   } = useInventory();
   const { sorting, table } = useInventoryTableHook({
     data: inventoryItems ?? [],
-    columns: InventoryDataTableColumns,
+    columns: viewableColumns,
   });
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
@@ -156,6 +160,10 @@ const InventoryPage = () => {
     setModalType: React.Dispatch<SetStateAction<boolean>>
   ) => {
     setModalType(false);
+  };
+
+  const handleSaveTableViews = (newColumns: ColumnDef<Inventory>[]) => {
+    setViewableColumns([...InventoryDataTableColumns, ...newColumns]);
   };
 
   console.log({ intializedScanner, license });
@@ -189,6 +197,7 @@ const InventoryPage = () => {
       />
 
       <TableViewModal
+        onSaveChanges={handleSaveTableViews}
         selectedStore={selectedStore}
         isOpen={isTableViewModalOpen}
         onClose={() => handleCloseModal(setIsTableViewModalOpen)}

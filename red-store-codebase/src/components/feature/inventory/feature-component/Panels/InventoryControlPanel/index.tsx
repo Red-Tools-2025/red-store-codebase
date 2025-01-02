@@ -6,7 +6,6 @@ import InventoryActionsCTA from "./InventoryActionsCTA";
 import { Dispatch, SetStateAction } from "react";
 import InventroySearch from "./InventorySearch";
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
-import { set } from "react-hook-form";
 
 interface InventoryControlPanelProps {
   displayState: string;
