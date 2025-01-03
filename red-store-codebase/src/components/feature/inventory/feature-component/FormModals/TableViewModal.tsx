@@ -28,6 +28,7 @@ interface StoreDefination {
   type: string;
   // below fields are only for select type
   allowedValues?: string[];
+  handleFilterChange: (column: string, value: string) => void;
 }
 
 type InvAdditional = Record<string, string | number>;
@@ -62,13 +63,12 @@ const TableViewModal: React.FC<TableViewModalProps> = ({
     const newColumns: ColumnDef<Inventory>[] = selectedFields.map((field) => ({
       accessorKey: field.fieldName,
       header: field.label,
+      filterFn: "includesString",
       cell: ({ row }) => {
         const additionalData = row.original.invAdditional as InvAdditional;
         return additionalData?.[field.fieldName] ?? "N/A";
       },
     }));
-
-    console.log({ newColumns });
 
     onSaveChanges(newColumns);
     onClose();

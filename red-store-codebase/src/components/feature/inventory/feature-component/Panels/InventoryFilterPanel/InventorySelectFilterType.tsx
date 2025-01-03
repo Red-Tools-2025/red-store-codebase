@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Inventory } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
 interface InventorySelectFilterTypeProps {
@@ -39,11 +39,12 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
   };
 
   const handleDeactivateFilter = () => {
-    setSelectedOption(undefined); // Reset selected option
+    setSelectedOption(undefined);
     setActiveFilter(false);
-    table.getColumn(filterValue)?.setFilterValue(undefined); // Clear the filter in the table
+    table.getColumn(filterValue)?.setFilterValue(undefined);
   };
 
+  // Sync state when table updates externally
   return (
     <div className="flex items-center gap-1">
       <Select

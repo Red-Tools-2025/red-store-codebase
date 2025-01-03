@@ -15,7 +15,7 @@ import { InventoryDataTableColumns } from "@/components/feature/inventory/featur
 import InventoryDataTable from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable";
 import InventoryPaginationPanel from "@/components/feature/inventory/feature-component/Panels/InventoryPaginationPanel";
 import useInventoryTableHook from "../hooks/inventory/StaticHooks/useInventoryTableHook";
-import { ColumnDef, Table } from "@tanstack/react-table";
+import { ColumnDef, ColumnDefBase, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 import { set } from "zod";
@@ -141,7 +141,11 @@ const InventoryPage = () => {
     columns: viewableColumns,
   });
   const [availableNewFilters, setAvailableNewFilters] = useState<
-    { header: string; accessorKey: string }[]
+    {
+      header: string;
+      accessorKey: string;
+      cell: ColumnDefBase<Inventory, string | number | boolean | null>["cell"]; // Use ColumnDefBase's cell type
+    }[]
   >([]);
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
@@ -180,6 +184,7 @@ const InventoryPage = () => {
           .toLowerCase()
           .replace(/[^a-z0-9\s]/g, "") // Remove special characters
           .replace(/\s+/g, "_"), // Replace spaces with underscores as string,
+        cell: col.cell,
       })),
     ]);
   };
