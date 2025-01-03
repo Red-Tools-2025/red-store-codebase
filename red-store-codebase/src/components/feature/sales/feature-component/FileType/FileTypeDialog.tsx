@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ImFilesEmpty } from "react-icons/im";
 import * as React from "react";
 
 interface FileTypeDialogProps {
@@ -151,7 +152,12 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Select File Type</Button>
+        <Button variant={"secondary"}>
+          <div className="flex items-center ">
+            <ImFilesEmpty className="mr-2 h-3 w-3" />
+            <p>Download</p>
+          </div>
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
