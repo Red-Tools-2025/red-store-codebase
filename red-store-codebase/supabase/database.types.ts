@@ -15,6 +15,7 @@ export type Database = {
           mrp_per_bottle: number | null
           opening_stock: number | null
           product_id: number
+          product_name: string
           received_stock: number | null
           sale_amount: number | null
           sales: number | null
@@ -26,6 +27,7 @@ export type Database = {
           mrp_per_bottle?: number | null
           opening_stock?: number | null
           product_id: number
+          product_name: string
           received_stock?: number | null
           sale_amount?: number | null
           sales?: number | null
@@ -37,6 +39,7 @@ export type Database = {
           mrp_per_bottle?: number | null
           opening_stock?: number | null
           product_id?: number
+          product_name?: string
           received_stock?: number | null
           sale_amount?: number | null
           sales?: number | null
@@ -113,6 +116,24 @@ export type Database = {
         Returns: {
           bucket: string
           mean_transaction: number
+        }[]
+      }
+      get_monthly_inventory_summary: {
+        Args: {
+          store_id_input: number
+          month_input: string
+        }
+        Returns: {
+          product_name: string
+          product_id: number
+          year: number
+          month: number
+          opening_stock: number
+          received_stock: number
+          closing_stock: number
+          sales: number
+          sale_amount: number
+          total_value: number
         }[]
       }
       get_monthly_sales: {

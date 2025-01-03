@@ -5,6 +5,7 @@ import { DatePickerWithRange } from "@/components/feature/sales/feature-componen
 import useInventoryData from "@/app/hooks/sales/useInventoryData";
 import useDateRange from "@/hooks/useDateRange";
 import { useSales } from "@/app/contexts/sales/SalesContext";
+import { FileTypeDialog } from "@/components/feature/sales/feature-component/FileType/FileTypeDialog";
 
 const InventoryControlPanel = () => {
   const { selectedStore } = useSales();
@@ -44,6 +45,7 @@ const InventoryControlPanel = () => {
           className="w-full"
           onDateSelect={handleDateChange}
         />
+        <FileTypeDialog storeId={selectedStore?.storeId} />
       </div>
 
       {loading ? (
