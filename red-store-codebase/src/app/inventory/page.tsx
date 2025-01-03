@@ -243,6 +243,7 @@ const InventoryPage = () => {
         showAdditionalFilters={showAdditionalFilters}
         data={inventoryItems ?? []}
         table={table}
+        setColumnFilters={setColumnFilters}
       />
 
       {/* Inventory Render */}

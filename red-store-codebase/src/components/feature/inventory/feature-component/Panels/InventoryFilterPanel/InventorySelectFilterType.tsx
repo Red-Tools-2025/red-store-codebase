@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Inventory } from "@prisma/client";
-import { Table } from "@tanstack/react-table";
+import { ColumnFiltersState, Table } from "@tanstack/react-table";
 import { useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
@@ -18,6 +18,7 @@ interface InventorySelectFilterTypeProps {
   filterOptions: string[];
   filterPlaceholder: string;
   table: Table<Inventory>;
+  setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
 }
 
 const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
@@ -26,6 +27,7 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
   filterOptions,
   filterPlaceholder,
   table,
+  setColumnFilters,
 }) => {
   const [selectedOption, setSelectedOption] = useState<string | undefined>(
     undefined
@@ -35,13 +37,20 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
   const handleFilterChange = (value: string) => {
     setSelectedOption(value);
     setActiveFilter(true);
-    table.getColumn(filterValue)?.setFilterValue(value);
+    // table.getColumn(filterValue)?.setFilterValue(value);
+    setColumnFilters((prev) => [
+      ...prev,
+      ...[
+        { id: filterValue, value }, // Assuming `invItem` is the column ID for product names
+      ],
+    ]);
   };
 
   const handleDeactivateFilter = () => {
     setSelectedOption(undefined);
     setActiveFilter(false);
-    table.getColumn(filterValue)?.setFilterValue(undefined);
+    // table.getColumn(filterValue)?.setFilterValue(undefined);
+    setColumnFilters([]);
   };
 
   // Sync state when table updates externally

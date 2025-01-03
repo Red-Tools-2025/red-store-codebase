@@ -1,5 +1,9 @@
 import { Inventory } from "@prisma/client";
-import { ColumnDefBase, Table } from "@tanstack/react-table";
+import {
+  ColumnDefBase,
+  ColumnFiltersState,
+  Table,
+} from "@tanstack/react-table";
 import InventorySelectFilterType from "./InventorySelectFilterType";
 import { IoIosAddCircle } from "react-icons/io";
 import { motion } from "framer-motion";
@@ -16,6 +20,7 @@ interface InventoryFilterPanelProps {
     accessorKey: string;
     cell: ColumnDefBase<Inventory, string | number | boolean | null>["cell"]; // Optional cell handler for dynamic filtering
   }[];
+  setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
 }
 
 const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
@@ -23,6 +28,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   table,
   showAdditionalFilters,
   availableNewFilters,
+  setColumnFilters,
 }) => {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const brandFilterOptions = Array.from(
@@ -52,6 +58,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   return (
     <div className="flex mb-4 gap-2 items-center">
       <InventorySelectFilterType
+        setColumnFilters={setColumnFilters}
         filterValue="invItemBrand"
         table={table}
         filterLabel="Stock Brand"
@@ -59,6 +66,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
         filterPlaceholder="Filter by brand"
       />
       <InventorySelectFilterType
+        setColumnFilters={setColumnFilters}
         filterValue="invItemType"
         table={table}
         filterLabel="Stock Packaging"
@@ -75,6 +83,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
 
         return (
           <InventorySelectFilterType
+            setColumnFilters={setColumnFilters}
             key={i}
             filterValue={filterConfig.accessorKey}
             table={table}
