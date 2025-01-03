@@ -11,9 +11,8 @@ const SalesPage = () => {
   // maybe move Info Cards to a global component cause we will be using them quite regularly across all pages
   return (
     <main>
-      <InfoCards></InfoCards>
-
-      <SalesControlPanel></SalesControlPanel>
+      <InfoCards />
+      <SalesControlPanel />
     </main>
   );
 };

@@ -5,7 +5,9 @@ import {
   UserRoundCheck,
   UserRoundX,
   Radiation,
+  Coins,
   Store as StoreIcon,
+  CalendarClock,
   Flame,
 } from "lucide-react";
 
@@ -21,7 +23,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
   description,
 }) => {
   return (
-    <div className="p-5 rounded-lg border">
+    <div className="p-5 rounded-lg border my-5">
       <div className="flex flex-col gap-1">
         <div className="flex justify-between">
           <h3>{heading} </h3>
@@ -85,18 +87,14 @@ const InfoCards = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <InfoCard
-        icon={IndianRupee}
-        heading="Total Stock Value"
-        description={"₹6"}
-      />
+      <InfoCard icon={Coins} heading="Total Stock Value" description={"₹6"} />
       <InfoCard
         icon={UserRoundCheck}
         heading="Total Stock Quantity"
         description={"756 units"}
       />
       <InfoCard
-        icon={Flame}
+        icon={CalendarClock}
         heading="Monthly Sales"
         description={`₹${avgMonthlySales}`}
       />
