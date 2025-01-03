@@ -1,5 +1,5 @@
 import InfoCards from "@/components/feature/inventory/info-card";
-import SalesControlPanel from "@/components/feature/management/feature-component/Tables/SalesControlPanel";
+import SalesControlPanel from "@/components/feature/sales/feature-component/Panels/SalesControlPanel";
 
 const SalesPage = () => {
   // Correct naming convention here according to the renaming I have done for this page
