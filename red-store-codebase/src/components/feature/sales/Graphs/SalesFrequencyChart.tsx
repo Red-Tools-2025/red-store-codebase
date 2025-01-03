@@ -15,7 +15,7 @@ const SalesFrequencyChart = ({ storeId }: { storeId: number }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-[25vh] w-full">
+      <div className="flex justify-center items-center h-[30vh] w-full">
         <div className="flex space-x-2">
           <div className="w-2.5 h-2.5 rounded-full bg-black animate-bounce"></div>
           <div className="w-2.5 h-2.5 rounded-full bg-black animate-bounce"></div>
@@ -39,12 +39,12 @@ const SalesFrequencyChart = ({ storeId }: { storeId: number }) => {
   const chartConfig = {
     freq: {
       label: "Item Sold",
-      color: "#000000",
+      color: "#2196F3",
     },
   };
 
   return (
-    <ChartContainer className="h-[25vh] w-full max-h-full" config={chartConfig}>
+    <ChartContainer className="h-[30vh] w-full max-h-full" config={chartConfig}>
       <BarChart
         data={salesFrequencyData}
         width={650}
@@ -56,7 +56,7 @@ const SalesFrequencyChart = ({ storeId }: { storeId: number }) => {
         <YAxis />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
-        <Bar dataKey="freq" fill="#000000" radius={[5, 5, 0, 0]} />
+        <Bar dataKey="freq" fill="#2196F3" radius={[5, 5, 0, 0]} />
       </BarChart>
     </ChartContainer>
   );
