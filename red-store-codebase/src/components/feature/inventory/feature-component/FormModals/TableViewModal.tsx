@@ -68,6 +68,8 @@ const TableViewModal: React.FC<TableViewModalProps> = ({
       },
     }));
 
+    console.log({ newColumns });
+
     onSaveChanges(newColumns);
     onClose();
     setShowAdditionalFilters(true);

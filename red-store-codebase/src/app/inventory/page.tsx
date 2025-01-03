@@ -140,6 +140,9 @@ const InventoryPage = () => {
     data: inventoryItems ?? [],
     columns: viewableColumns,
   });
+  const [availableNewFilters, setAvailableNewFilters] = useState<
+    { header: string; accessorKey: string }[]
+  >([]);
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
   const [showAdditionalFilters, setShowAdditionalFilters] =
@@ -167,9 +170,19 @@ const InventoryPage = () => {
 
   const handleSaveTableViews = (newColumns: ColumnDef<Inventory>[]) => {
     setViewableColumns([...InventoryDataTableColumns, ...newColumns]);
+    console.log({ newColumns });
+    setAvailableNewFilters(() => [
+      ...newColumns.map((col) => ({
+        header: col.header as string,
+        // for some reason tan stack has it's own typing mismatched so have to resort to manually creating accessorKey as done before
+        accessorKey: (col.header as string)
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9\s]/g, "") // Remove special characters
+          .replace(/\s+/g, "_"), // Replace spaces with underscores as string,
+      })),
+    ]);
   };
-
-  console.log({ intializedScanner, license });
 
   return (
     <div>
@@ -220,6 +233,7 @@ const InventoryPage = () => {
       />
 
       <InventoryFilterPanel
+        availableNewFilters={availableNewFilters}
         showAdditionalFilters={showAdditionalFilters}
         data={inventoryItems ?? []}
         table={table}

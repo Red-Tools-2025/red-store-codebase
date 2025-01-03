@@ -8,11 +8,13 @@ interface InventoryFilterPanelProps {
   data: Inventory[];
   table: Table<Inventory>;
   showAdditionalFilters: boolean;
+  availableNewFilters: { header: string; accessorKey: string }[];
 }
 const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   data,
   table,
   showAdditionalFilters,
+  availableNewFilters,
 }) => {
   const brandFilterOptions = Array.from(
     new Set(data.map((item) => item.invItemBrand))
@@ -20,6 +22,8 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   const typeFilterOptions = Array.from(
     new Set(data.map((item) => item.invItemType))
   );
+
+  console.log({ availableNewFilters });
   return (
     <div className="flex mb-4 gap-2 items-center">
       <InventorySelectFilterType

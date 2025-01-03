@@ -120,12 +120,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     setIsFormLoading(false);
   }, [customFields]);
 
-  console.log({
-    initial_v,
-    customFields,
-    dynamicFormValidation: dynamicFormValidation?.fields,
-  });
-
   const formik = useFormik({
     initialValues: initial_v,
     validationSchema: dynamicFormValidation,
