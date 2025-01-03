@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Inventory } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
 interface InventorySelectFilterTypeProps {

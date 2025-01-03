@@ -136,7 +136,7 @@ const InventoryPage = () => {
     total_count,
     handleRefresh,
   } = useInventory();
-  const { sorting, table } = useInventoryTableHook({
+  const { sorting, table, setColumnFilters } = useInventoryTableHook({
     data: inventoryItems ?? [],
     columns: viewableColumns,
   });
@@ -229,6 +229,7 @@ const InventoryPage = () => {
       <InventoryControlPanel
         displayState={displayState}
         handleOpenModal={handleOpenModal}
+        setColumnFilters={setColumnFilters}
         handleRefresh={handleRefresh}
         setDisplayState={setDisplayState}
         setIsAddProdModalOpen={setIsAddProdModalOpen}
