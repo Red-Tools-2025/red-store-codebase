@@ -69,7 +69,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
       inventoryItems={inventoryItems}
       sessionData={sessionUser ?? null}
     >
-      <div className="p-5">
+      <div className="p-5 font-inter">
         {session ? (
           <>
             {isLoadingStores ? (

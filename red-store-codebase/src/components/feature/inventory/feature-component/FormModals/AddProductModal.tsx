@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import * as Yup from "yup";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { LuScanFace } from "react-icons/lu";
 import {
@@ -27,21 +28,35 @@ import { useToast } from "@/hooks/use-toast";
 import { AddProductFormValidation } from "@/lib/formik/formik";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import useScanner from "@/app/hooks/scanner/StaticHooks/useScanner";
+import { InventoryCustomFieldsRequestBody } from "@/app/types/inventory/api";
 
 interface AddProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   productTypes: string[];
-  amountMeasurements: string[];
-  productCategories: string[];
+}
+
+interface StoreDefination {
+  fieldName: string;
+  label: string;
+  type: string;
+  // below fields are only for select type
+  allowedValues?: string[];
+}
+
+interface intitialAddProductFormValues {
+  invItem: string;
+  invItemBrand: string;
+  invItemType: string;
+  invItemPrice: string;
+  invItemStock: string;
+  invItemBarcode: string;
 }
 
 const AddProductModal: React.FC<AddProductModalProps> = ({
   isOpen,
   onClose,
   productTypes,
-  amountMeasurements,
-  productCategories,
 }) => {
   const { toast } = useToast();
   const {
@@ -53,26 +68,79 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     initializedScanner,
     license,
   } = useScanner();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isFormLoading, setIsFormLoading] = useState<boolean>(false);
+  const [initial_v, setInitial_v] = useState<{ [key: string]: string }>({});
+  const [dynamicFormValidation, setDynamicFormValidation] =
+    useState<Yup.ObjectSchema<any> | null>(null);
   const { sessionData, selectedStore } = useInventory();
 
-  const formik = useFormik({
-    initialValues: {
+  const customFields =
+    (selectedStore?.customfields as unknown as StoreDefination[]) || [];
+
+  useEffect(() => {
+    if (!customFields.length) {
+      setIsFormLoading(false);
+      return;
+    }
+
+    // Prepare initial values and validation schema dynamically
+    const base_initial_values: intitialAddProductFormValues = {
       invItem: "",
       invItemBrand: "",
       invItemType: "",
       invItemPrice: "",
       invItemStock: "",
       invItemBarcode: "",
-      invItemSize: "",
-      category: "",
-      amount: "",
-      measurement: "",
-    },
-    validationSchema: AddProductFormValidation,
+    };
+
+    const dynamic_initial_values = customFields.reduce(
+      (acc: { [key: string]: string }, field) => {
+        acc[field.fieldName] = ""; // Dynamically add custom field to initial values
+        return acc;
+      },
+      { ...base_initial_values }
+    );
+
+    const dynamicValidationSchema = Yup.object({
+      ...AddProductFormValidation.fields,
+      ...customFields.reduce(
+        (acc: { [key: string]: Yup.StringSchema }, field) => {
+          acc[field.fieldName] = Yup.string().required(
+            `${field.label} is required`
+          );
+          return acc;
+        },
+        {}
+      ),
+    });
+
+    setInitial_v(dynamic_initial_values);
+    setDynamicFormValidation(dynamicValidationSchema);
+    setIsFormLoading(false);
+  }, [customFields]);
+
+  console.log({
+    initial_v,
+    customFields,
+    dynamicFormValidation: dynamicFormValidation?.fields,
+  });
+
+  const formik = useFormik({
+    initialValues: initial_v,
+    validationSchema: dynamicFormValidation,
+    enableReinitialize: true,
     onSubmit: async (values) => {
       try {
         setIsSubmitting(true);
+        // building the invAdditional
+        const invAdditional = customFields.reduce(
+          (acc: { [key: string]: string }, field) => {
+            acc[field.fieldName] = values[field.fieldName];
+            return acc;
+          },
+          {}
+        );
         const newProduct: Partial<Inventory> = {
           storeId: selectedStore?.storeId,
           storeManagerId: sessionData?.id,
@@ -84,11 +152,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           invCreatedDate: new Date(),
           invItemBarcode: values.invItemBarcode,
 
-          invAdditional: {
-            category: values.category,
-            size: values.amount,
-            measurement: values.measurement,
-          },
+          invAdditional: invAdditional,
         };
         const response = await axios.post<{
           message: string;
@@ -124,12 +188,25 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       } finally {
         setIsSubmitting(false);
       }
+      // console.log({ values });
     },
   });
 
+  if (isFormLoading) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Loading...</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[500px]">
+      <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
           <DialogDescription>
@@ -182,7 +259,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             )}
           </div>
           <div className="col-span-1">
-            <Label htmlFor="invItemType">Product Type</Label>
+            <Label htmlFor="invItemType">Package Type</Label>
             <Select
               name="invItemType"
               onValueChange={(value) =>
@@ -191,7 +268,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               value={formik.values.invItemType}
             >
               <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
-                <SelectValue placeholder="Select product type" />
+                <SelectValue placeholder="Select package type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -252,17 +329,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               onBlur={formik.handleBlur}
             />
           </div>
-          <div className="col-span-1">
-            <Label htmlFor="invItemSize">Item Size</Label>
-            <Input
-              id="invItemSize"
-              name="invItemSize"
-              type="number"
-              value={formik.values.invItemSize}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-          </div>
           {/* <div className="col-span-1">
             <Label htmlFor="category">Category</Label>
             <Input
@@ -279,7 +345,57 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               </div>
             )}
           </div> */}
-          <div className="col-span-1">
+          {customFields.map(
+            (
+              field,
+              index // Map over custom fields
+            ) => (
+              <div key={index} className="col-span-1">
+                <Label htmlFor={field.fieldName}>{field.label}</Label>
+                {field.type === "select" ? (
+                  <Select
+                    name={field.fieldName}
+                    onValueChange={(value) =>
+                      formik.setFieldValue(field.fieldName, value)
+                    }
+                    value={formik.values[field.fieldName]}
+                  >
+                    <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
+                      <SelectValue placeholder={`Select ${field.label}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {field.allowedValues &&
+                        field.allowedValues.length > 0 && (
+                          <SelectGroup>
+                            {field.allowedValues.map((type, index) => (
+                              <SelectItem key={index} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    id={field.fieldName}
+                    name={field.fieldName}
+                    type={field.type}
+                    value={formik.values[field.fieldName]}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                )}
+                {formik.touched[field.fieldName] &&
+                  formik.errors[field.fieldName] && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors[field.fieldName]}
+                    </div>
+                  )}
+              </div>
+            )
+          )}
+          {/* <div className="col-span-1">
             <Label htmlFor="category">Category</Label>
             <Select
               name="category"
@@ -320,7 +436,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 {formik.errors.amount}
               </div>
             )}
-          </div>
+          </div> */}
           {/* <div className="col-span-1">
             <Label htmlFor="measurement">Measurement</Label>
             <Input
@@ -337,7 +453,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               </div>
             )}
           </div> */}
-          <div className="col-span-1">
+          {/* <div className="col-span-1">
             <Label htmlFor="measurement">Measurement</Label>
             <Select
               name="measurement"
@@ -364,7 +480,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 {formik.errors.measurement}
               </div>
             )}
-          </div>
+          </div> */}
           <DialogFooter className="col-span-2 mt-5">
             {initializedScanner ? (
               <>
