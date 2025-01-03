@@ -66,6 +66,7 @@ export interface ProcessCartRequestBody {
   cartItems: {
     product_id: number;
     product_current_stock: number;
+    product_name: string;
     product_price: number;
     productQuantity: number;
   }[];

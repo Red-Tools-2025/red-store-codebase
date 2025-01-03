@@ -153,6 +153,7 @@ export async function POST(req: Request) {
         sales: cartItem.productQuantity,
         sale_amount: cartItem.productQuantity * productPrice,
         product_id: cartItem.product_id,
+        product_name: inventoryItem.invItem, // Added product_name
         opening_stock: inventoryItem.invItemStock,
         received_stock: 0,
         closing_stock: inventoryItem.invItemStock - productQuantity,
