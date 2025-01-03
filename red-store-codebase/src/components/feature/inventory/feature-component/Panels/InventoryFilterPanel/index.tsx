@@ -3,6 +3,9 @@ import { Table } from "@tanstack/react-table";
 import InventorySelectFilterType from "./InventorySelectFilterType";
 import { IoIosAddCircle } from "react-icons/io";
 import { motion } from "framer-motion";
+import InventoryExtraFiltersControls from "./InventoryExtraFiltersControls";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface InventoryFilterPanelProps {
   data: Inventory[];
@@ -16,6 +19,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   showAdditionalFilters,
   availableNewFilters,
 }) => {
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const brandFilterOptions = Array.from(
     new Set(data.map((item) => item.invItemBrand))
   );
@@ -23,7 +27,6 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
     new Set(data.map((item) => item.invItemType))
   );
 
-  console.log({ availableNewFilters });
   return (
     <div className="flex mb-4 gap-2 items-center">
       <InventorySelectFilterType
@@ -50,7 +53,14 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
         className="overflow-hidden"
       >
         {showAdditionalFilters && (
-          <IoIosAddCircle className="text-blue-300 hover:text-blue-500 text-xl cursor-pointer transition-colors" />
+          <InventoryExtraFiltersControls
+            availableNewFilters={availableNewFilters}
+            selectedFilters={setSelectedFilters}
+          >
+            <Button variant="ghost" className="bg-gray-100">
+              <IoIosAddCircle className="text-blue-300 hover:text-blue-500 text-xl cursor-pointer transition-colors" />
+            </Button>
+          </InventoryExtraFiltersControls>
         )}
       </motion.div>
     </div>
