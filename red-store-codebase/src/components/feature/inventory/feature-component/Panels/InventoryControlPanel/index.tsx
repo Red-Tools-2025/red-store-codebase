@@ -13,6 +13,7 @@ interface InventoryControlPanelProps {
   setIsRestockProdModalOpen: Dispatch<React.SetStateAction<boolean>>;
   setIsDeleteProdModalOpen: Dispatch<React.SetStateAction<boolean>>;
   setIsAddProdModalOpen: Dispatch<React.SetStateAction<boolean>>;
+  setIsTableViewModalOpen: Dispatch<React.SetStateAction<boolean>>;
   handleOpenModal: (setModalType: Dispatch<SetStateAction<boolean>>) => void;
   handleRefresh: () => void;
 }
@@ -25,6 +26,7 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
   setIsAddProdModalOpen,
   setIsDeleteProdModalOpen,
   setIsRestockProdModalOpen,
+  setIsTableViewModalOpen,
 }) => {
   const { inventoryItems } = useInventory();
   return (
@@ -79,6 +81,7 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
           inventoryItems={inventoryItems}
           openRestockModal={() => handleOpenModal(setIsRestockProdModalOpen)}
           openDeleteModal={() => handleOpenModal(setIsDeleteProdModalOpen)}
+          openTableViewModal={() => handleOpenModal(setIsTableViewModalOpen)}
         />
         <Button
           onClick={() => handleOpenModal(setIsAddProdModalOpen)}

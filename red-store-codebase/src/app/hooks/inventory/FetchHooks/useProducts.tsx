@@ -1,21 +1,25 @@
 // src/hooks/inventory/useProducts.tsx
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Inventory } from "@prisma/client";
 
 interface FetchProductsServerFetch {
   message: string | null;
   inventoryItems: Inventory[] | null;
+  total_count: number;
 }
 
 const useProducts = (
   storeId: string,
-  storeManagerId: string
+  storeManagerId: string,
+  currentPage: number,
+  pageSize: number
 ): {
   inventoryItems: Inventory[] | null;
   message: string | null;
   error: string | null;
   isLoading: boolean;
+  total_count: number;
   handleRefresh: () => void;
 } => {
   const [inventoryItems, setInventoryItems] = useState<Inventory[] | null>(
@@ -25,6 +29,7 @@ const useProducts = (
   const [refreshInventory, setRefreshInventory] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [total_count, setTotalCount] = useState<number>(0);
 
   const handleRefresh = () => {
     setRefreshInventory(!refreshInventory);
@@ -37,11 +42,17 @@ const useProducts = (
         const { data } = await axios.get<FetchProductsServerFetch>(
           "/api/inventory/products",
           {
-            params: { storeId, storeManagerId },
+            params: {
+              storeId,
+              storeManagerId,
+              page: currentPage,
+              pageSize: pageSize,
+            },
           }
         );
         if (data.inventoryItems) {
           setInventoryItems(data.inventoryItems);
+          setTotalCount(data.total_count);
         }
         setIsLoading(false);
         setMessage(data.message);
@@ -53,9 +64,16 @@ const useProducts = (
     };
 
     fetchData();
-  }, [storeId, storeManagerId, refreshInventory]);
+  }, [storeId, storeManagerId, refreshInventory, currentPage, pageSize]);
 
-  return { inventoryItems, message, error, isLoading, handleRefresh };
+  return {
+    inventoryItems,
+    message,
+    error,
+    isLoading,
+    total_count,
+    handleRefresh,
+  };
 };
 
 export default useProducts;

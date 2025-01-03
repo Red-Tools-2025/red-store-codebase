@@ -3,13 +3,6 @@ import React, { SetStateAction, useState } from "react";
 import { useInventory } from "../contexts/inventory/InventoryContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
 import { Toaster } from "@/components/ui/toaster";
 import DeleteProductModal from "@/components/feature/inventory/feature-component/FormModals/DeleteProductsModal";
@@ -18,33 +11,42 @@ import { Inventory } from "@prisma/client";
 import InventoryControlPanel from "@/components/feature/inventory/feature-component/Panels/InventoryControlPanel";
 import InventoryEmptyState from "@/components/feature/inventory/feature-component/DisplayStates/InventoryEmptyState";
 import DefineStoreModal from "@/components/feature/inventory/feature-component/FormModals/DefineStoreModal";
+import { InventoryDataTableColumns } from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable/InventoryDataTableColumns";
+import InventoryDataTable from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable";
+import InventoryPaginationPanel from "@/components/feature/inventory/feature-component/Panels/InventoryPaginationPanel";
+import useInventoryTableHook from "../hooks/inventory/StaticHooks/useInventoryTableHook";
+import { ColumnDef, Table } from "@tanstack/react-table";
+import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
+import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 
-interface JsonRenderProps {
-  item: Inventory;
-  field: string;
-}
+// interface JsonRenderProps {
+//   item: Inventory;
+//   field: string;
+// }
 
-const JsonRender: React.FC<JsonRenderProps> = ({ item, field }) => {
-  return (
-    <p>
-      {typeof item.invAdditional === "object" &&
-      item.invAdditional !== null &&
-      field in item.invAdditional
-        ? String((item.invAdditional as Record<string, unknown>)[field])
-        : ""}
-    </p>
-  );
-};
+// const JsonRender: React.FC<JsonRenderProps> = ({ item, field }) => {
+//   return (
+//     <p>
+//       {typeof item.invAdditional === "object" &&
+//       item.invAdditional !== null &&
+//       field in item.invAdditional
+//         ? String((item.invAdditional as Record<string, unknown>)[field])
+//         : ""}
+//     </p>
+//   );
+// };
 
 // Inventory Display Component
 interface InventoryDisplayProps {
   displayState: "list" | "grid";
   inventoryItems: Inventory[];
+  table: Table<Inventory>;
 }
 
 const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
   displayState,
   inventoryItems,
+  table,
 }) => {
   const listVariants = {
     hidden: { opacity: 0 },
@@ -66,57 +68,7 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
   };
 
   if (displayState === "list") {
-    return (
-      <motion.div initial="hidden" animate="visible" variants={listVariants}>
-        <Table className="w-full border border-gray-200">
-          <TableHeader>
-            <TableRow>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                ID
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Product
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Brand
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Type
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Quantity
-              </TableCell>
-              <TableCell className="border-b border-gray-200 p-3 font-bold text-gray-500">
-                Price
-              </TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <AnimatePresence>
-              {inventoryItems.map((item, index) => (
-                <motion.tr
-                  key={item.invId}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  variants={itemVariants}
-                  className={`border-b border-gray-200 hover:bg-green-100 cursor-pointer ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
-                >
-                  <TableCell>{`#${item.invId}`}</TableCell>
-                  <TableCell>{`${item.invItem}`}</TableCell>
-                  <TableCell>{item.invItemBrand}</TableCell>
-                  <TableCell>{item.invItemType}</TableCell>
-                  <TableCell>{item.invItemStock}</TableCell>
-                  <TableCell>₹{item.invItemPrice}</TableCell>
-                </motion.tr>
-              ))}
-            </AnimatePresence>
-          </TableBody>
-        </Table>
-      </motion.div>
-    );
+    return <InventoryDataTable table={table} />;
   }
 
   return (
@@ -141,17 +93,10 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
                   <p className="font-light rounded-sm px-2 py-1 bg-[#F5F7F9] border border-1 border-gray-300">
                     {item.invItemBrand}
                   </p>
-                  <p className="font-light rounded-sm px-2 py-1 bg-[#F5F7F9] border border-1 border-gray-300 flex gap-1 text-gray-500">
-                    <JsonRender field="size" item={item} />
-                    <JsonRender field="measurement" item={item} />
-                  </p>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p className="font-light text-xs text-gray-500 rounded-sm w-fit px-2 py-1 bg-[#F5F7F9] border border-1 border-gray-300">
-                    <JsonRender field="category" item={item} />
-                  </p>
                   <p className="text-xl">{item.invItem}</p>
                   <div className="flex justify-between items-center">
                     <span className="font-semibold text-lg">
@@ -173,16 +118,31 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
 
 // Main Inventory Page Component
 const InventoryPage = () => {
+  const [viewableColumns, setViewableColumns] = useState<
+    ColumnDef<Inventory>[]
+  >(InventoryDataTableColumns);
+
   const {
     inventoryItems,
     isLoading: isLoadingProducts,
     intializedScanner,
     license,
     selectedStore,
+    setCurrentPage,
+    setPageSize,
+    currentPage,
+    pageSize,
+    total_count,
     handleRefresh,
   } = useInventory();
+  const { sorting, table } = useInventoryTableHook({
+    data: inventoryItems ?? [],
+    columns: viewableColumns,
+  });
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
+  const [isTableViewModalOpen, setIsTableViewModalOpen] =
+    useState<boolean>(false);
   const [isDeleteProdModalOpen, setIsDeleteProdModalOpen] =
     useState<boolean>(false);
   const [isRestockProdModalOpen, setIsRestockProdModalOpen] =
@@ -200,6 +160,10 @@ const InventoryPage = () => {
     setModalType: React.Dispatch<SetStateAction<boolean>>
   ) => {
     setModalType(false);
+  };
+
+  const handleSaveTableViews = (newColumns: ColumnDef<Inventory>[]) => {
+    setViewableColumns([...InventoryDataTableColumns, ...newColumns]);
   };
 
   console.log({ intializedScanner, license });
@@ -232,6 +196,13 @@ const InventoryPage = () => {
         onClose={() => handleCloseModal(setIsDefineStoreModalOpen)}
       />
 
+      <TableViewModal
+        onSaveChanges={handleSaveTableViews}
+        selectedStore={selectedStore}
+        isOpen={isTableViewModalOpen}
+        onClose={() => handleCloseModal(setIsTableViewModalOpen)}
+      />
+
       {/* Inventory Control Panel */}
       <InventoryControlPanel
         displayState={displayState}
@@ -241,7 +212,10 @@ const InventoryPage = () => {
         setIsAddProdModalOpen={setIsAddProdModalOpen}
         setIsDeleteProdModalOpen={setIsDeleteProdModalOpen}
         setIsRestockProdModalOpen={setIsRestockProdModalOpen}
+        setIsTableViewModalOpen={setIsTableViewModalOpen}
       />
+
+      <InventoryFilterPanel data={inventoryItems ?? []} table={table} />
 
       {/* Inventory Render */}
       <div>
@@ -260,6 +234,7 @@ const InventoryPage = () => {
               />
             ) : (
               <InventoryDisplay
+                table={table}
                 displayState={displayState as "list" | "grid"}
                 inventoryItems={inventoryItems}
               />
@@ -267,6 +242,15 @@ const InventoryPage = () => {
           </div>
         )}
       </div>
+
+      {/* Inventory Pagination Controls */}
+      <InventoryPaginationPanel
+        total_count={total_count}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        setCurrentPage={setCurrentPage}
+        setPageSize={setPageSize}
+      />
     </div>
   );
 };
