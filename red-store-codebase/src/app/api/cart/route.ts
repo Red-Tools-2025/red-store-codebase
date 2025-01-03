@@ -151,7 +151,7 @@ export async function POST(req: Request) {
       return {
         mrp_per_bottle: inventoryItem.invItemPrice,
         sales: cartItem.productQuantity,
-        sale_amount: cartItem.productQuantity * productPrice,
+        sale_amount: cartItem.productQuantity * inventoryItem.invItemPrice,
         product_id: cartItem.product_id,
         product_name: inventoryItem.invItem, // Added product_name
         opening_stock: inventoryItem.invItemStock,
