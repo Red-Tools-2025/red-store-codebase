@@ -18,6 +18,7 @@ import useInventoryTableHook from "../hooks/inventory/StaticHooks/useInventoryTa
 import { ColumnDef, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
+import { set } from "zod";
 
 // interface JsonRenderProps {
 //   item: Inventory;
@@ -141,6 +142,8 @@ const InventoryPage = () => {
   });
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
+  const [showAdditionalFilters, setShowAdditionalFilters] =
+    useState<boolean>(false);
   const [isTableViewModalOpen, setIsTableViewModalOpen] =
     useState<boolean>(false);
   const [isDeleteProdModalOpen, setIsDeleteProdModalOpen] =
@@ -197,10 +200,11 @@ const InventoryPage = () => {
       />
 
       <TableViewModal
-        onSaveChanges={handleSaveTableViews}
         selectedStore={selectedStore}
         isOpen={isTableViewModalOpen}
         onClose={() => handleCloseModal(setIsTableViewModalOpen)}
+        setShowAdditionalFilters={setShowAdditionalFilters}
+        onSaveChanges={handleSaveTableViews}
       />
 
       {/* Inventory Control Panel */}
@@ -215,7 +219,11 @@ const InventoryPage = () => {
         setIsTableViewModalOpen={setIsTableViewModalOpen}
       />
 
-      <InventoryFilterPanel data={inventoryItems ?? []} table={table} />
+      <InventoryFilterPanel
+        showAdditionalFilters={showAdditionalFilters}
+        data={inventoryItems ?? []}
+        table={table}
+      />
 
       {/* Inventory Render */}
       <div>

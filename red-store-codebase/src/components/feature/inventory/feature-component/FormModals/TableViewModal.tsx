@@ -8,16 +8,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Inventory, Store } from "@prisma/client";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { motion } from "framer-motion"; // For smooth animations
 import { IoSave } from "react-icons/io5";
 import { ColumnDef } from "@tanstack/react-table";
+import { on } from "events";
 
 interface TableViewModalProps {
   isOpen: boolean;
-  onClose: () => void;
   selectedStore: Store | null;
+  onClose: () => void;
   onSaveChanges: (columns: ColumnDef<Inventory>[]) => void;
+  setShowAdditionalFilters: React.Dispatch<SetStateAction<boolean>>;
 }
 
 interface StoreDefination {
@@ -32,9 +34,10 @@ type InvAdditional = Record<string, string | number>;
 
 const TableViewModal: React.FC<TableViewModalProps> = ({
   isOpen,
-  onClose,
   selectedStore,
   onSaveChanges,
+  onClose,
+  setShowAdditionalFilters,
 }) => {
   const [selectedFields, setSelectedFields] = useState<StoreDefination[]>([]);
   const customFields =
@@ -67,10 +70,13 @@ const TableViewModal: React.FC<TableViewModalProps> = ({
 
     onSaveChanges(newColumns);
     onClose();
+    setShowAdditionalFilters(true);
   };
 
   const handleCloseModal = () => {
     setSelectedFields([]);
+    onSaveChanges([]);
+    setShowAdditionalFilters(false);
     onClose();
   };
 
@@ -161,7 +167,7 @@ const TableViewModal: React.FC<TableViewModalProps> = ({
             </div>
           </Button>
           <Button onClick={handleCloseModal} variant="secondary" type="submit">
-            Cancel
+            {setSelectedFields.length > 0 ? "Clear" : "Cancel"}
           </Button>
         </DialogFooter>
       </DialogContent>

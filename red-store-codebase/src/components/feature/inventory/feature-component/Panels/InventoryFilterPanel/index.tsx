@@ -1,14 +1,18 @@
 import { Inventory } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
 import InventorySelectFilterType from "./InventorySelectFilterType";
+import { IoIosAddCircle } from "react-icons/io";
+import { motion } from "framer-motion";
 
 interface InventoryFilterPanelProps {
   data: Inventory[];
   table: Table<Inventory>;
+  showAdditionalFilters: boolean;
 }
 const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   data,
   table,
+  showAdditionalFilters,
 }) => {
   const brandFilterOptions = Array.from(
     new Set(data.map((item) => item.invItemBrand))
@@ -17,7 +21,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
     new Set(data.map((item) => item.invItemType))
   );
   return (
-    <div className="flex mb-4 gap-2">
+    <div className="flex mb-4 gap-2 items-center">
       <InventorySelectFilterType
         filterValue="invItemBrand"
         table={table}
@@ -32,6 +36,19 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
         filterOptions={typeFilterOptions as string[]}
         filterPlaceholder="Filter by packaging"
       />
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{
+          opacity: showAdditionalFilters ? 1 : 0,
+          height: showAdditionalFilters ? "auto" : 0,
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        {showAdditionalFilters && (
+          <IoIosAddCircle className="text-blue-300 hover:text-blue-500 text-xl cursor-pointer transition-colors" />
+        )}
+      </motion.div>
     </div>
   );
 };
