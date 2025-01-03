@@ -28,25 +28,31 @@ const EmployeeControlPanel: React.FC<EmployeeControlPanelProps> = ({
     RoleType.STORE_MANAGER,
   ];
 
+  const roleMapping: Record<number, string> = {
+    [1]: "SALES",
+    [2]: "MANAGER",
+    [3]: "INVENTORY_STAFF",
+    [4]: "STORE_MANAGER",
+  };
+
   // Effect to watch for updates in employeeData
   useEffect(() => {
     if (employeeData) {
-      // Ensure only unique role values, hence relevant options for filtering data
       const uniqueRoles = employeeData.reduce<
-        { value: string; label: string }[]
+        {
+          value: string;
+          label: string;
+        }[]
       >((accumulator, employee) => {
-        if (employee) {
-          // Access roleType from role object
-          if (
-            !accumulator.some(
-              (item) => item.value === employee.roleId.toString()
-            )
-          ) {
-            accumulator.push({
-              value: employee.roleId.toString(),
-              label: roleValues[employee.roleId],
-            });
-          }
+        if (employee.roleId.length > 0) {
+          employee.roleId.forEach((id) => {
+            if (!accumulator.some((role) => role.value === id.toString())) {
+              accumulator.push({
+                value: id.toString(),
+                label: roleMapping[id] || "Unknown Role",
+              });
+            }
+          });
         }
         return accumulator;
       }, []);

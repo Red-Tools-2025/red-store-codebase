@@ -1,6 +1,6 @@
 export interface AddEmployeeRequestBody {
   storeId: number | string; // Allow both number and string to handle conversion
-  roleId: number;
+  roleId: number[];
   empName: string;
   empPhone: string;
   empStatus: boolean;

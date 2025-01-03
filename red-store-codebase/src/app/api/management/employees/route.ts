@@ -63,9 +63,6 @@ export async function GET(req: Request) {
       where: {
         storeManagerId: storeManagerID,
       },
-      // include: {
-
-      // },
     });
 
     if (emp_for_manager.length === 0) {
@@ -139,5 +136,3 @@ export async function PATCH(req: Request) {
     console.log(err);
   }
 }
-
-

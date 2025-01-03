@@ -12,6 +12,13 @@ interface EmployeeDataTableProps {
   roleValues: ("SALES" | "MANAGER" | "INVENTORY_STAFF" | "STORE_MANAGER")[];
 }
 
+const roleMapping: Record<string, number> = {
+  SALES: 1,
+  MANAGER: 2,
+  INVENTORY_STAFF: 3,
+  STORE_MANAGER: 4,
+};
+
 const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
   employeeData,
   searchValue,
@@ -20,7 +27,7 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
   roleValues,
 }) => {
   const { selectedStore } = useManagement();
-  const headers: string[] = ["Employee ID", "Employee Name", "Role", "Status"];
+  const headers: string[] = ["Employee ID", "Employee Name", "Role"];
 
   // Handle all filtering in one place with useMemo
   const filteredData = useMemo(() => {
@@ -44,9 +51,12 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
 
     // Apply role filter - only filter if not "All"
     if (roleFilterValue !== "All") {
-      filtered = filtered.filter(
-        (employee) => employee.roleId.toString() === roleFilterValue // Filter based on roleType
-      );
+      const roleIdToFilter = roleMapping[roleFilterValue.toString()];
+      if (roleIdToFilter) {
+        filtered = filtered.filter((employee) =>
+          employee.roleId.includes(roleIdToFilter)
+        );
+      }
     }
 
     return filtered;
@@ -66,20 +76,18 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
       <TableRow key={index}>
         <TableCell className="w-auto">{employee.empId}</TableCell>
         <TableCell className="w-auto">{employee.empName}</TableCell>
-        <TableCell className="w-auto">
-          {roleValues[employee.roleId-1]}
+        <TableCell className="w-auto flex pt-3 gap-2">
+          {employee.roleId.map((roleId, i) => {
+            return (
+              <p
+                key={i}
+                className="text-[10px] px-2 rounded-full bg-blue-100 border border-blue-500 text-blue-500"
+              >
+                {roleValues[roleId - 1]}
+              </p>
+            );
+          })}
         </TableCell>{" "}
-        <TableCell className="w-auto">
-          {employee.empStatus ? (
-            <p className="bg-green-100 text-green-600 font-semibold inline-block w-auto px-3 py-1 rounded-sm">
-              Active
-            </p>
-          ) : (
-            <p className="bg-red-100 text-red-600 font-semibold inline-block w-auto px-3 py-1 rounded-sm">
-              Inactive
-            </p>
-          )}
-        </TableCell>
       </TableRow>
     ));
 

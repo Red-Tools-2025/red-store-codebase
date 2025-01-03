@@ -24,12 +24,13 @@ import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useToast } from "@/hooks/use-toast";
 import { AddEmployeeRequestBody } from "@/app/types/management/employee";
+import clsx from "clsx"; // Utility for conditionally joining classNames
 
 // Interface for the API response data
 interface Employee {
   id: number;
   storeId: number;
-  roleId: number;
+  roleIds: number[];
   empName: string;
   empPhone: string;
   empStatus: boolean;
@@ -47,6 +48,11 @@ interface AddEmployeeModalProps {
   onClose: () => void;
 }
 
+const roleColors: { [key: number]: string } = {
+  1: "bg-blue-200 text-blue-800",
+  3: "bg-green-200 text-green-800",
+};
+
 const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   isOpen,
   onClose,
@@ -54,6 +60,7 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   const { toast } = useToast();
   const { sessionData, selectedStore } = useManagement();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [selectedRoles, setSelectedRoles] = useState<number[]>([]);
 
   const roleOptions = [
     { id: 1, name: "SALES" },
@@ -63,14 +70,12 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   const formik = useFormik({
     initialValues: {
       storeId: selectedStore?.storeId,
-      roleId: "",
       empName: "",
       empPhone: "",
       empStatus: true,
       storeManagerId: sessionData?.id || "",
     },
     validationSchema: Yup.object({
-      roleId: Yup.number().required("Please select employee role type"),
       empName: Yup.string().required("Employee name is required"),
       empPhone: Yup.string().required("Employee phone is required"),
     }),
@@ -79,13 +84,13 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
       try {
         const requestBody: AddEmployeeRequestBody = {
           storeId: Number(values.storeId),
-          roleId: Number(values.roleId),
+          roleId: selectedRoles,
           empName: values.empName,
           empPhone: values.empPhone,
           empStatus: values.empStatus,
           storeManagerId: values.storeManagerId,
         };
-    
+
         const { data } = await axios.post<AddEmployeeResponse>(
           "/api/management/employees",
           requestBody,
@@ -103,6 +108,7 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
         });
 
         formik.resetForm();
+        setSelectedRoles([]);
         onClose();
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -133,44 +139,26 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
     }
   }, [selectedStore]);
 
+  const handleAddRole = (roleId: number) => {
+    if (!selectedRoles.includes(roleId)) {
+      setSelectedRoles((prev) => [...prev, roleId]);
+    }
+  };
+
+  const handleRemoveRole = (roleId: number) => {
+    setSelectedRoles((prev) => prev.filter((id) => id !== roleId));
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add New Employee</DialogTitle>
           <DialogDescription>
-            Fill in the details of the new employee.
+            Fill in the details of the new employee. Assign roles as needed.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={formik.handleSubmit} className="grid gap-4 py-4">
-          <div className="flex-col">
-            <Label htmlFor="roleId" className="text-right">
-              Employee Role
-            </Label>
-            <Select
-              name="roleId"
-              onValueChange={(value) => formik.setFieldValue("roleId", value)}
-              value={formik.values.roleId}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {roleOptions.map((role) => (
-                    <SelectItem key={role.id} value={role.id.toString()}>
-                      {role.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            {formik.touched.roleId && formik.errors.roleId ? (
-              <div className="text-red-500 col-span-4">
-                {formik.errors.roleId}
-              </div>
-            ) : null}
-          </div>
           <div className="flex-col">
             <Label htmlFor="empName" className="text-right">
               Employee Name
@@ -209,7 +197,48 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
               </div>
             ) : null}
           </div>
-
+          <div className="flex-col">
+            <Label htmlFor="roleId" className="text-right">
+              Employee Roles
+            </Label>
+            <Select
+              name="roleId"
+              onValueChange={(value) => handleAddRole(Number(value))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Add a role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {roleOptions.map((role) => (
+                    <SelectItem key={role.id} value={role.id.toString()}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {selectedRoles.map((roleId) => (
+                <span
+                  key={roleId}
+                  className={clsx(
+                    "px-3 py-1 text-xs rounded-full flex items-center gap-2",
+                    roleColors[roleId]
+                  )}
+                >
+                  {roleOptions.find((role) => role.id === roleId)?.name}
+                  <button
+                    type="button"
+                    className="text-red-500"
+                    onClick={() => handleRemoveRole(roleId)}
+                  >
+                    &times;
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Adding..." : "Add Employee"}

@@ -40,11 +40,6 @@ const EmployeeTableController: React.FC<EmployeeTableControllerProps> = ({
                 setRoleFilterValue(value === "All" ? "All" : value)
               }
             />
-            <FilterDropdown
-              label="Status"
-              options={statuses}
-              onValueChange={(value) => setStatusFilterValue(value)}
-            />
           </div>
         </>
       ) : (
