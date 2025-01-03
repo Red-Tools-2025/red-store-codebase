@@ -110,7 +110,7 @@ model Sale {
 model Employee {
   empId          Int       @default(autoincrement()) @map("empid")
   storeId        Int       @map("storeid")
-  roleId         Int       @map("roleid")
+  roleId         Int[]       @map("roleid")
   createdAt      DateTime? @default(now()) @map("createdat") @db.Timestamp(6)
   empName        String    @map("empname") @db.VarChar(255)
   empPhone       String    @map("empphone") @db.VarChar(50)
