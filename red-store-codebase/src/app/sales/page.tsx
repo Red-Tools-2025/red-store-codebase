@@ -1,6 +1,5 @@
 import InfoCards from "@/components/feature/inventory/info-card";
-import InventoryControlPanel from "@/components/feature/management/feature-component/Tables/InventoryControlPanel";
-import { DatePickerWithRange } from "@/components/feature/sales/feature-component/DatePicker/DatePickerWithRange";
+import SalesControlPanel from "@/components/feature/management/feature-component/Tables/SalesControlPanel";
 
 const SalesPage = () => {
   // Correct naming convention here according to the renaming I have done for this page
@@ -13,8 +12,8 @@ const SalesPage = () => {
   return (
     <main>
       <InfoCards></InfoCards>
-      
-      <InventoryControlPanel></InventoryControlPanel>
+
+      <SalesControlPanel></SalesControlPanel>
     </main>
   );
 };

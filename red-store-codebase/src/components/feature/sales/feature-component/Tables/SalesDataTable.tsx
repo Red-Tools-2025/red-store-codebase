@@ -15,7 +15,7 @@ const formatNumberWithCommas = (
   return new Intl.NumberFormat().format(Number(formattedNumber)); // Format number with commas
 };
 
-interface InventoryDataTableProps {
+interface SalesDataTableProps {
   inventoryData: {
     time: string;
     store_id: number;
@@ -31,7 +31,7 @@ interface InventoryDataTableProps {
   endDate: string;
 }
 
-const InventoryDataTable: React.FC<InventoryDataTableProps> = ({
+const SalesDataTable: React.FC<SalesDataTableProps> = ({
   inventoryData,
   startDate,
   endDate,
@@ -107,4 +107,4 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({
   );
 };
 
-export default InventoryDataTable;
+export default SalesDataTable;
