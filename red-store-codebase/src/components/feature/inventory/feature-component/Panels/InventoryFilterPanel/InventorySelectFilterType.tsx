@@ -52,7 +52,7 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
       >
         <SelectTrigger
           className={
-            `w-fit px-3 transition-all` +
+            `w-fit px-3 transition-all text-gray-500 hover:text-gray-800` +
             (activeFilter
               ? ` bg-blue-100 border border-blue-500 text-blue-500`
               : ``)
