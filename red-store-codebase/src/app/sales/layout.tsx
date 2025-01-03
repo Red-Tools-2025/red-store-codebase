@@ -50,7 +50,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
       selectedStore={selectedStore}
       sessionData={sessionUser ?? null}
     >
-      <div className="p-5">
+      <div className="p-5 font-inter">
         {session ? (
           <>
             {isLoadingStores ? (
@@ -58,7 +58,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
             ) : userStores && userStores.length > 0 ? (
               <>
                 <div className="flex justify-between">
-                  <h1 className="text-2xl font-semibold">Inventory Overview</h1>
+                  <h1 className="text-2xl font-semibold">Sales Overview</h1>
                   <div className="flex gap-2">
                     <DropDownStoreSelect
                       data={userStores}

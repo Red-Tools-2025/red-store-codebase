@@ -15,9 +15,10 @@ import { InventoryDataTableColumns } from "@/components/feature/inventory/featur
 import InventoryDataTable from "@/components/feature/inventory/feature-component/Tables/InventoryDataTable";
 import InventoryPaginationPanel from "@/components/feature/inventory/feature-component/Panels/InventoryPaginationPanel";
 import useInventoryTableHook from "../hooks/inventory/StaticHooks/useInventoryTableHook";
-import { ColumnDef, Table } from "@tanstack/react-table";
+import { ColumnDef, ColumnDefBase, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
+import { set } from "zod";
 
 // interface JsonRenderProps {
 //   item: Inventory;
@@ -135,12 +136,21 @@ const InventoryPage = () => {
     total_count,
     handleRefresh,
   } = useInventory();
-  const { sorting, table } = useInventoryTableHook({
+  const { sorting, table, setColumnFilters } = useInventoryTableHook({
     data: inventoryItems ?? [],
     columns: viewableColumns,
   });
+  const [availableNewFilters, setAvailableNewFilters] = useState<
+    {
+      header: string;
+      accessorKey: string;
+      cell: ColumnDefBase<Inventory, string | number | boolean | null>["cell"]; // Use ColumnDefBase's cell type
+    }[]
+  >([]);
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
+  const [showAdditionalFilters, setShowAdditionalFilters] =
+    useState<boolean>(false);
   const [isTableViewModalOpen, setIsTableViewModalOpen] =
     useState<boolean>(false);
   const [isDeleteProdModalOpen, setIsDeleteProdModalOpen] =
@@ -164,9 +174,20 @@ const InventoryPage = () => {
 
   const handleSaveTableViews = (newColumns: ColumnDef<Inventory>[]) => {
     setViewableColumns([...InventoryDataTableColumns, ...newColumns]);
+    console.log({ newColumns });
+    setAvailableNewFilters(() => [
+      ...newColumns.map((col) => ({
+        header: col.header as string,
+        // for some reason tan stack has it's own typing mismatched so have to resort to manually creating accessorKey as done before
+        accessorKey: (col.header as string)
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9\s]/g, "") // Remove special characters
+          .replace(/\s+/g, "_"), // Replace spaces with underscores as string,
+        cell: col.cell,
+      })),
+    ]);
   };
-
-  console.log({ intializedScanner, license });
 
   return (
     <div>
@@ -197,16 +218,18 @@ const InventoryPage = () => {
       />
 
       <TableViewModal
-        onSaveChanges={handleSaveTableViews}
         selectedStore={selectedStore}
         isOpen={isTableViewModalOpen}
         onClose={() => handleCloseModal(setIsTableViewModalOpen)}
+        setShowAdditionalFilters={setShowAdditionalFilters}
+        onSaveChanges={handleSaveTableViews}
       />
 
       {/* Inventory Control Panel */}
       <InventoryControlPanel
         displayState={displayState}
         handleOpenModal={handleOpenModal}
+        setColumnFilters={setColumnFilters}
         handleRefresh={handleRefresh}
         setDisplayState={setDisplayState}
         setIsAddProdModalOpen={setIsAddProdModalOpen}
@@ -215,7 +238,13 @@ const InventoryPage = () => {
         setIsTableViewModalOpen={setIsTableViewModalOpen}
       />
 
-      <InventoryFilterPanel data={inventoryItems ?? []} table={table} />
+      <InventoryFilterPanel
+        availableNewFilters={availableNewFilters}
+        showAdditionalFilters={showAdditionalFilters}
+        data={inventoryItems ?? []}
+        table={table}
+        setColumnFilters={setColumnFilters}
+      />
 
       {/* Inventory Render */}
       <div>

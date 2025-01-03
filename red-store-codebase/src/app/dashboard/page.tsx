@@ -18,8 +18,6 @@ import {
 } from "@/components/ui/card";
 import { SalesOverviewCard } from "@/components/feature/dashboard/RevenueOverView";
 import TransactionOverviewCard from "@/components/feature/dashboard/TransactionOverviewCard";
-import QuoteCard from "@/components/feature/dashboard/QuoteCard";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import TotalInventoryWorthCard from "@/components/feature/dashboard/TotalInventoryWorth";
@@ -49,7 +47,6 @@ const AnalyticsPage = () => {
         <TotalInventoryWorthCard storeId={selectedStore?.storeId} />
         <SalesOverviewCard storeId={selectedStore?.storeId} />
         <RestockInventoryCard storeId={selectedStore?.storeId} />
-   
       </div>
       <div className="flex flex-col items-center bg-gray-50 py-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">

@@ -1,12 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   IndianRupee,
   UserRoundCheck,
   UserRoundX,
   Radiation,
+  Coins,
   Store as StoreIcon,
+  CalendarClock,
   Flame,
 } from "lucide-react";
 
@@ -22,31 +23,31 @@ const InfoCard: React.FC<InfoCardProps> = ({
   description,
 }) => {
   return (
-    <Card className="flex flex-col p-1 sm:p-1 border border-gray-200 shadow-md rounded-md hover:shadow-lg transition-shadow duration-200 my-5 bg-[#F9FAFB]">
-      <CardHeader className="flex flex-col">
-        <div className="flex items-center justify-center w-10 h-10 sm:w-10 sm:h-10 bg-slate-900 rounded-full mb-1">
-          <Icon className="text-lg sm:text-lg text-white " />
+    <div className="p-5 rounded-lg border my-5">
+      <div className="flex flex-col gap-1">
+        <div className="flex justify-between">
+          <h3>{heading} </h3>
+          <div className="bg-blue-500 p-2 rounded-full text-white text-sm">
+            <Icon className="h-5 w-5" />
+          </div>
         </div>
-        <h3 className="text-base sm:text-lg font-inter md:text-xl lg:text-3xl text-gray-500">
-          {heading}
-        </h3>
-      </CardHeader>
-      <CardContent className="relative">
-        <p className="text-sm font-inter text-gray-700 sm:text-3xl">
-          {/* Show the number */}
-          <span className="relative font-inter">
-            {description.split(" ")[0]} {/* Show the number */}
-            {/* Check for units and position them at the bottom-right */}
-            {heading === "Total Stock Quantity" &&
-              description.includes("units") && (
-                <span className="absolute font-inter  bottom-[-4px] right-[-40px] text-lg text-gray-500">
-                  units
-                </span>
-              )}
-          </span>
-        </p>
-      </CardContent>
-    </Card>
+        <div className="relative">
+          <p className="text-black text-3xl">
+            {/* Show the number */}
+            <span className="relative font-inter">
+              {description.split(" ")[0]} {/* Show the number */}
+              {/* Check for units and position them at the bottom-right */}
+              {heading === "Total Stock Quantity" &&
+                description.includes("units") && (
+                  <span className="absolute font-inter  bottom-[-4px] right-[-40px] text-lg text-gray-500">
+                    units
+                  </span>
+                )}
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -86,18 +87,14 @@ const InfoCards = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <InfoCard
-        icon={IndianRupee}
-        heading="Total Stock Value"
-        description={"₹6"}
-      />
+      <InfoCard icon={Coins} heading="Total Stock Value" description={"₹6"} />
       <InfoCard
         icon={UserRoundCheck}
         heading="Total Stock Quantity"
         description={"756 units"}
       />
       <InfoCard
-        icon={Flame}
+        icon={CalendarClock}
         heading="Monthly Sales"
         description={`₹${avgMonthlySales}`}
       />

@@ -6,6 +6,7 @@ import InventoryActionsCTA from "./InventoryActionsCTA";
 import { Dispatch, SetStateAction } from "react";
 import InventroySearch from "./InventorySearch";
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
+import { ColumnFiltersState } from "@tanstack/react-table";
 
 interface InventoryControlPanelProps {
   displayState: string;
@@ -16,6 +17,7 @@ interface InventoryControlPanelProps {
   setIsTableViewModalOpen: Dispatch<React.SetStateAction<boolean>>;
   handleOpenModal: (setModalType: Dispatch<SetStateAction<boolean>>) => void;
   handleRefresh: () => void;
+  setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
 }
 
 const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
@@ -27,12 +29,19 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
   setIsDeleteProdModalOpen,
   setIsRestockProdModalOpen,
   setIsTableViewModalOpen,
+  setColumnFilters,
 }) => {
   const { inventoryItems } = useInventory();
+
+  const setSearchFilter = (value: string) => {
+    setColumnFilters([
+      { id: "invItem", value }, // Assuming `invItem` is the column ID for product names
+    ]);
+  };
   return (
     <div className="my-5 flex items-center justify-between">
       <div className="flex w-2/4 items-center space-x-4">
-        <InventroySearch />
+        <InventroySearch setSearchFilter={setSearchFilter} />
         <div className="flex space-x-1">
           {/* Grid Icon */}
           <div

@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Inventory } from "@prisma/client";
-import { Table } from "@tanstack/react-table";
+import { ColumnFiltersState, Table } from "@tanstack/react-table";
 import { useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
@@ -18,6 +18,7 @@ interface InventorySelectFilterTypeProps {
   filterOptions: string[];
   filterPlaceholder: string;
   table: Table<Inventory>;
+  setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
 }
 
 const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
@@ -26,6 +27,7 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
   filterOptions,
   filterPlaceholder,
   table,
+  setColumnFilters,
 }) => {
   const [selectedOption, setSelectedOption] = useState<string | undefined>(
     undefined
@@ -35,15 +37,23 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
   const handleFilterChange = (value: string) => {
     setSelectedOption(value);
     setActiveFilter(true);
-    table.getColumn(filterValue)?.setFilterValue(value);
+    // table.getColumn(filterValue)?.setFilterValue(value);
+    setColumnFilters((prev) => [
+      ...prev,
+      ...[
+        { id: filterValue, value }, // Assuming `invItem` is the column ID for product names
+      ],
+    ]);
   };
 
   const handleDeactivateFilter = () => {
-    setSelectedOption(undefined); // Reset selected option
+    setSelectedOption(undefined);
     setActiveFilter(false);
-    table.getColumn(filterValue)?.setFilterValue(undefined); // Clear the filter in the table
+    // table.getColumn(filterValue)?.setFilterValue(undefined);
+    setColumnFilters([]);
   };
 
+  // Sync state when table updates externally
   return (
     <div className="flex items-center gap-1">
       <Select
@@ -52,7 +62,7 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
       >
         <SelectTrigger
           className={
-            `w-fit px-3 transition-all` +
+            `w-fit px-3 transition-all text-gray-500 hover:text-gray-800` +
             (activeFilter
               ? ` bg-blue-100 border border-blue-500 text-blue-500`
               : ``)

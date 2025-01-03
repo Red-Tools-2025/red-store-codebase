@@ -1,13 +1,13 @@
-"use client"
+"use client";
 import { useState } from "react";
-import InventoryDataTable from "@/components/feature/sales/feature-component/Tables/InventoryDataTable";
+import SalesDataTable from "@/components/feature/sales/feature-component/Tables/SalesDataTable";
 import { DatePickerWithRange } from "@/components/feature/sales/feature-component/DatePicker/DatePickerWithRange";
 import useInventoryData from "@/app/hooks/sales/useInventoryData";
 import useDateRange from "@/hooks/useDateRange";
 import { useSales } from "@/app/contexts/sales/SalesContext";
 import { FileTypeDialog } from "@/components/feature/sales/feature-component/FileType/FileTypeDialog";
 
-const InventoryControlPanel = () => {
+const SalesControlPanel = () => {
   const { selectedStore } = useSales();
   const currentDate = new Date();
   const endDate = currentDate.toISOString().split("T")[0];
@@ -55,7 +55,7 @@ const InventoryControlPanel = () => {
           <div className="w-3 h-3 bg-gray-300 rounded-full animate-pulse delay-400"></div>
         </div>
       ) : (
-        <InventoryDataTable
+        <SalesDataTable
           inventoryData={inventoryData}
           startDate={startDateState}
           endDate={endDateState}
@@ -107,4 +107,4 @@ const InventoryControlPanel = () => {
   );
 };
 
-export default InventoryControlPanel;
+export default SalesControlPanel;
