@@ -1,5 +1,14 @@
 // hooks/useInventoryData.ts
 import { useState, useEffect } from "react";
+import axios from "axios";
+
+interface InventoryDataResponse {
+  data: any[];
+  total_pages: number;
+  current_page: number;
+  items_per_page: number;
+  total_count: number;
+}
 
 const useInventoryData = (
   currentPage: number,
@@ -14,22 +23,29 @@ const useInventoryData = (
   const [totalCount, setTotalCount] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  const handleRefresh = () => {
+    setRefreshInventory(!refreshInventory);
+  };
+
   useEffect(() => {
     const fetchInventoryData = async () => {
-      setLoading(true);
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/inventory/timeseries?store_id=${selectedStoreId}&startDate=${startDateState}&endDate=${endDateState}&page=${currentPage}&pageSize=${itemsPerPage}`
+        setLoading(true);
+        const { data } = await axios.get<InventoryDataResponse>(
+          "/api/inventory/timeseries",
+          {
+            params: {
+              store_id: selectedStoreId,
+              startDate: startDateState,
+              endDate: endDateState,
+              page: currentPage,
+              pageSize: itemsPerPage,
+            },
+          }
         );
-        const data = await response.json();
-
-        if (!response.ok) {
-          console.error(data.error || "Error fetching inventory data");
-          return;
-        }
 
         setInventoryData(data.data || []);
-        setTotalPages(Math.ceil(data.total_count / itemsPerPage)); // Ensure `totalPages` updates with `pageSize`
+        setTotalPages(data.total_pages || 1);
         setTotalCount(data.total_count || 0);
       } catch (error) {
         console.error("Error fetching inventory data:", error);
@@ -57,6 +73,7 @@ const useInventoryData = (
     totalCount,
     setRefreshInventory,
     refreshInventory,
+    handleRefresh,
   };
 };
 
