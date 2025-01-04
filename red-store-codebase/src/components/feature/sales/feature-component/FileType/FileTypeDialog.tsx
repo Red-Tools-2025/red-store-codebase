@@ -8,8 +8,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { PiFileCsvDuotone, PiMicrosoftExcelLogoFill } from "react-icons/pi";
+import { BsFileEarmarkPdf } from "react-icons/bs";
 import {
   Select,
   SelectContent,
@@ -159,66 +159,68 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
           </div>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] font-inter">
         <DialogHeader>
           <DialogTitle>Select File Type</DialogTitle>
           <DialogDescription>
             Choose the file type and month for the report generation.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4">
           <div className="flex flex-col gap-4">
             {/* File Type Options */}
             <div className="flex gap-4 items-center">
               <Button
-                variant={selectedFileType === "excel" ? "primary" : "outline"}
+                variant={"secondary"}
                 className="w-full"
                 onClick={() => setSelectedFileType("excel")}
               >
-                Excel File
+                <div className="flex items-center ">
+                  <BsFileEarmarkPdf className="mr-2 h-4 w-4" />
+                  <p>Excel</p>
+                </div>
               </Button>
               <Button
-                variant={selectedFileType === "pdf" ? "primary" : "outline"}
+                variant={"secondary"}
                 className="w-full"
                 onClick={() => setSelectedFileType("pdf")}
               >
-                PDF File
+                <div className="flex items-center ">
+                  <PiMicrosoftExcelLogoFill className="mr-2 h-4 w-4" />
+                  <p>Excel</p>
+                </div>
               </Button>
               <Button
-                variant={selectedFileType === "csv" ? "primary" : "outline"}
+                variant={"secondary"}
                 className="w-full"
                 onClick={() => setSelectedFileType("csv")}
               >
-                CSV File
+                <div className="flex items-center ">
+                  <PiFileCsvDuotone className="mr-2 h-4 w-4" />
+                  <p>CSV File</p>
+                </div>
               </Button>
             </div>
 
             {/* Select Component for Month and Year */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="select-month" className="text-right">
-                Month
-              </Label>
-              <Select
-                onValueChange={(value: string) => setSelectedMonth(value)}
-              >
-                <SelectTrigger id="select-month" className="col-span-3">
-                  <SelectValue placeholder="Select a month" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Available Months</SelectLabel>
-                    {options.map((option) => (
-                      <SelectItem
-                        key={`${option.year}-${option.month}`}
-                        value={`${option.year}-${option.month}`}
-                      >
-                        {`${monthNames[option.month - 1]} ${option.year}`}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select onValueChange={(value: string) => setSelectedMonth(value)}>
+              <SelectTrigger id="select-month" className="col-span-3">
+                <SelectValue placeholder="Select a month" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Available Months</SelectLabel>
+                  {options.map((option) => (
+                    <SelectItem
+                      key={`${option.year}-${option.month}`}
+                      value={`${option.year}-${option.month}`}
+                    >
+                      {`${monthNames[option.month - 1]} ${option.year}`}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <DialogFooter>
