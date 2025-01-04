@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { ImFilesEmpty } from "react-icons/im";
 import * as React from "react";
+import axios from "axios"; // Import Axios
 
 interface FileTypeDialogProps {
   storeId?: number; // Required prop from the parent
@@ -28,13 +29,12 @@ interface FileTypeDialogProps {
 
 export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
   const [options, setOptions] = React.useState<
-    {
-      year: number;
-      month: number;
-    }[]
+    { year: number; month: number }[]
   >([]);
-  const [selectedMonth, setSelectedMonth] = React.useState("");
-  const [selectedFileType, setSelectedFileType] = React.useState("");
+  const [selectedMonth, setSelectedMonth] = React.useState<string>("");
+  const [selectedFileType, setSelectedFileType] = React.useState<string>("");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
   const monthNames = [
     "Jan",
     "Feb",
@@ -59,21 +59,13 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
       }
 
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/inventory/timeseries/metrics/get-month-year?store_id=${storeId}`
+        const { data } = await axios.get<{ year: number; month: number }[]>(
+          "/api/inventory/timeseries/metrics/get-month-year",
+          {
+            params: { store_id: storeId },
+          }
         );
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch data, status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setOptions(data);
-        } else {
-          console.warn("No month data received for the storeId:", storeId);
-          setOptions([]);
-        }
+        setOptions(data);
       } catch (error) {
         console.error("Error fetching month data:", error);
       }
@@ -88,19 +80,23 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
       return;
     }
 
+    setIsLoading(true);
+
     const apiEndpoints: { [key: string]: string } = {
-      excel:
-        "http://localhost:3000/api/inventory/timeseries/metrics/report-excel",
-      pdf: "http://localhost:3000/api/inventory/timeseries/metrics/report-pdf",
-      csv: "http://localhost:3000/api/inventory/timeseries/metrics/report-csv",
+      excel: "/api/inventory/timeseries/metrics/report-excel",
+      pdf: "/api/inventory/timeseries/metrics/report-pdf",
+      csv: "/api/inventory/timeseries/metrics/report-csv",
     };
 
     const [year, month] = selectedMonth.split("-");
     const apiUrl = `${apiEndpoints[selectedFileType]}?store_id=${storeId}&month_input=${year}-${month}-01`;
 
     try {
-      const response = await fetch(apiUrl);
-      const data = await response.json();
+      const { data } = await axios.get<{
+        excel?: string;
+        pdf?: string;
+        csv?: string;
+      }>(apiUrl);
 
       let base64String = "";
 
@@ -130,7 +126,9 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
         selectedFileType === "excel" ? "xlsx" : selectedFileType
       }`;
       link.click();
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.error("Error downloading file:", error);
       alert("An error occurred while downloading the file. Please try again.");
     }
@@ -172,18 +170,26 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
             <div className="flex gap-4 items-center">
               <Button
                 variant={"secondary"}
-                className="w-full"
-                onClick={() => setSelectedFileType("excel")}
+                className={
+                  selectedFileType === "pdf"
+                    ? "w-full bg-blue-200 border-blue-500 text-blue-500"
+                    : "w-full"
+                }
+                onClick={() => setSelectedFileType("pdf")}
               >
                 <div className="flex items-center ">
                   <BsFileEarmarkPdf className="mr-2 h-4 w-4" />
-                  <p>Excel</p>
+                  <p>PDF</p>
                 </div>
               </Button>
               <Button
                 variant={"secondary"}
-                className="w-full"
-                onClick={() => setSelectedFileType("pdf")}
+                className={
+                  selectedFileType === "excel"
+                    ? "w-full bg-blue-200 border-blue-500 text-blue-500"
+                    : "w-full"
+                }
+                onClick={() => setSelectedFileType("excel")}
               >
                 <div className="flex items-center ">
                   <PiMicrosoftExcelLogoFill className="mr-2 h-4 w-4" />
@@ -192,7 +198,11 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
               </Button>
               <Button
                 variant={"secondary"}
-                className="w-full"
+                className={
+                  selectedFileType === "csv"
+                    ? "w-full bg-blue-200 border-blue-500 text-blue-500"
+                    : "w-full"
+                }
                 onClick={() => setSelectedFileType("csv")}
               >
                 <div className="flex items-center ">
@@ -224,8 +234,16 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleDownload}>
-            Print
+          <Button
+            type="submit"
+            onClick={handleDownload}
+            disabled={isLoading} // Disable button when loading
+          >
+            {isLoading ? (
+              <span>Downloading...</span> // You can replace this with a spinner if needed
+            ) : (
+              "Print"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
