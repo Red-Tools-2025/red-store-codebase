@@ -1,42 +1,62 @@
 // hooks/useMeanTransactionData.ts
 import { useState, useEffect } from "react";
+import axios from "axios";
+
+interface TransactionMetrics {
+  month: string;
+  avg: number;
+  total: number;
+  highest: number;
+  lowest: number;
+}
 
 const useMeanTransactionData = (storeId: number) => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<TransactionMetrics[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/inventory/timeseries/metrics/get_monthly_transaction?store_id=${storeId}`
-        );
-        const data = await response.json();
-        const formattedData = data.data.map(
-          (item: {
-            month: string;
-            average_transaction: number;
-            total_transactions: number;
-            highest_transaction: number;
-            lowest_transaction: number;
-          }) => ({
+        setLoading(true);
+        const { data } = await axios.get<{
+          data:
+            | {
+                month: string;
+                average_transaction: number;
+                total_transactions: number;
+                highest_transaction: number;
+                lowest_transaction: number;
+              }[]
+            | null;
+        }>("/api/inventory/timeseries/metrics/get_monthly_transaction", {
+          params: { store_id: storeId },
+        });
+
+        if (data.data) {
+          const formattedData = data.data.map((item) => ({
             month: item.month.trim(),
             avg: item.average_transaction,
             total: item.total_transactions,
             highest: item.highest_transaction,
             lowest: item.lowest_transaction,
-          })
-        );
-        setChartData(formattedData);
+          }));
+
+          setChartData(formattedData);
+        } else {
+          setChartData([]);
+        }
       } catch (err) {
+        console.error("Error fetching transaction metrics:", err);
         setError("Failed to load data");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    if (storeId) {
+      fetchData();
+    }
   }, [storeId]);
 
   return { chartData, loading, error };

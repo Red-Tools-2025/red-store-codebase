@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 interface SalesFrequency {
   hour: string;
@@ -14,35 +15,39 @@ interface UseSalesFrequencyData {
 }
 
 const useSalesFrequencyData = (storeId: number): UseSalesFrequencyData => {
-  const [salesFrequencyData, setSalesFrequencyData] = useState<SalesFrequency[]>([]);
+  const [salesFrequencyData, setSalesFrequencyData] = useState<
+    SalesFrequency[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/inventory/timeseries/metrics/sales-hour?store_id=${storeId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch sales frequency data");
-        }
-        const data = await response.json();
-        const formattedData = data.data.map(
-          (item: { hour: number; total_sales: number }) => ({
-            hour: `${item.hour} ${item.hour < 12 ? "AM" : "PM"}`,
-            freq: item.total_sales,
-          })
-        );
+        setLoading(true);
+        const response = await axios.get<{
+          data: { hour: number; total_sales: number }[] | null;
+        }>("/api/inventory/timeseries/metrics/sales-hour", {
+          params: { store_id: storeId },
+        });
+
+        const formattedData = (response.data.data || []).map((item) => ({
+          hour: `${item.hour} ${item.hour < 12 ? "AM" : "PM"}`,
+          freq: item.total_sales,
+        }));
+
         setSalesFrequencyData(formattedData);
       } catch (err) {
+        console.error("Error fetching sales frequency data:", err);
         setError("Failed to load data");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    if (storeId) {
+      fetchData();
+    }
   }, [storeId]);
 
   return { salesFrequencyData, loading, error };

@@ -54,6 +54,7 @@ export async function GET(req: Request) {
         total_pages: totalPageCount,
         current_page: page,
         items_per_page: pageSize,
+        total_count: count,
       },
       { status: 200 }
     );

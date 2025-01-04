@@ -28,7 +28,6 @@ import { useToast } from "@/hooks/use-toast";
 import { AddProductFormValidation } from "@/lib/formik/formik";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import useScanner from "@/app/hooks/scanner/StaticHooks/useScanner";
-import { InventoryCustomFieldsRequestBody } from "@/app/types/inventory/api";
 
 interface AddProductModalProps {
   isOpen: boolean;

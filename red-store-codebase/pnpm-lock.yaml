@@ -68,6 +68,9 @@ dependencies:
   date-fns:
     specifier: ^3.0.0
     version: 3.6.0
+  dayjs:
+    specifier: ^1.11.13
+    version: 1.11.13
   dynamsoft-camera-enhancer:
     specifier: 3.3.1
     version: 3.3.1

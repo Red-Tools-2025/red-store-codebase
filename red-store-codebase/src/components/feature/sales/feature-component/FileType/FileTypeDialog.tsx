@@ -8,8 +8,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { PiFileCsvDuotone, PiMicrosoftExcelLogoFill } from "react-icons/pi";
+import { BsFileEarmarkPdf } from "react-icons/bs";
 import {
   Select,
   SelectContent,
@@ -19,7 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ImFilesEmpty } from "react-icons/im";
 import * as React from "react";
+import axios from "axios"; // Import Axios
 
 interface FileTypeDialogProps {
   storeId?: number; // Required prop from the parent
@@ -27,13 +29,12 @@ interface FileTypeDialogProps {
 
 export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
   const [options, setOptions] = React.useState<
-    {
-      year: number;
-      month: number;
-    }[]
+    { year: number; month: number }[]
   >([]);
-  const [selectedMonth, setSelectedMonth] = React.useState("");
-  const [selectedFileType, setSelectedFileType] = React.useState("");
+  const [selectedMonth, setSelectedMonth] = React.useState<string>("");
+  const [selectedFileType, setSelectedFileType] = React.useState<string>("");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
   const monthNames = [
     "Jan",
     "Feb",
@@ -58,21 +59,13 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
       }
 
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/inventory/timeseries/metrics/get-month-year?store_id=${storeId}`
+        const { data } = await axios.get<{ year: number; month: number }[]>(
+          "/api/inventory/timeseries/metrics/get-month-year",
+          {
+            params: { store_id: storeId },
+          }
         );
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch data, status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setOptions(data);
-        } else {
-          console.warn("No month data received for the storeId:", storeId);
-          setOptions([]);
-        }
+        setOptions(data);
       } catch (error) {
         console.error("Error fetching month data:", error);
       }
@@ -87,19 +80,23 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
       return;
     }
 
+    setIsLoading(true);
+
     const apiEndpoints: { [key: string]: string } = {
-      excel:
-        "http://localhost:3000/api/inventory/timeseries/metrics/report-excel",
-      pdf: "http://localhost:3000/api/inventory/timeseries/metrics/report-pdf",
-      csv: "http://localhost:3000/api/inventory/timeseries/metrics/report-csv",
+      excel: "/api/inventory/timeseries/metrics/report-excel",
+      pdf: "/api/inventory/timeseries/metrics/report-pdf",
+      csv: "/api/inventory/timeseries/metrics/report-csv",
     };
 
     const [year, month] = selectedMonth.split("-");
     const apiUrl = `${apiEndpoints[selectedFileType]}?store_id=${storeId}&month_input=${year}-${month}-01`;
 
     try {
-      const response = await fetch(apiUrl);
-      const data = await response.json();
+      const { data } = await axios.get<{
+        excel?: string;
+        pdf?: string;
+        csv?: string;
+      }>(apiUrl);
 
       let base64String = "";
 
@@ -129,7 +126,9 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
         selectedFileType === "excel" ? "xlsx" : selectedFileType
       }`;
       link.click();
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.error("Error downloading file:", error);
       alert("An error occurred while downloading the file. Please try again.");
     }
@@ -151,73 +150,100 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Select File Type</Button>
+        <Button variant={"secondary"}>
+          <div className="flex items-center ">
+            <ImFilesEmpty className="mr-2 h-3 w-3" />
+            <p>Download</p>
+          </div>
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] font-inter">
         <DialogHeader>
           <DialogTitle>Select File Type</DialogTitle>
           <DialogDescription>
             Choose the file type and month for the report generation.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4">
           <div className="flex flex-col gap-4">
             {/* File Type Options */}
             <div className="flex gap-4 items-center">
               <Button
-                variant={selectedFileType === "excel" ? "primary" : "outline"}
-                className="w-full"
-                onClick={() => setSelectedFileType("excel")}
-              >
-                Excel File
-              </Button>
-              <Button
-                variant={selectedFileType === "pdf" ? "primary" : "outline"}
-                className="w-full"
+                variant={"secondary"}
+                className={
+                  selectedFileType === "pdf"
+                    ? "w-full bg-blue-200 border-blue-500 text-blue-500"
+                    : "w-full"
+                }
                 onClick={() => setSelectedFileType("pdf")}
               >
-                PDF File
+                <div className="flex items-center ">
+                  <BsFileEarmarkPdf className="mr-2 h-4 w-4" />
+                  <p>PDF</p>
+                </div>
               </Button>
               <Button
-                variant={selectedFileType === "csv" ? "primary" : "outline"}
-                className="w-full"
+                variant={"secondary"}
+                className={
+                  selectedFileType === "excel"
+                    ? "w-full bg-blue-200 border-blue-500 text-blue-500"
+                    : "w-full"
+                }
+                onClick={() => setSelectedFileType("excel")}
+              >
+                <div className="flex items-center ">
+                  <PiMicrosoftExcelLogoFill className="mr-2 h-4 w-4" />
+                  <p>Excel</p>
+                </div>
+              </Button>
+              <Button
+                variant={"secondary"}
+                className={
+                  selectedFileType === "csv"
+                    ? "w-full bg-blue-200 border-blue-500 text-blue-500"
+                    : "w-full"
+                }
                 onClick={() => setSelectedFileType("csv")}
               >
-                CSV File
+                <div className="flex items-center ">
+                  <PiFileCsvDuotone className="mr-2 h-4 w-4" />
+                  <p>CSV File</p>
+                </div>
               </Button>
             </div>
 
             {/* Select Component for Month and Year */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="select-month" className="text-right">
-                Month
-              </Label>
-              <Select
-                onValueChange={(value: string) => setSelectedMonth(value)}
-              >
-                <SelectTrigger id="select-month" className="col-span-3">
-                  <SelectValue placeholder="Select a month" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Available Months</SelectLabel>
-                    {options.map((option) => (
-                      <SelectItem
-                        key={`${option.year}-${option.month}`}
-                        value={`${option.year}-${option.month}`}
-                      >
-                        {`${monthNames[option.month - 1]} ${option.year}`}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select onValueChange={(value: string) => setSelectedMonth(value)}>
+              <SelectTrigger id="select-month" className="col-span-3">
+                <SelectValue placeholder="Select a month" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Available Months</SelectLabel>
+                  {options.map((option) => (
+                    <SelectItem
+                      key={`${option.year}-${option.month}`}
+                      value={`${option.year}-${option.month}`}
+                    >
+                      {`${monthNames[option.month - 1]} ${option.year}`}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleDownload}>
-            Print
+          <Button
+            type="submit"
+            onClick={handleDownload}
+            disabled={isLoading} // Disable button when loading
+          >
+            {isLoading ? (
+              <span>Downloading...</span> // You can replace this with a spinner if needed
+            ) : (
+              "Print"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

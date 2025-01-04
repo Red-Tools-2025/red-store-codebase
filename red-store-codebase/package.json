@@ -34,6 +34,7 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
     "date-fns": "^3.0.0",
+    "dayjs": "^1.11.13",
     "dynamsoft-camera-enhancer": "3.3.1",
     "dynamsoft-javascript-barcode": "9.6.11",
     "formik": "^2.4.6",

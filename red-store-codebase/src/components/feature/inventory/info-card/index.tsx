@@ -1,15 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  IndianRupee,
-  UserRoundCheck,
-  UserRoundX,
-  Radiation,
-  Coins,
-  Store as StoreIcon,
-  CalendarClock,
-  Flame,
-} from "lucide-react";
+import { Coins, CalendarClock, ChartSpline, Database } from "lucide-react";
 
 interface InfoCardProps {
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -89,7 +80,7 @@ const InfoCards = () => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <InfoCard icon={Coins} heading="Total Stock Value" description={"₹6"} />
       <InfoCard
-        icon={UserRoundCheck}
+        icon={Database}
         heading="Total Stock Quantity"
         description={"756 units"}
       />
@@ -99,7 +90,7 @@ const InfoCards = () => {
         description={`₹${avgMonthlySales}`}
       />
       <InfoCard
-        icon={Radiation}
+        icon={ChartSpline}
         heading="Average Daily Sales"
         description={`₹${avgDailySales}`}
       />

@@ -6,6 +6,9 @@ import useInventoryData from "@/app/hooks/sales/useInventoryData";
 import useDateRange from "@/hooks/useDateRange";
 import { useSales } from "@/app/contexts/sales/SalesContext";
 import { FileTypeDialog } from "@/components/feature/sales/feature-component/FileType/FileTypeDialog";
+import SalesPaginationPanel from "./SalesPaginationPanel";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 const SalesControlPanel = () => {
   const { selectedStore } = useSales();
@@ -20,17 +23,28 @@ const SalesControlPanel = () => {
     endDate
   );
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 13;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPageSize, setCurrentPageSize] = useState<number>(15);
 
   const selectedStoreId = selectedStore?.storeId as number;
-  const { inventoryData, totalPages, loading } = useInventoryData(
+  const {
+    inventoryData,
+    totalPages,
+    loading,
+    totalCount,
+    setRefreshInventory,
+    refreshInventory,
+  } = useInventoryData(
     currentPage,
     startDateState,
     endDateState,
     selectedStoreId,
-    itemsPerPage
+    currentPageSize
   );
+
+  console.log({ totalPages, totalCount });
+
+  const handleRefresh = () => setRefreshInventory(!refreshInventory);
 
   const handlePageSelectChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -41,10 +55,13 @@ const SalesControlPanel = () => {
   return (
     <div className="flex-col w-full">
       <div className="flex gap-4 mb-4">
-        <DatePickerWithRange
-          className="w-full"
-          onDateSelect={handleDateChange}
-        />
+        <DatePickerWithRange onDateSelect={handleDateChange} />
+        <Button onClick={handleRefresh} variant={"secondary"}>
+          <div className="flex items-center ">
+            <RefreshCw className="mr-2 h-3 w-3" />
+            <p>Refresh</p>
+          </div>
+        </Button>
         <FileTypeDialog storeId={selectedStore?.storeId} />
       </div>
 
@@ -62,7 +79,7 @@ const SalesControlPanel = () => {
         />
       )}
 
-      <div className="flex justify-between items-center mt-4">
+      {/* <div className="flex justify-between items-center mt-4">
         <div className="flex gap-4 items-center">
           <button
             onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
@@ -102,7 +119,16 @@ const SalesControlPanel = () => {
           </select>
           <span>of {totalPages}</span>
         </div>
-      </div>
+      </div> */}
+
+      <SalesPaginationPanel
+        currentPage={currentPage}
+        pageSize={currentPageSize}
+        setPageSize={setCurrentPage}
+        setCurrentPage={setCurrentPage}
+        total_count={totalCount}
+        totalPages={totalPages}
+      />
     </div>
   );
 };
