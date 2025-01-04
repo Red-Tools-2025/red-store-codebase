@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import supabase from "../../../../../../../supabase/client";
 import { jsPDF } from "jspdf";

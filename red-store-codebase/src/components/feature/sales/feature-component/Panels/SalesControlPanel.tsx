@@ -24,7 +24,7 @@ const SalesControlPanel = () => {
   );
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [currentPageSize, setCurrentPageSize] = useState<number>(15);
+  const [currentPageSize] = useState<number>(15);
 
   const selectedStoreId = selectedStore?.storeId as number;
   const {
@@ -45,12 +45,6 @@ const SalesControlPanel = () => {
   console.log({ totalPages, totalCount });
 
   const handleRefresh = () => setRefreshInventory(!refreshInventory);
-
-  const handlePageSelectChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setCurrentPage(Number(event.target.value));
-  };
 
   return (
     <div className="flex-col w-full">

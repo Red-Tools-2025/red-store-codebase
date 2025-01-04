@@ -4,9 +4,7 @@ import { TrendingUp } from "lucide-react";
 import StoreRevenueChart from "@/components/feature/sales/Graphs/StoreRevenueChart";
 import MeanTransactionChart from "@/components/feature/sales/Graphs/MeanTransactionValueChart";
 import SalesFrequencyChart from "@/components/feature/sales/Graphs/SalesFrequencyChart";
-import TopBottomProductList from "@/components/feature/sales/Graphs/ProductList";
 import { useDashboardContext } from "../contexts/dashboard/DashboardContext"; // Adjust path as needed
-import CardFirst from "@/components/feature/dashboard/Card";
 
 import TopProductsTable from "@/components/feature/dashboard/CardContent";
 import {
@@ -98,7 +96,7 @@ const AnalyticsPage = () => {
                   />
                 </div>
                 <div className="text-sm text-gray-500 font-inter mt-1">
-                  Today's Sale
+                  Today&apos;s Sale
                 </div>
               </CardHeader>
               <CardContent>

@@ -5,9 +5,9 @@ import FilterDropdown from "../Filter";
 import { Employee } from "@prisma/client";
 
 interface EmployeeTableControllerProps {
-  setSearchValue: Dispatch<SetStateAction<String>>;
-  setRoleFilterValue: Dispatch<SetStateAction<String | "All">>;
-  setStatusFilterValue: Dispatch<SetStateAction<String>>;
+  setSearchValue: Dispatch<SetStateAction<string>>;
+  setRoleFilterValue: Dispatch<SetStateAction<string | "All">>;
+  setStatusFilterValue: Dispatch<SetStateAction<string>>;
   employeeData: Employee[] | null;
   roles: { value: string; label: string }[]; // Converted to string for compatibility
 }
@@ -17,13 +17,7 @@ const EmployeeTableController: React.FC<EmployeeTableControllerProps> = ({
   employeeData,
   roles,
   setRoleFilterValue,
-  setStatusFilterValue,
 }) => {
-  const statuses = [
-    { value: "active", label: "Active" },
-    { value: "inactive", label: "Inactive" },
-  ];
-
   return (
     <div className="flex gap-3 justify-space">
       {employeeData ? (

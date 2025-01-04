@@ -19,9 +19,7 @@ import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
 export const description =
   "A registration form for new users with name, email, password, and phone number.";
 
-interface TestRegisterFormProps {}
-
-const TestRegisterForm: React.FC<TestRegisterFormProps> = ({}) => {
+const TestRegisterForm = ({}) => {
   const router = useRouter();
   const { handleRegister } = useAuthServerHook();
 

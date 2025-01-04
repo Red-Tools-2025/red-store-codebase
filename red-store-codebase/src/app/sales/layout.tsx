@@ -2,11 +2,10 @@
 import { useSession } from "next-auth/react";
 import { SessionUserType } from "../types/management/context";
 
-import React, { SetStateAction, useMemo, useState } from "react";
+import React, { useState } from "react";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Store } from "@prisma/client";
-import useProducts from "../hooks/inventory/FetchHooks/useProducts";
 import { SalesProvider } from "../contexts/sales/SalesContext";
 
 interface ManagementPageLayoutProps {
@@ -20,11 +19,9 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
 
   // Fetching store data and inventory data
-  const {
-    data: userStores,
-    error: storeServerFetchError,
-    isLoading: isLoadingStores,
-  } = useStoreServerFetch(sessionUser?.id ?? "");
+  const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
+    sessionUser?.id ?? ""
+  );
 
   // Use useEffect to set initial store when stores are loaded
   React.useEffect(() => {
@@ -32,18 +29,6 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
       setIsSelectedStore(userStores[0]);
     }
   }, [userStores]);
-
-  const handleOpenModal = (
-    setModalType: React.Dispatch<SetStateAction<boolean>>
-  ) => {
-    setModalType(true);
-  };
-
-  const handleCloseModal = (
-    setModalType: React.Dispatch<SetStateAction<boolean>>
-  ) => {
-    setModalType(false);
-  };
 
   return (
     <SalesProvider

@@ -94,8 +94,8 @@ const InventoryEmptyState: React.FC<InventoryEmptyStateProps> = ({
           <p className="text-center font-[400] w-[450px] text-[16px] text-gray-600 mt-2">
             Hey, your store seems{" "}
             <span className="underline decoration-gray-600">to be empty</span>,
-            Let's begin by adding some products to it, so you can start selling
-            !!.
+            {` Let's begin by adding some products to it, so you can start selling
+            !!.`}
           </p>
           <>
             {!selectedStore ? (

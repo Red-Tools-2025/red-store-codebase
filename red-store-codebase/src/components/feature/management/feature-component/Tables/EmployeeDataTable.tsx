@@ -1,14 +1,14 @@
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Employee, Employee as PrismaEmployee } from "@prisma/client";
+import { Employee } from "@prisma/client";
 import TableLayout from "../../layouts/TableLayout";
 import { useMemo } from "react";
 import { useManagement } from "@/app/contexts/management/ManagementContext";
 
 interface EmployeeDataTableProps {
   employeeData: Employee[] | null;
-  searchValue: String;
-  roleFilterValue: String | "All";
-  statusFilterValue: String;
+  searchValue: string;
+  roleFilterValue: string | "All";
+  statusFilterValue: string;
   roleValues: ("SALES" | "MANAGER" | "INVENTORY_STAFF" | "STORE_MANAGER")[];
 }
 

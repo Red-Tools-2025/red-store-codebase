@@ -12,7 +12,7 @@ interface SideNavProps {
 const SideNav: React.FC<SideNavProps> = ({ SideNavCloseFn, SideNavItems }) => {
   return (
     <SideNavLayout sideNavTitle="This is the side nav title">
-      <div>Hi I'm the sidenav content</div>
+      <div>{`Hi I'm the sidenav content`}</div>
       <Button className="bg-purple-500" onClick={SideNavCloseFn}>
         Close me
       </Button>

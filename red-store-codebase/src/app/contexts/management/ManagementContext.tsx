@@ -1,9 +1,6 @@
 import { SessionUserType } from "@/app/types/management/context";
 import { Store, Employee } from "@prisma/client";
 import { createContext, useContext } from "react";
-interface Role {
-  roleType: string; // Assuming roleType is the field you want to display
-}
 
 // // Extend the existing Employee type to include role
 // interface Employee extends PrismaEmployee {

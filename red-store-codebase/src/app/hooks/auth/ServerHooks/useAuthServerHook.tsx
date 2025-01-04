@@ -71,6 +71,7 @@ const useAuthServerHook = () => {
       }
     } catch (err) {
       setError("An unexpected error occurred during login.");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }

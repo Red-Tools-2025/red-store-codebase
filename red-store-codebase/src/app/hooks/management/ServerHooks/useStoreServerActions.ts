@@ -41,6 +41,7 @@ const useStoreServerActions = () => {
       }
     } catch (error) {
       setMessage("An error occurred while adding the employee.");
+      console.error("Error adding employee:", error);
     }
   };
   return { handleSubmit };

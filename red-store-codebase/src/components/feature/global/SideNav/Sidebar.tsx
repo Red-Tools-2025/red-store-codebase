@@ -1,16 +1,10 @@
 "use client";
 import { useState } from "react";
 import {
-  Bell,
-  SquareChartGantt ,
-  GlobeLock,
+  SquareChartGantt,
   Inbox,
-  Logs,
-  Menu,
   Receipt,
-  Settings,
   User,
-  X,
   ChevronLeft,
   ChevronRight,
   SquarePercent,

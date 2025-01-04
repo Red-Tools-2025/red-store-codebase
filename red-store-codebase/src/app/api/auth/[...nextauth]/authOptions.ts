@@ -1,7 +1,6 @@
 import Credentials from "next-auth/providers/credentials";
 
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
 
 import { type NextAuthOptions } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
@@ -54,7 +53,7 @@ const authOptions: NextAuthOptions = {
   },
   callbacks: {
     // following signIn callback only applicable for google account providers
-    signIn: async ({ user, account, profile }) => {
+    signIn: async ({ account, profile }) => {
       if (account && account.provider === "google") {
         const existingUser = await db.user.findUnique({
           where: { email: profile?.email ?? "" },

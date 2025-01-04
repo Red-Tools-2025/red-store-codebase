@@ -12,12 +12,12 @@ interface EmployeeControlPanelProps {
 const EmployeeControlPanel: React.FC<EmployeeControlPanelProps> = ({
   employeeData,
 }) => {
-  const [searchValue, setSearchValue] = useState<String>("");
+  const [searchValue, setSearchValue] = useState<string>("");
   const [roles, setRoles] = useState<{ value: string; label: string }[]>([]);
 
   // States to handle filters
-  const [roleFilterValue, setRoleFilterValue] = useState<String>("All");
-  const [statusFilterValue, setStatusFilterValue] = useState<String>("All");
+  const [roleFilterValue, setRoleFilterValue] = useState<string>("All");
+  const [statusFilterValue, setStatusFilterValue] = useState<string>("All");
 
   // A role constant to map IDs to the right roles, // find more efficient way to update and parse in the futre
   // Array positions correspond to the relevant role Ids to the role types

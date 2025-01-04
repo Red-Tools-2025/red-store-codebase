@@ -1,6 +1,4 @@
-import { set } from "zod";
 import InventoryPageSizeSelector from "./InventoryPageSizeSelector";
-import { dir } from "console";
 
 interface InventoryPaginationPanelProps {
   currentPage: number;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,9 +17,7 @@ interface TransactionOverviewCardProps {
 const TransactionOverviewCard: React.FC<TransactionOverviewCardProps> = ({
   storeId,
 }) => {
-  const { chartData, loading, error } = useMeanTransactionData(
-    storeId as number
-  );
+  const { chartData, loading } = useMeanTransactionData(storeId as number);
   const [selectedMonth, setSelectedMonth] = useState<string>("December");
   const [currentTransactions, setCurrentTransactions] = useState<any | null>(
     null

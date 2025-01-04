@@ -6,7 +6,7 @@ interface LoginButtonProps {
   asChild?: boolean;
 }
 
-export const LoginButton = ({ children, mode, asChild }: LoginButtonProps) => {
+export const LoginButton = ({ children }: LoginButtonProps) => {
   const router = useRouter();
   const onClick = () => {
     router.push("/auth/login");

@@ -18,7 +18,6 @@ import useInventoryTableHook from "../hooks/inventory/StaticHooks/useInventoryTa
 import { ColumnDef, ColumnDefBase, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
-import { set } from "zod";
 
 // interface JsonRenderProps {
 //   item: Inventory;
@@ -126,8 +125,6 @@ const InventoryPage = () => {
   const {
     inventoryItems,
     isLoading: isLoadingProducts,
-    intializedScanner,
-    license,
     selectedStore,
     setCurrentPage,
     setPageSize,
@@ -136,7 +133,7 @@ const InventoryPage = () => {
     total_count,
     handleRefresh,
   } = useInventory();
-  const { sorting, table, setColumnFilters } = useInventoryTableHook({
+  const { table, setColumnFilters } = useInventoryTableHook({
     data: inventoryItems ?? [],
     columns: viewableColumns,
   });

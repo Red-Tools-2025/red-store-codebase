@@ -26,7 +26,6 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
   filterValue,
   filterOptions,
   filterPlaceholder,
-  table,
   setColumnFilters,
 }) => {
   const [selectedOption, setSelectedOption] = useState<string | undefined>(

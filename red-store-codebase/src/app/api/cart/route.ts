@@ -146,7 +146,6 @@ export async function POST(req: Request) {
 
       // Corrected to match API body keys
       const productQuantity = cartItem.productQuantity; // Fix here
-      const productPrice = cartItem.product_price; // Fix here
 
       return {
         mrp_per_bottle: inventoryItem.invItemPrice,
@@ -162,7 +161,7 @@ export async function POST(req: Request) {
       };
     });
 
-    const { data, error: TimeseriesInsertionError } = await supabase
+    const { error: TimeseriesInsertionError } = await supabase
       .from("inventory_timeseries")
       .insert(prepped_series_inserts);
 

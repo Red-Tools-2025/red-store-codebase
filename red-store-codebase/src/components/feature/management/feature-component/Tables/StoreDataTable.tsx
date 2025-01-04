@@ -5,9 +5,9 @@ import { useMemo } from "react";
 
 interface StoreDataTableProps {
   storeData: Store[] | null;
-  searchValue: String;
-  locationFilterValue: String;
-  statusFilterValue: String;
+  searchValue: string;
+  locationFilterValue: string;
+  statusFilterValue: string;
 }
 
 const StoreDataTable: React.FC<StoreDataTableProps> = ({

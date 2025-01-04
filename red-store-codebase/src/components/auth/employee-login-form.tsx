@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -12,7 +12,6 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
@@ -25,7 +24,6 @@ const EmployeeLoginSchema = z.object({
 });
 
 export const EmployeeLoginForm = () => {
-  const router = useRouter();
   const [error, setError] = useState<string>("");
   const [isPending, setIsPending] = useState<boolean>(false);
   const form = useForm<z.infer<typeof EmployeeLoginSchema>>({
@@ -37,32 +35,33 @@ export const EmployeeLoginForm = () => {
     },
   });
 
-const onSubmit = async (values: z.infer<typeof EmployeeLoginSchema>) => {
-  setError("");
-  setIsPending(false);
-
-  try {
-    const result = await signIn("employeelogin", {
-      redirect: false, // Prevent automatic redirection
-      storeName: values.storeName,
-      employeePhone: values.employeePhone,
-      employeeName: values.employeeName,
-    });
-
-    if (result?.error) {
-      setError(result.error); // Display error message
-    } else if (result?.ok) {
-        console.log(result);
-      // Redirect only if authentication succeeds
-    } else {
-      setError("An unexpected error occurred. Please try again.");
-    }
-  } catch (err) {
-    setError("An unexpected error occurred during login.");
-  } finally {
+  const onSubmit = async (values: z.infer<typeof EmployeeLoginSchema>) => {
+    setError("");
     setIsPending(false);
-  }
-};
+
+    try {
+      const result = await signIn("employeelogin", {
+        redirect: false, // Prevent automatic redirection
+        storeName: values.storeName,
+        employeePhone: values.employeePhone,
+        employeeName: values.employeeName,
+      });
+
+      if (result?.error) {
+        setError(result.error); // Display error message
+      } else if (result?.ok) {
+        console.log(result);
+        // Redirect only if authentication succeeds
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred during login.");
+      console.error("Error logging in:", err);
+    } finally {
+      setIsPending(false);
+    }
+  };
   return (
     <CardWrapper
       headerHeading="Employee Login"

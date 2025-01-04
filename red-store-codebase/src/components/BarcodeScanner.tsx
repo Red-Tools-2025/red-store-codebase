@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CameraEnhancer } from "dynamsoft-camera-enhancer";
 import { PlayCallbackInfo } from "dynamsoft-camera-enhancer";
 import { TextResult, BarcodeReader } from "dynamsoft-javascript-barcode";

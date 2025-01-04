@@ -1,21 +1,21 @@
 import { Store } from "@prisma/client";
 import StoreTableController from "../../Tables/StoreTableController";
 import StoreDataTable from "../../Tables/StoreDataTable";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface StoreControlPanelProps {
   storeData: Store[] | null;
 }
 
 const StoreControlPanel: React.FC<StoreControlPanelProps> = ({ storeData }) => {
-  const [searchValue, setSearchValue] = useState<String>("");
+  const [searchValue, setSearchValue] = useState<string>("");
   const [locations, setLocations] = useState<
     { value: string; label: string }[]
   >([]);
 
   // states to handle filters
-  const [locationFilterValue, setLocationFilterValue] = useState<String>("All");
-  const [statusFilterValue, setStatusFilterValue] = useState<String>("All");
+  const [locationFilterValue, setLocationFilterValue] = useState<string>("All");
+  const [statusFilterValue, setStatusFilterValue] = useState<string>("All");
 
   // Effect to watch for updates in storeData
   useEffect(() => {

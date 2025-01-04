@@ -25,12 +25,8 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   const sessionUser = session?.user as SessionUserType | undefined;
   console.log(sessionUser?.id);
 
-  const { data, error, isLoading } = useStoreServerFetch(sessionUser?.id ?? "");
-  const {
-    data: employeeData,
-    error: employeeError,
-    isLoading: isEmployeeLoading,
-  } = useEmployeeServerFetch(sessionUser?.id ?? ""); // Fetch employee data
+  const { data, isLoading } = useStoreServerFetch(sessionUser?.id ?? "");
+  const { data: employeeData } = useEmployeeServerFetch(sessionUser?.id ?? ""); // Fetch employee data
 
   const [isStoreModalOpen, setisStoreModalOpen] = useState<boolean>(false);
   const [isEmpModalOpen, setIsEmpModalOpen] = useState<boolean>(false);

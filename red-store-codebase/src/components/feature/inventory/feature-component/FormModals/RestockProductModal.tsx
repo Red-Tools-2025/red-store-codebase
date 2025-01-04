@@ -125,6 +125,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
       setProductsToUpdate([]);
       onClose();
     } catch (err) {
+      console.error(err);
       setisRestocking(false);
       toast({
         title: "Error",

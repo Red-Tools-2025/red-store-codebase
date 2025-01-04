@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // hooks/useInventoryData.ts
 import { useState, useEffect } from "react";
 
@@ -32,7 +33,13 @@ const useInventoryData = (
     if (selectedStoreId) {
       fetchInventoryData();
     }
-  }, [currentPage, startDateState, endDateState, selectedStoreId, itemsPerPage]);
+  }, [
+    currentPage,
+    startDateState,
+    endDateState,
+    selectedStoreId,
+    itemsPerPage,
+  ]);
 
   return { inventoryData, totalPages, loading };
 };

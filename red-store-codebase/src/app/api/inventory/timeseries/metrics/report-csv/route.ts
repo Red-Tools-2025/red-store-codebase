@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-// @ts-ignore
 import { parse } from "json2csv";
 import supabase from "../../../../../../../supabase/client";
-import dayjs from "dayjs";
 
 export async function GET(req: Request) {
   try {
@@ -18,9 +17,9 @@ export async function GET(req: Request) {
       );
     }
 
-    // Parse the month_input and calculate date range
-    const startDate = dayjs(month_input).startOf("month").format("YYYY-MM-DD");
-    const endDate = dayjs(month_input).endOf("month").format("YYYY-MM-DD");
+    // // Parse the month_input and calculate date range
+    // const startDate = dayjs(month_input).startOf("month").format("YYYY-MM-DD");
+    // const endDate = dayjs(month_input).endOf("month").format("YYYY-MM-DD");
 
     // Call the Supabase RPC function to get the data
     const { data, error } = await supabase.rpc(
@@ -45,7 +44,10 @@ export async function GET(req: Request) {
       { label: "Product ID", value: "product_id" },
       { label: "Opening Stock", value: "opening_stock" },
       { label: "Received Stock", value: "received_stock" },
-      { label: "Total", value: (row: any) => row.opening_stock + row.received_stock },
+      {
+        label: "Total",
+        value: (row: any) => row.opening_stock + row.received_stock,
+      },
       { label: "Closing Stock", value: "closing_stock" },
       { label: "Sales", value: "sales" },
       { label: "Sale Amount", value: "sale_amount" },
@@ -63,8 +65,8 @@ export async function GET(req: Request) {
   } catch (err) {
     console.error("Unexpected error:", err);
     return NextResponse.json(
-        { error: "Unexpected error occurred" },
-        { status: 500 }
+      { error: "Unexpected error occurred" },
+      { status: 500 }
     );
   }
 }

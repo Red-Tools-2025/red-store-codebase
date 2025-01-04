@@ -5,7 +5,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { CardWrapper } from "@/components/auth/CardWrapper";
@@ -24,11 +23,10 @@ import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook"; 
 export const RegisterForm = () => {
   const router = useRouter();
   const { handleRegister } = useAuthServerHook();
-const [phone, setPhone] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
-  const [isPending, startTransition] = useTransition();
- const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPending] = useTransition();
+  const [, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
@@ -71,7 +69,7 @@ const [phone, setPhone] = useState<string>("");
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                   {/*  <FormLabel>Name</FormLabel> */}
+                    {/*  <FormLabel>Name</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
@@ -106,7 +104,7 @@ const [phone, setPhone] = useState<string>("");
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                  {/*   <FormLabel>Password</FormLabel> */}
+                    {/*   <FormLabel>Password</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
@@ -124,7 +122,7 @@ const [phone, setPhone] = useState<string>("");
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                {/*     <FormLabel>Phone (optional)</FormLabel> */}
+                    {/*     <FormLabel>Phone (optional)</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
@@ -140,7 +138,11 @@ const [phone, setPhone] = useState<string>("");
             </div>
             <FormError message={error} />
             <FormSuccess message={success} />
-            <Button type="submit" className="w-full  font-inter mt-4" disabled={isPending}>
+            <Button
+              type="submit"
+              className="w-full  font-inter mt-4"
+              disabled={isPending}
+            >
               Create an Account
             </Button>
           </form>

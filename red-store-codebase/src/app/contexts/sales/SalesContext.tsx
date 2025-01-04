@@ -1,6 +1,6 @@
 import { createContext, useContext, ReactNode } from "react";
 import { SessionUserType } from "@/app/types/management/context";
-import { Inventory, Store } from "@prisma/client";
+import { Store } from "@prisma/client";
 
 interface SalesContextType {
   sessionData: SessionUserType | null;

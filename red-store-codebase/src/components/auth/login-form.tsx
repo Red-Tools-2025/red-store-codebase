@@ -5,7 +5,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { CardWrapper } from "@/components/auth/CardWrapper";
@@ -25,9 +24,9 @@ export const LoginForm = () => {
   const router = useRouter();
   const { handleLogin } = useAuthServerHook(); // Hook from the first code
   const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string | undefined>("");
-  const [isPending, startTransition] = useTransition();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [success] = useState<string | undefined>("");
+  const [isPending] = useTransition();
+  const [, setIsLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -100,7 +99,11 @@ export const LoginForm = () => {
             </div>
             <FormError message={error} />
             <FormSuccess message={success} />
-            <Button type="submit" className="w-full mt-4 font-inter" disabled={isPending}>
+            <Button
+              type="submit"
+              className="w-full mt-4 font-inter"
+              disabled={isPending}
+            >
               Sign in
             </Button>
           </form>

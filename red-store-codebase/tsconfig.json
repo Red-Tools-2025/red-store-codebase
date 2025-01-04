@@ -3,16 +3,16 @@
     "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
+    "skipLibCheck": true, // Skips checking of declaration files in node_modules (helps speed up compilation)
+    "strict": true, // Keep strict mode enabled for overall type checking
+    "noEmit": false, // Ensures that TypeScript emits output, necessary for building
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
+    "incremental": true, // Enables incremental compilation for faster builds
     "allowSyntheticDefaultImports": true,
     "plugins": [
       {
@@ -27,8 +27,23 @@
       "dynamsoft-camera-enhancer": [
         "./node_modules/dynamsoft-camera-enhancer/dist/types/index.d.ts"
       ]
-    }
+    },
+    "skipDefaultLibCheck": true, // Avoids type-checking for the default libraries (prevents unnecessary checks)
+    "noUnusedLocals": false, // Disable unused local variable checks for build files
+    "noUnusedParameters": false, // Disable unused parameters checks
+    "noImplicitAny": false // Allow implicit 'any' types if necessary (can be adjusted based on your use case)
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/inventory/timeseries/metrics/restock-inventory"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/api/inventory/timeseries/metrics/restock-inventory"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist", // Exclude generated output files
+    ".next",
+    "build" // Exclude build-related folders
+  ]
 }

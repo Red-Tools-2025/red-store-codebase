@@ -1,4 +1,4 @@
-import { TableCell, TableRow } from "@/components/ui/table";
+import { TableCell } from "@/components/ui/table";
 import TableLayout from "@/components/feature/management/layouts/TableLayout";
 import { useMemo } from "react";
 import { motion } from "framer-motion"; // Import motion for animation

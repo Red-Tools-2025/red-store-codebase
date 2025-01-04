@@ -136,6 +136,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
       onClose();
     } catch (error) {
       setIsDeleting(false);
+      console.error(error);
       toast({
         title: "Error",
         description: "Failed to delete products",

@@ -2,7 +2,7 @@
 import { useSession } from "next-auth/react";
 import { SessionUserType } from "../types/management/context";
 
-import React, { SetStateAction, useMemo, useState } from "react";
+import React, { useState } from "react";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Store } from "@prisma/client";
@@ -27,11 +27,9 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   const [pageSize, setPageSize] = useState<number>(10);
 
   // Fetching store data and inventory data
-  const {
-    data: userStores,
-    error: storeServerFetchError,
-    isLoading: isLoadingStores,
-  } = useStoreServerFetch(sessionUser?.id ?? "");
+  const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
+    sessionUser?.id ?? ""
+  );
 
   // Use useEffect to set initial store when stores are loaded
   React.useEffect(() => {
@@ -41,9 +39,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   }, [userStores]);
 
   const {
-    error: InventoryFetchError,
     inventoryItems,
-    message,
     isLoading: isLoadingProducts,
     total_count,
     handleRefresh,

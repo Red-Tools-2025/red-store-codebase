@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import React, { useEffect, useState } from "react";
-import { LetterText, Loader, LucideProps, Sigma } from "lucide-react";
+import { LetterText, LucideProps, Sigma } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFormik } from "formik";
 import {

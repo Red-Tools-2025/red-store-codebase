@@ -20,9 +20,7 @@ const InventoryPageSizeSelector: React.FC<InventoryPageSizeSelectorProps> = ({
   setCurrentPage,
   setSelectedPageSize,
 }) => {
-  const [pageSizeOptions, setPageSizeOptions] = useState<number[]>([
-    5, 10, 15, 20, 50, 100,
-  ]);
+  const [pageSizeOptions] = useState<number[]>([5, 10, 15, 20, 50, 100]);
 
   return (
     <div className="flex items-center gap-2">

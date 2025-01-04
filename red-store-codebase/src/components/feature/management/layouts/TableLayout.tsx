@@ -3,7 +3,6 @@ import {
   TableBody,
   TableCell,
   TableHeader,
-  TableRow,
 } from "@/components/ui/table";
 
 interface TableLayoutProps {

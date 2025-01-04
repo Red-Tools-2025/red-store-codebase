@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import supabase from "../../../../../../../supabase/client";
-// @ts-ignore
 import * as XLSX from "xlsx";
-import dayjs from "dayjs";
 
 export async function GET(req: Request) {
   try {
@@ -19,8 +18,8 @@ export async function GET(req: Request) {
     }
 
     // Parse the month_input and calculate date range
-    const startDate = dayjs(month_input).startOf("month").format("YYYY-MM-DD");
-    const endDate = dayjs(month_input).endOf("month").format("YYYY-MM-DD");
+    // const startDate = dayjs(month_input).startOf("month").format("YYYY-MM-DD");
+    // const endDate = dayjs(month_input).endOf("month").format("YYYY-MM-DD");
 
     // Call the Supabase RPC function to get the data
     const { data, error } = await supabase.rpc(
@@ -45,9 +44,9 @@ export async function GET(req: Request) {
       "Product ID": row.product_id,
       "Opening Stock": row.opening_stock,
       "Received Stock": row.received_stock,
-      "Total": row.opening_stock + row.received_stock,
+      Total: row.opening_stock + row.received_stock,
       "Closing Stock": row.closing_stock,
-      "Sales": row.sales,
+      Sales: row.sales,
       "Sale Amount": row.sale_amount,
       "Total Value": row.total_value,
     }));

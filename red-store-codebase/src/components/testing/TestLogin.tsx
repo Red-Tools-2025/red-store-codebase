@@ -18,9 +18,7 @@ import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
 export const description =
   "A simple login form with email and password. The submit button says 'Sign in'.";
 
-interface TestLoginFormProps {}
-
-const TestLoginForm: React.FC<TestLoginFormProps> = ({}) => {
+const TestLoginForm = () => {
   const router = useRouter();
   const { handleLogin } = useAuthServerHook();
 

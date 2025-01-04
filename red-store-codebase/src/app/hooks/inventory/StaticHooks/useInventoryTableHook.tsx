@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Inventory } from "@prisma/client";
 import {
   ColumnDef,

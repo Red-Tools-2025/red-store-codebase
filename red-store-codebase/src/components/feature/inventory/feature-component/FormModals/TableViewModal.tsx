@@ -12,7 +12,6 @@ import { SetStateAction, useState } from "react";
 import { motion } from "framer-motion"; // For smooth animations
 import { IoSave } from "react-icons/io5";
 import { ColumnDef } from "@tanstack/react-table";
-import { on } from "events";
 
 interface TableViewModalProps {
   isOpen: boolean;

@@ -98,7 +98,7 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
                     </div>
                     <div className="flex flex-col items-center mt-5">
                       <p className="text-xl font-[600] text-[#101828]">
-                        Oops! Looks like we couldn't find anything
+                        Oops! Looks like we couldn&apos;t find anything
                       </p>
                       <p className="text-center font-[400] w-[450px] text-[16px] text-gray-600 mt-2">
                         Hey, there looks like you dont have any product of this

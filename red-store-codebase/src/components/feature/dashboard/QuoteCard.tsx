@@ -21,12 +21,12 @@ const DashboardMessageCard: React.FC = () => {
       </CardHeader>
       <CardContent>
         <p className="text-base text-gray-600 h-28 font-inter">
-          "Stay ahead of demand with real-time inventory insights. Track sales,
+          {`Stay ahead of demand with real-time inventory insights. Track sales,
           monitor stock levels, and optimize restocking to ensure your shelves
           are always full and customers satisfied. Leverage detailed analytics
           to identify trends and make smarter purchasing decisions. With our
           dashboard, you'll never run out of your best-selling products, and
-          you'll minimize waste from overstocking."
+          you'll minimize waste from overstocking.`}
         </p>
       </CardContent>
       <CardFooter className="flex justify-end text-sma text-gray-500 font-inter">

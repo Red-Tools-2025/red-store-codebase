@@ -5,9 +5,9 @@ import FilterDropdown from "../Filter";
 import { Store } from "@prisma/client";
 
 interface StoreTableControllerProps {
-  setSearchValue: Dispatch<SetStateAction<String>>;
-  setLocationFilterValue: Dispatch<SetStateAction<String>>;
-  setStatusFilterValue: Dispatch<SetStateAction<String>>;
+  setSearchValue: Dispatch<SetStateAction<string>>;
+  setLocationFilterValue: Dispatch<SetStateAction<string>>;
+  setStatusFilterValue: Dispatch<SetStateAction<string>>;
   storeData: Store[] | null;
   locations: { value: string; label: string }[];
 }

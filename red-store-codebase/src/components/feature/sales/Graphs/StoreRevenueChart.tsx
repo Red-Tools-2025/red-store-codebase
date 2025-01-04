@@ -17,13 +17,22 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import useStoreRevenueData from "@/app/hooks/dashboard/useStoreRevenueData";
-import { Button } from "@/components/ui/button";
 
 // Helper function to convert month number to month name
 const getMonthName = (month: number) => {
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   return months[month - 1];
 };
@@ -88,7 +97,7 @@ const StoreRevenueChart = ({ storeId }: { storeId: number }) => {
   }
 
   // Skip the first two data points
-  
+
   const filteredChartData = chartData.slice(2);
 
   const uniqueYears = [
@@ -144,7 +153,8 @@ const StoreRevenueChart = ({ storeId }: { storeId: number }) => {
               .filter((data) => data.year === selectedYear) // Filter months based on selected year
               .map((data) => (
                 <option key={data.month} value={data.month}>
-                  {getMonthName(data.month)} {/* Use the helper function here */}
+                  {getMonthName(data.month)}{" "}
+                  {/* Use the helper function here */}
                 </option>
               ))}
           </select>
