@@ -7,6 +7,7 @@ import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerF
 import { Store } from "@prisma/client";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useProducts from "../hooks/inventory/FetchHooks/useProducts";
+import { PosProvider } from "../contexts/pos/PosContext";
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -47,34 +48,41 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   );
 
   return (
-    <div className="p-5 font-inter">
-      {session ? (
-        <>
-          {isLoadingStores ? (
-            <div>Loading...</div>
-          ) : userStores && userStores.length > 0 ? (
-            <>
-              <div className="flex justify-between">
-                <h1 className="text-2xl font-semibold">Point of Sales</h1>
-                <div className="flex gap-2">
-                  <DropDownStoreSelect
-                    data={userStores}
-                    isDisabled={userStores.length === 0}
-                    setSelectedStore={setIsSelectedStore}
-                    selectedStore={selectedStore}
-                  />
+    <PosProvider
+      handleRefresh={handleRefresh}
+      isLoading={isLoadingProducts}
+      inventoryItems={inventoryItems}
+      sessionData={sessionUser ?? null}
+    >
+      <div className="p-5 font-inter">
+        {session ? (
+          <>
+            {isLoadingStores ? (
+              <div>Loading...</div>
+            ) : userStores && userStores.length > 0 ? (
+              <>
+                <div className="flex justify-between">
+                  <h1 className="text-2xl font-semibold">Point of Sales</h1>
+                  <div className="flex gap-2">
+                    <DropDownStoreSelect
+                      data={userStores}
+                      isDisabled={userStores.length === 0}
+                      setSelectedStore={setIsSelectedStore}
+                      selectedStore={selectedStore}
+                    />
+                  </div>
                 </div>
-              </div>
-              {children}
-            </>
-          ) : (
-            <div>No stores found</div>
-          )}
-        </>
-      ) : (
-        <main>Session not found. Please log in again.</main>
-      )}
-    </div>
+                {children}
+              </>
+            ) : (
+              <div>No stores found</div>
+            )}
+          </>
+        ) : (
+          <main>Session not found. Please log in again.</main>
+        )}
+      </div>
+    </PosProvider>
   );
 };
 
