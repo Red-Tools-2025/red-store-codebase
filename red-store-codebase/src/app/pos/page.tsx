@@ -19,7 +19,7 @@ const POSPage = () => {
         />
 
         {/* POS Cart Display */}
-        <div className="w-1/3 bg-green-500 p-4">
+        <div className="w-1/4 bg-green-500 p-4">
           {/* Content for cart display can go here */}
         </div>
       </div>

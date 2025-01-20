@@ -11,7 +11,7 @@ const ItemSelectionDisplay: React.FC<ItemSelectionDisplayProps> = ({
   isLoading,
 }) => {
   return (
-    <div className="flex-1 p-4 w-2/3">
+    <div className="flex-1 p-4 w-1/4">
       {isLoading ? (
         <div className="text-center text-gray-500">Loading...</div>
       ) : (
