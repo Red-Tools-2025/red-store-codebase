@@ -6,6 +6,7 @@ import { SessionUserType } from "../types/management/context";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Store } from "@prisma/client";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
+import useProducts from "../hooks/inventory/FetchHooks/useProducts";
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,10 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const sessionUser = session?.user as SessionUserType | undefined;
 
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
+
+  // pagination
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   // Fetching store data and inventory data
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
@@ -28,6 +33,18 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       setIsSelectedStore(userStores[0]);
     }
   }, [userStores]);
+
+  const {
+    inventoryItems,
+    isLoading: isLoadingProducts,
+    total_count,
+    handleRefresh,
+  } = useProducts(
+    selectedStore ? String(selectedStore.storeId) : "",
+    sessionUser?.id ?? "",
+    currentPage,
+    pageSize
+  );
 
   return (
     <div className="p-5 font-inter">
