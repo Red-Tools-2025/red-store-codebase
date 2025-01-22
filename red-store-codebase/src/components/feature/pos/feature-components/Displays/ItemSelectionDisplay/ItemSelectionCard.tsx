@@ -3,23 +3,17 @@ import { useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { FaCartPlus } from "react-icons/fa";
+import useCart from "@/app/hooks/pos/StaticHooks/useCart";
+import { usePos } from "@/app/contexts/pos/PosContext";
 
 interface ItemSelectionCardProps {
   item: Inventory;
-  handleAddToCart: (cartItem: {
-    product_id: number;
-    productQuantity: number;
-    productBrand: string;
-    productName: string;
-    productPrice: number;
-  }) => void;
 }
 
-const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({
-  item,
-  handleAddToCart,
-}) => {
+const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
   const [cartCount, setCartCount] = useState<number>(0);
+  const { cartItems, setCartItems } = usePos();
+  const { handleAddToCart } = useCart();
 
   const handleCartCount = (sign: string) => {
     if (sign === "negative") {
@@ -43,13 +37,17 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({
         <FaCartPlus
           className="text-xl hover:text-blue-500 transition-all cursor-pointer"
           onClick={() =>
-            handleAddToCart({
-              product_id: item.invId,
-              productQuantity: cartCount,
-              productBrand: item.invItemBrand ?? "",
-              productName: item.invItem,
-              productPrice: item.invItemPrice,
-            })
+            handleAddToCart(
+              {
+                product_id: item.invId,
+                productQuantity: cartCount,
+                productBrand: item.invItemBrand ?? "",
+                productName: item.invItem,
+                productPrice: item.invItemPrice,
+              },
+              cartItems,
+              setCartItems
+            )
           }
         />
       </div>

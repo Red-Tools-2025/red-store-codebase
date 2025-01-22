@@ -2,41 +2,12 @@
 import { usePos } from "../contexts/pos/PosContext";
 import ItemSelectionDisplay from "@/components/feature/pos/feature-components/Displays/ItemSelectionDisplay";
 import ProductDisplayControl from "@/components/feature/pos/feature-components/Panels/ProductDisplayControl";
-import { useState } from "react";
+import useCart from "../hooks/pos/StaticHooks/useCart";
 
 const POSPage = () => {
-  const { inventoryItems, isLoading, handleRefresh } = usePos();
-  const [cartItems, setCartItems] = useState<
-    {
-      product_id: number;
-      productQuantity: number;
-      productName: string;
-      productBrand: string;
-    }[]
-  >([]);
-
-  const handleAddToCart = (cartItem: {
-    product_id: number;
-    productQuantity: number;
-    productName: string;
-    productBrand: string;
-  }) => {
-    if (!cartItems.some((item) => item.product_id === cartItem.product_id)) {
-      setCartItems((prev) =>
-        cartItem.productQuantity === 0
-          ? [...prev, { ...cartItem, productQuantity: 1 }]
-          : [...prev, cartItem]
-      );
-    }
-  };
-
-  console.log(cartItems);
-
-  const handleRemoveFromCart = (cartItemId: number) =>
-    setCartItems((prev) =>
-      prev.filter((cartItem) => cartItem.product_id != cartItemId)
-    );
-
+  const { inventoryItems, isLoading, cartItems, handleRefresh, setCartItems } =
+    usePos();
+  const { handleRemoveFromCart } = useCart();
   return (
     <div className="flex flex-col h-screen">
       {/* Header Section */}
@@ -50,7 +21,6 @@ const POSPage = () => {
         <div className="flex-1 overflow-y-auto">
           <div className="p-2">
             <ItemSelectionDisplay
-              handleAddToCart={handleAddToCart}
               inventoryItems={inventoryItems}
               isLoading={isLoading}
             />
@@ -64,7 +34,11 @@ const POSPage = () => {
               <div key={i} className="flex flex-col">
                 <p>{item.productName}</p>
                 <p>{item.productQuantity}</p>
-                <p onClick={() => handleRemoveFromCart(item.product_id)}>
+                <p
+                  onClick={() =>
+                    handleRemoveFromCart(item.product_id, setCartItems)
+                  }
+                >
                   remove
                 </p>
               </div>

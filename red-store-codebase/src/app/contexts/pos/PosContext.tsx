@@ -1,12 +1,21 @@
-import { createContext, useContext, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { SessionUserType } from "@/app/types/management/context";
 import { Inventory } from "@prisma/client";
+import { Cart } from "@/app/types/pos/cart";
 
 interface PosContextType {
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
   isLoading: boolean;
   handleRefresh: () => void;
+  cartItems: Cart[];
+  setCartItems: Dispatch<SetStateAction<Cart[]>>;
 }
 
 const PosContext = createContext<PosContextType | undefined>(undefined);
@@ -17,12 +26,16 @@ export const PosProvider = ({
   inventoryItems,
   isLoading,
   handleRefresh,
+  cartItems,
+  setCartItems,
 }: {
   children: ReactNode;
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
   isLoading: boolean;
   handleRefresh: () => void;
+  cartItems: Cart[];
+  setCartItems: Dispatch<SetStateAction<Cart[]>>;
 }) => {
   return (
     <PosContext.Provider
@@ -31,6 +44,8 @@ export const PosProvider = ({
         inventoryItems,
         isLoading,
         handleRefresh,
+        cartItems,
+        setCartItems,
       }}
     >
       {children}

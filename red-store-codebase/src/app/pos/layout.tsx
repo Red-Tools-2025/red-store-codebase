@@ -8,6 +8,7 @@ import { Store } from "@prisma/client";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useProducts from "../hooks/inventory/FetchHooks/useProducts";
 import { PosProvider } from "../contexts/pos/PosContext";
+import { Cart } from "../types/pos/cart";
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -22,6 +23,9 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   // pagination
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
+
+  // cart
+  const [cartItems, setCartItems] = useState<Cart[]>([]);
 
   // Fetching store data and inventory data
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
@@ -49,6 +53,8 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
 
   return (
     <PosProvider
+      cartItems={cartItems}
+      setCartItems={setCartItems}
       handleRefresh={handleRefresh}
       isLoading={isLoadingProducts}
       inventoryItems={inventoryItems}
