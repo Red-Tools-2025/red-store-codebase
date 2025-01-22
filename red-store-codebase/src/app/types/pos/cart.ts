@@ -3,5 +3,5 @@ export interface Cart {
   productQuantity: number;
   productName: string;
   productBrand: string;
-  productPrice: Number;
+  productPrice: number;
 }
