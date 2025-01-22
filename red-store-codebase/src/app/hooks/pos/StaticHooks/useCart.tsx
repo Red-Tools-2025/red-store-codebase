@@ -19,12 +19,36 @@ const useCart = () => {
   const handleRemoveFromCart = (
     cartItemId: number,
     setCartItems: Dispatch<SetStateAction<Cart[]>>
-  ) =>
+  ) => {
     setCartItems((prev) =>
       prev.filter((cartItem) => cartItem.product_id != cartItemId)
     );
+  };
 
-  return { handleAddToCart, handleRemoveFromCart };
+  const handleCartItemQty = (
+    cartItemId: number,
+    sign: string,
+    setCartItems: Dispatch<SetStateAction<Cart[]>>
+  ) => {
+    setCartItems(
+      (prev) =>
+        prev
+          .map((item) =>
+            item.product_id === cartItemId
+              ? {
+                  ...item,
+                  productQuantity:
+                    sign === "negative"
+                      ? Math.max(item.productQuantity - 1, 0)
+                      : item.productQuantity + 1,
+                }
+              : item
+          )
+          .filter((item) => item.productQuantity > 0) // Remove items with quantity 0
+    );
+  };
+
+  return { handleAddToCart, handleRemoveFromCart, handleCartItemQty };
 };
 
 export default useCart;
