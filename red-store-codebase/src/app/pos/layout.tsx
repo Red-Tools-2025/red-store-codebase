@@ -21,7 +21,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
 
   // pagination
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize, setPageSize] = useState<number>(20);
 
   // Fetching store data and inventory data
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(

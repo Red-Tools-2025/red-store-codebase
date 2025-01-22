@@ -11,13 +11,13 @@ const ItemSelectionDisplay: React.FC<ItemSelectionDisplayProps> = ({
   isLoading,
 }) => {
   return (
-    <div className="flex-1 p-4 w-1/4">
+    <div className="w-full">
       {isLoading ? (
         <div className="text-center text-gray-500">Loading...</div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
           {inventoryItems?.map((item) => (
-            <ItemSelectionCard item={item} />
+            <ItemSelectionCard key={item.invId} item={item} />
           ))}
         </div>
       )}
