@@ -2,12 +2,10 @@
 import { usePos } from "../contexts/pos/PosContext";
 import ItemSelectionDisplay from "@/components/feature/pos/feature-components/Displays/ItemSelectionDisplay";
 import ProductDisplayControl from "@/components/feature/pos/feature-components/Panels/ProductDisplayControl";
-import useCart from "../hooks/pos/StaticHooks/useCart";
+import CartDisplay from "@/components/feature/pos/feature-components/Displays/CartDisplay";
 
 const POSPage = () => {
-  const { inventoryItems, isLoading, cartItems, handleRefresh, setCartItems } =
-    usePos();
-  const { handleRemoveFromCart } = useCart();
+  const { inventoryItems, isLoading, cartItems, handleRefresh } = usePos();
   return (
     <div className="flex flex-col h-screen">
       {/* Header Section */}
@@ -28,23 +26,7 @@ const POSPage = () => {
         </div>
 
         {/* Fixed Cart Section */}
-        <div className="w-80 bg-green-500 p-4">
-          {cartItems.map((item, i) => {
-            return (
-              <div key={i} className="flex flex-col">
-                <p>{item.productName}</p>
-                <p>{item.productQuantity}</p>
-                <p
-                  onClick={() =>
-                    handleRemoveFromCart(item.product_id, setCartItems)
-                  }
-                >
-                  remove
-                </p>
-              </div>
-            );
-          })}
-        </div>
+        <CartDisplay cartItems={cartItems} />
       </div>
     </div>
   );
