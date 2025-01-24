@@ -14,12 +14,17 @@ const CartDisplay: React.FC<CartDisplayProps> = ({ cartItems }) => {
   const { handleRemoveFromCart, handleCartItemQty } = useCart();
 
   return (
-    <div className="w-80  ml-3 p-3 pt-0 flex flex-col justify-between">
+    <div className="w-80 ml-3 p-3 pt-0 flex flex-col justify-between">
       <div className="flex flex-col">
         <p className="text-xl pb-3 font-semibold">Order Summary</p>
-        <div className="flex flex-col gap-3">
-          {cartItems.map((item, i) => {
-            return (
+        {/* Scrollable container */}
+        <div className="relative h-[450px] overflow-y-auto scrollbar-hide">
+          {/* Gradient at the top */}
+          <div className="absolute top-0 left-0 w-full h-6 bg-gradient-to-b from-white via-white/50 to-transparent pointer-events-none"></div>
+
+          {/* Scrollable content */}
+          <div className="flex flex-col gap-3">
+            {cartItems.map((item, i) => (
               <div
                 key={i}
                 className="flex rounded-lg flex-col bg-gray-100 gap-1 p-3"
@@ -64,22 +69,30 @@ const CartDisplay: React.FC<CartDisplayProps> = ({ cartItems }) => {
                   </div>
                 </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col gap-1">
-        <div className="flex justify-between p-2 bg-gray-100 rounded-md">
-          <p className="font-semibold">Total :</p>
-          <p>
-            {`₹
-            ${cartItems.reduce(
-              (total, item) => total + item.productQuantity * item.productPrice,
-              0
-            )}`}
-          </p>
+
+        {/* Bottom gradient positioned above "Total" */}
+        <div className="relative">
+          <div className="absolute -top-6 left-0 w-full h-6 bg-gradient-to-t from-white via-white/50 to-transparent pointer-events-none"></div>
+
+          {/* Total and Checkout Button */}
+          <div className="flex flex-col gap-1">
+            <div className="flex justify-between p-2 bg-gray-100 rounded-md">
+              <p className="font-semibold">Total :</p>
+              <p>
+                {`₹
+                ${cartItems.reduce(
+                  (total, item) =>
+                    total + item.productQuantity * item.productPrice,
+                  0
+                )}`}
+              </p>
+            </div>
+            <Button variant="secondary">Checkout</Button>
+          </div>
         </div>
-        <Button variant="secondary">Checkout</Button>
       </div>
     </div>
   );
