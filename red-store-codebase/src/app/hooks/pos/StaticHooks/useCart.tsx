@@ -5,7 +5,8 @@ const useCart = () => {
   const handleAddToCart = (
     cartItem: Cart,
     cartItems: Cart[],
-    setCartItems: Dispatch<SetStateAction<Cart[]>>
+    setCartItems: Dispatch<SetStateAction<Cart[]>>,
+    setIsSelected: Dispatch<SetStateAction<number>>
   ) => {
     if (!cartItems.some((item) => item.product_id === cartItem.product_id)) {
       setCartItems((prev) =>
@@ -13,16 +14,19 @@ const useCart = () => {
           ? [...prev, { ...cartItem, productQuantity: 1 }]
           : [...prev, cartItem]
       );
+      setIsSelected(cartItem.product_id);
     }
   };
 
   const handleRemoveFromCart = (
     cartItemId: number,
-    setCartItems: Dispatch<SetStateAction<Cart[]>>
+    setCartItems: Dispatch<SetStateAction<Cart[]>>,
+    setIsSelected: Dispatch<SetStateAction<number>>
   ) => {
     setCartItems((prev) =>
       prev.filter((cartItem) => cartItem.product_id != cartItemId)
     );
+    setIsSelected(0);
   };
 
   const handleCartItemQty = (

@@ -10,13 +10,13 @@ interface CartDisplayProps {
 }
 
 const CartDisplay: React.FC<CartDisplayProps> = ({ cartItems }) => {
-  const { setCartItems } = usePos();
+  const { setCartItems, setIsSelected } = usePos();
   const { handleRemoveFromCart, handleCartItemQty } = useCart();
 
   return (
     <div className="w-80  ml-3 p-3 pt-0 flex flex-col justify-between">
       <div className="flex flex-col">
-        <p className="text-xl pb-3">Order Summary</p>
+        <p className="text-xl pb-3 font-semibold">Order Summary</p>
         <div className="flex flex-col gap-3">
           {cartItems.map((item, i) => {
             return (
@@ -54,7 +54,11 @@ const CartDisplay: React.FC<CartDisplayProps> = ({ cartItems }) => {
                     <MdOutlineDelete
                       className="text-xl text-red-300 hover:text-red-500 cursor-pointer transition-all"
                       onClick={() =>
-                        handleRemoveFromCart(item.product_id, setCartItems)
+                        handleRemoveFromCart(
+                          item.product_id,
+                          setCartItems,
+                          setIsSelected
+                        )
                       }
                     />
                   </div>

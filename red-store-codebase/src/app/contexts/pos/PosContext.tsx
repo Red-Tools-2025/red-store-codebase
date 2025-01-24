@@ -12,10 +12,12 @@ import { Cart } from "@/app/types/pos/cart";
 interface PosContextType {
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
-  isLoading: boolean;
-  handleRefresh: () => void;
   cartItems: Cart[];
+  isLoading: boolean;
+  isSelected: number;
+  handleRefresh: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
+  setIsSelected: Dispatch<SetStateAction<number>>;
 }
 
 const PosContext = createContext<PosContextType | undefined>(undefined);
@@ -24,28 +26,34 @@ export const PosProvider = ({
   children,
   sessionData,
   inventoryItems,
-  isLoading,
-  handleRefresh,
   cartItems,
+  isLoading,
+  isSelected,
+  handleRefresh,
   setCartItems,
+  setIsSelected,
 }: {
   children: ReactNode;
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
-  isLoading: boolean;
-  handleRefresh: () => void;
   cartItems: Cart[];
+  isLoading: boolean;
+  isSelected: number;
+  handleRefresh: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
+  setIsSelected: Dispatch<SetStateAction<number>>;
 }) => {
   return (
     <PosContext.Provider
       value={{
         sessionData,
         inventoryItems,
-        isLoading,
-        handleRefresh,
         cartItems,
+        isLoading,
+        isSelected,
+        handleRefresh,
         setCartItems,
+        setIsSelected,
       }}
     >
       {children}

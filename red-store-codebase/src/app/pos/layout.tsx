@@ -26,6 +26,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
 
   // cart
   const [cartItems, setCartItems] = useState<Cart[]>([]);
+  const [isSelected, setIsSelected] = useState<number>(0);
 
   // Fetching store data and inventory data
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
@@ -53,6 +54,8 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
 
   return (
     <PosProvider
+      isSelected={isSelected}
+      setIsSelected={setIsSelected}
       cartItems={cartItems}
       setCartItems={setCartItems}
       handleRefresh={handleRefresh}
