@@ -10,7 +10,7 @@ interface CartDisplayProps {
 }
 
 const CartDisplay: React.FC<CartDisplayProps> = ({ cartItems }) => {
-  const { setCartItems, setIsSelected } = usePos();
+  const { setCartItems } = usePos();
   const { handleRemoveFromCart, handleCartItemQty } = useCart();
 
   return (
@@ -59,11 +59,7 @@ const CartDisplay: React.FC<CartDisplayProps> = ({ cartItems }) => {
                     <MdOutlineDelete
                       className="text-xl text-red-300 hover:text-red-500 cursor-pointer transition-all"
                       onClick={() =>
-                        handleRemoveFromCart(
-                          item.product_id,
-                          setCartItems,
-                          setIsSelected
-                        )
+                        handleRemoveFromCart(item.product_id, setCartItems)
                       }
                     />
                   </div>

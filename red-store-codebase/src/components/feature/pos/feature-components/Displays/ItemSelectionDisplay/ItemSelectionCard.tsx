@@ -14,7 +14,7 @@ interface ItemSelectionCardProps {
 
 const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
   const [cartCount, setCartCount] = useState<number>(0);
-  const { cartItems, isSelected, setIsSelected, setCartItems } = usePos();
+  const { cartItems, setCartItems } = usePos();
   const { handleAddToCart, handleRemoveFromCart } = useCart();
 
   const handleCartCount = (sign: string) => {
@@ -29,7 +29,9 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
     <div
       key={item.invId}
       className={`${
-        isSelected === item.invId ? "bg-blue-500 text-white group" : "bg-white"
+        cartItems.some((cart_item) => cart_item.product_id === item.invId)
+          ? "bg-blue-500 text-white group"
+          : "bg-white"
       } border border-1 rounded-md p-3 flex flex-col h-40 justify-between`}
     >
       <div className="flex justify-between items-center py-1">
@@ -38,12 +40,10 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
           <IoIosArrowRoundForward />
           <p>{item.invItemStock}</p>
         </div>
-        {isSelected === item.invId ? (
+        {cartItems.some((cart_item) => cart_item.product_id === item.invId) ? (
           <MdDelete
             className="text-xl text-white transition-all cursor-pointer"
-            onClick={() =>
-              handleRemoveFromCart(item.invId, setCartItems, setIsSelected)
-            }
+            onClick={() => handleRemoveFromCart(item.invId, setCartItems)}
           />
         ) : (
           <FaCartPlus
@@ -58,8 +58,7 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
                   productPrice: item.invItemPrice,
                 },
                 cartItems,
-                setCartItems,
-                setIsSelected
+                setCartItems
               )
             }
           />
@@ -68,14 +67,16 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
       <div className={`flex flex-col gap-2`}>
         <p
           className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
-            isSelected === item.invId ? "text-blue-500" : ""
+            cartItems.some((cart_item) => cart_item.product_id === item.invId)
+              ? "text-blue-500"
+              : ""
           }`}
         >
           {item.invItemBrand}
         </p>
         <p
           className={`${
-            isSelected === item.invId
+            cartItems.some((cart_item) => cart_item.product_id === item.invId)
               ? ""
               : "group-hover:text-blue-600 transition-all"
           }`}
@@ -85,7 +86,9 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
       </div>
       <div
         className={`flex text-sm items-end items-center justify-end gap-3 ${
-          isSelected === item.invId ? "hidden" : ""
+          cartItems.some((cart_item) => cart_item.product_id === item.invId)
+            ? "hidden"
+            : ""
         }`}
       >
         <CiCirclePlus

@@ -14,10 +14,8 @@ interface PosContextType {
   inventoryItems: Inventory[] | null;
   cartItems: Cart[];
   isLoading: boolean;
-  isSelected: number;
   handleRefresh: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
-  setIsSelected: Dispatch<SetStateAction<number>>;
 }
 
 const PosContext = createContext<PosContextType | undefined>(undefined);
@@ -28,20 +26,16 @@ export const PosProvider = ({
   inventoryItems,
   cartItems,
   isLoading,
-  isSelected,
   handleRefresh,
   setCartItems,
-  setIsSelected,
 }: {
   children: ReactNode;
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
   cartItems: Cart[];
   isLoading: boolean;
-  isSelected: number;
   handleRefresh: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
-  setIsSelected: Dispatch<SetStateAction<number>>;
 }) => {
   return (
     <PosContext.Provider
@@ -50,10 +44,8 @@ export const PosProvider = ({
         inventoryItems,
         cartItems,
         isLoading,
-        isSelected,
         handleRefresh,
         setCartItems,
-        setIsSelected,
       }}
     >
       {children}
