@@ -1,8 +1,5 @@
-import { description } from "@/components/testing/TestLogin";
-import { Toast } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
 import { openDB, DBSchema } from "idb";
-import { title } from "process";
 import { Dispatch, SetStateAction } from "react";
 
 // Define the IndexedDB Schema
