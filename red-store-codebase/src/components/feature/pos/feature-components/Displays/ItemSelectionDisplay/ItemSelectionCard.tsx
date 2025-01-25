@@ -56,6 +56,7 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
                   productBrand: item.invItemBrand ?? "",
                   productName: item.invItem,
                   productPrice: item.invItemPrice,
+                  productCurrentStock: item.invItemStock,
                 },
                 cartItems,
                 setCartItems

@@ -1,17 +1,17 @@
 import { usePos } from "@/app/contexts/pos/PosContext";
+import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 import useCart from "@/app/hooks/pos/StaticHooks/useCart";
-import { Cart } from "@/app/types/pos/cart";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 
-interface CartDisplayProps {
-  cartItems: Cart[];
-}
-
-const CartDisplay: React.FC<CartDisplayProps> = ({ cartItems }) => {
-  const { setCartItems } = usePos();
+const CartDisplay = () => {
+  const { setCartItems, cartItems } = usePos();
   const { handleRemoveFromCart, handleCartItemQty } = useCart();
+  const { saveToCache } = useBrowserCacheStorage();
+
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   return (
     <div className="w-80 ml-3 p-3 pt-0 flex flex-col justify-between">
@@ -86,7 +86,26 @@ const CartDisplay: React.FC<CartDisplayProps> = ({ cartItems }) => {
                 )}`}
               </p>
             </div>
-            <Button variant="secondary">Checkout</Button>
+            <Button
+              onClick={() =>
+                saveToCache(
+                  cartItems.map((cartItem) => ({
+                    cartItem: {
+                      product_id: cartItem.product_id,
+                      product_current_stock: cartItem.productCurrentStock, // Set this to actual stock if available
+                      product_name: cartItem.productName,
+                      product_price: cartItem.productPrice,
+                      productQuantity: cartItem.productQuantity,
+                    },
+                    store_id: "store_123", // Replace with the actual store ID
+                  })),
+                  setIsSaving
+                )
+              }
+              variant="secondary"
+            >
+              Checkout
+            </Button>
           </div>
         </div>
       </div>

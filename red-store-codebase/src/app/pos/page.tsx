@@ -26,7 +26,7 @@ const POSPage = () => {
         </div>
 
         {/* Fixed Cart Section */}
-        <CartDisplay cartItems={cartItems} />
+        <CartDisplay />
       </div>
     </div>
   );
