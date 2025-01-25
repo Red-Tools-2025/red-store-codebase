@@ -5,12 +5,12 @@ import ProductDisplayControl from "@/components/feature/pos/feature-components/P
 import CartDisplay from "@/components/feature/pos/feature-components/Displays/CartDisplay";
 
 const POSPage = () => {
-  const { inventoryItems, isLoading, cartItems, handleRefresh } = usePos();
+  const { inventoryItems, isLoading, cartItems } = usePos();
   return (
     <div className="flex flex-col h-screen">
       {/* Header Section */}
       <div className="p-3">
-        <ProductDisplayControl handleRefresh={handleRefresh} />
+        <ProductDisplayControl />
       </div>
 
       {/* Main Content Area */}

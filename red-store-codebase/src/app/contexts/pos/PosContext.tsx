@@ -14,7 +14,7 @@ interface PosContextType {
   inventoryItems: Inventory[] | null;
   cartItems: Cart[];
   isLoading: boolean;
-  handleRefresh: () => void;
+  handleResync: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
 }
 
@@ -26,7 +26,7 @@ export const PosProvider = ({
   inventoryItems,
   cartItems,
   isLoading,
-  handleRefresh,
+  handleResync,
   setCartItems,
 }: {
   children: ReactNode;
@@ -34,7 +34,7 @@ export const PosProvider = ({
   inventoryItems: Inventory[] | null;
   cartItems: Cart[];
   isLoading: boolean;
-  handleRefresh: () => void;
+  handleResync: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
 }) => {
   return (
@@ -44,7 +44,7 @@ export const PosProvider = ({
         inventoryItems,
         cartItems,
         isLoading,
-        handleRefresh,
+        handleResync,
         setCartItems,
       }}
     >

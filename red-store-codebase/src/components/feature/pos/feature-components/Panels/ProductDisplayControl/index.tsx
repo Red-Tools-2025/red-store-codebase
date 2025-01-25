@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
 interface ProductDisplayControlProps {
-  handleRefresh: () => void;
+  handleRefresh?: () => void;
 }
 
 const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
