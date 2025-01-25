@@ -16,6 +16,7 @@ interface PosContextType {
   isLoading: boolean;
   handleResync: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
+  setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
 }
 
 const PosContext = createContext<PosContextType | undefined>(undefined);
@@ -28,6 +29,7 @@ export const PosProvider = ({
   isLoading,
   handleResync,
   setCartItems,
+  setClientSideItems,
 }: {
   children: ReactNode;
   sessionData: SessionUserType | null;
@@ -36,6 +38,7 @@ export const PosProvider = ({
   isLoading: boolean;
   handleResync: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
+  setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
 }) => {
   return (
     <PosContext.Provider
@@ -46,6 +49,7 @@ export const PosProvider = ({
         isLoading,
         handleResync,
         setCartItems,
+        setClientSideItems,
       }}
     >
       {children}

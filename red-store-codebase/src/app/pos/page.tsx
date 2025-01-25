@@ -5,7 +5,7 @@ import ProductDisplayControl from "@/components/feature/pos/feature-components/P
 import CartDisplay from "@/components/feature/pos/feature-components/Displays/CartDisplay";
 
 const POSPage = () => {
-  const { inventoryItems, isLoading, cartItems } = usePos();
+  const { inventoryItems, isLoading } = usePos();
   return (
     <div className="flex flex-col h-screen">
       {/* Header Section */}

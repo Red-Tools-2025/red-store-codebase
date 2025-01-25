@@ -1,4 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
+import { Inventory } from "@prisma/client";
 import { openDB, DBSchema } from "idb";
 import { Dispatch, SetStateAction } from "react";
 
@@ -36,13 +37,27 @@ const useBrowserCacheStorage = () => {
   // Adding product to browser DB
   const saveToCache = async (
     records: POSDbBuffer["sales"]["value"][],
-    isSavingToCache: Dispatch<SetStateAction<boolean>>
+    isSavingToCache: Dispatch<SetStateAction<boolean>>,
+    setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>
   ) => {
     const db = await initDB;
     isSavingToCache(true);
     try {
       for (const record of records) {
         await db.add("sales", record); // Ensure each record has a unique `cartItem.product_id`
+        setClientSideItems((prev) =>
+          prev
+            ? prev.map((item) =>
+                item.invId === record.cartItem.product_id
+                  ? {
+                      ...item,
+                      invItemStock:
+                        item.invItemStock - record.cartItem.productQuantity,
+                    }
+                  : item
+              )
+            : prev
+        );
       }
       console.log(`${records.length} sales logged successfully.`);
     } catch (error) {

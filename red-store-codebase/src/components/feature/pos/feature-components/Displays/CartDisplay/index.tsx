@@ -7,7 +7,7 @@ import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 
 const CartDisplay = () => {
-  const { setCartItems, cartItems } = usePos();
+  const { setCartItems, setClientSideItems, cartItems } = usePos();
   const { handleRemoveFromCart, handleCartItemQty } = useCart();
   const { saveToCache } = useBrowserCacheStorage();
 
@@ -99,7 +99,8 @@ const CartDisplay = () => {
                     },
                     store_id: "store_123", // Replace with the actual store ID
                   })),
-                  setIsSaving
+                  setIsSaving,
+                  setClientSideItems
                 )
               }
               variant="secondary"

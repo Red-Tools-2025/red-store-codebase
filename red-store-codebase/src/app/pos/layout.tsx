@@ -70,6 +70,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       cartItems={cartItems}
       setCartItems={setCartItems}
       handleResync={handleResync}
+      setClientSideItems={setClientSideItems}
       isLoading={isLoadingProducts}
       inventoryItems={clientSideItems}
       sessionData={sessionUser ?? null}
