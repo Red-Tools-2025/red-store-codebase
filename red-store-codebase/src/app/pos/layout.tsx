@@ -67,6 +67,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
 
   return (
     <PosProvider
+      selectedStore={selectedStore}
       cartItems={cartItems}
       setCartItems={setCartItems}
       handleResync={handleResync}

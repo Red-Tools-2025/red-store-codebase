@@ -76,15 +76,17 @@ export interface ProcessCartRequestBody {
 }
 
 export interface ProcessBulkCartRequest {
-  purchases: {
-    product_id: number;
-    product_current_stock: number;
-    product_name: string;
-    product_price: number;
-    productQuantity: number;
-  }[][]; // Array of cart items for bulk processing
+  sales_records: {
+    purchases: {
+      product_id: number;
+      product_current_stock: number;
+      product_name: string;
+      product_price: number;
+      productQuantity: number;
+    }[];
+    purchase_time: string;
+  }[]; // Array of cart items for bulk processing
   store_id: number;
-  purchase_time: string; // defaults to today, just for testing
 }
 
 export type TimeSeries =

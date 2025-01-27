@@ -23,6 +23,7 @@ const useItems = (
 
   const handleResync = () => {
     setResyncInventory(!resyncInventory);
+    setIsLoading(true);
   };
 
   useEffect(() => {

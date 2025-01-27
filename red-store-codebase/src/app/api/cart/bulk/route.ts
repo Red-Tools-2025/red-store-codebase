@@ -1,8 +1,4 @@
-import {
-  ProcessBulkCartRequest,
-  ProcessCartRequestBody,
-  TimeSeries,
-} from "@/app/types/inventory/api";
+import { ProcessBulkCartRequest, TimeSeries } from "@/app/types/inventory/api";
 
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
@@ -12,11 +8,11 @@ import supabase from "../../../../../supabase/client";
 export async function POST(req: Request) {
   try {
     const body: ProcessBulkCartRequest = await req.json();
-    const { purchases, store_id, purchase_time } = body;
+    const { sales_records, store_id } = body;
 
-    if (purchases.length === 0) {
+    if (sales_records.length === 0) {
       return NextResponse.json(
-        { error: "No purchases to process" },
+        { error: "No sales to process" },
         {
           status: 404,
           headers: {
@@ -26,12 +22,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const timestamp = new Date(purchase_time);
     const allSeriesInserts: TimeSeries[] = [];
     const allInventoryUpdates: Promise<any>[] = [];
 
-    for (const cartItems of purchases) {
-      const cart_product_ids = cartItems.map(
+    for (const record of sales_records) {
+      const cart_product_ids = record.purchases.map(
         (cartItems) => cartItems.product_id
       );
       const products_inventory = await db.inventory.findMany({
@@ -54,42 +49,37 @@ export async function POST(req: Request) {
           }
         );
 
-      const prepped_series_inserts: TimeSeries[] = cartItems.map((cartItem) => {
-        const inventoryItem = products_inventory.find(
-          (item) => item.invId === cartItem.product_id
-        );
-
-        if (!inventoryItem)
-          throw new Error(
-            `Product with ID ${cartItem.product_id} not found in inventory, please scan again`
+      const prepped_series_inserts: TimeSeries[] = record.purchases.map(
+        (cartItem) => {
+          const inventoryItem = products_inventory.find(
+            (item) => item.invId === cartItem.product_id
           );
 
-        console.log({
-          calculations: {
-            closing: inventoryItem.invItemStock - cartItem.productQuantity,
+          if (!inventoryItem)
+            throw new Error(
+              `Product with ID ${cartItem.product_id} not found in inventory, please scan again`
+            );
+
+          // Corrected to match API body keys
+          const productQuantity = cartItem.productQuantity; // Fix here
+
+          return {
+            mrp_per_bottle: inventoryItem.invItemPrice,
             sales: cartItem.productQuantity,
-          },
-        });
-
-        // Corrected to match API body keys
-        const productQuantity = cartItem.productQuantity; // Fix here
-
-        return {
-          mrp_per_bottle: inventoryItem.invItemPrice,
-          sales: cartItem.productQuantity,
-          sale_amount: cartItem.productQuantity * inventoryItem.invItemPrice,
-          product_id: cartItem.product_id,
-          product_name: inventoryItem.invItem, // Added product_name
-          opening_stock: inventoryItem.invItemStock,
-          received_stock: 0,
-          closing_stock: inventoryItem.invItemStock - productQuantity,
-          store_id: store_id,
-          time: timestamp.toISOString(),
-        };
-      });
+            sale_amount: cartItem.productQuantity * inventoryItem.invItemPrice,
+            product_id: cartItem.product_id,
+            product_name: inventoryItem.invItem, // Added product_name
+            opening_stock: cartItem.product_current_stock, // Fix here, due to nature of cache
+            received_stock: 0,
+            closing_stock: inventoryItem.invItemStock - productQuantity,
+            store_id: store_id,
+            time: record.purchase_time,
+          };
+        }
+      );
 
       // Create the decrements sequentially
-      const inventory_updates = cartItems.map((cartItem) =>
+      const inventory_updates = record.purchases.map((cartItem) =>
         db.inventory.update({
           where: {
             storeId_invId: { storeId: store_id, invId: cartItem.product_id }, // utilizing the primary key
@@ -103,27 +93,40 @@ export async function POST(req: Request) {
       );
 
       allSeriesInserts.push(...prepped_series_inserts);
-      allInventoryUpdates.push(...(inventory_updates as Promise<any>[]));
+      allInventoryUpdates.push(...inventory_updates);
     }
 
-    // insert data into Timeseries table
-    const { error: TimeseriesInsertionError } = await supabase
-      .from("inventory_timeseries")
-      .insert(allSeriesInserts);
+    // Creating batchwise bulk insertions
+    const batch_size = 100;
 
-    if (TimeseriesInsertionError) {
-      return NextResponse.json(
-        {
-          error: TimeseriesInsertionError.message,
-        },
-        {
-          status: 400,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
+    // sequntially loop through and insert in batches
+    for (let i = 0; i < allSeriesInserts.length; i += batch_size) {
+      const batch = allSeriesInserts.slice(i, i + batch_size);
+      const { error: TimeseriesInsertionError } = await supabase
+        .from("inventory_timeseries")
+        .insert(batch);
+
+      if (TimeseriesInsertionError) {
+        console.error("Batch insertion error", {
+          batch,
+          error: TimeseriesInsertionError,
+        });
+        return NextResponse.json(
+          {
+            error: TimeseriesInsertionError.message,
           },
-        }
-      );
+          {
+            status: 400,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
+        );
+      }
     }
+
+    // Process the updates to the inventory
+    await Promise.all(allInventoryUpdates);
 
     return NextResponse.json(
       {

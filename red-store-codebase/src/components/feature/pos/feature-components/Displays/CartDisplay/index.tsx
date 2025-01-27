@@ -8,7 +8,7 @@ import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 
 const CartDisplay = () => {
-  const { setCartItems, setClientSideItems, cartItems } = usePos();
+  const { setCartItems, cartItems, selectedStore } = usePos();
   const { handleRemoveFromCart, handleCartItemQty } = useCart();
   const { saveToCache } = useBrowserCacheStorage();
 
@@ -89,6 +89,7 @@ const CartDisplay = () => {
               </p>
             </div>
             <Button
+              disabled={cartItems.length === 0 || isSaving}
               onClick={() =>
                 saveToCache(
                   cartItems.map((cartItem) => ({
@@ -99,7 +100,9 @@ const CartDisplay = () => {
                       product_price: cartItem.productPrice,
                       productQuantity: cartItem.productQuantity,
                     },
-                    store_id: "store_123", // Replace with the actual store ID
+                    store_id: selectedStore
+                      ? selectedStore.storeId.toString()
+                      : "", // Replace with the actual store ID
                     purchase_time: new Date().toISOString(),
                   })),
                   setIsSaving
@@ -107,7 +110,7 @@ const CartDisplay = () => {
               }
               variant="secondary"
             >
-              Checkout
+              {isSaving ? "Saving..." : "Checkout"}
             </Button>
           </div>
         </div>

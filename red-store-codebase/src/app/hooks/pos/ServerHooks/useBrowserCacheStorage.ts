@@ -1,12 +1,13 @@
 import { usePos } from "@/app/contexts/pos/PosContext";
 import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 import { openDB, DBSchema } from "idb";
 import { Dispatch, SetStateAction } from "react";
 
 // Define the IndexedDB Schema
 interface POSDbBuffer extends DBSchema {
   sales: {
-    key: string; // Unique ID for each inventory item
+    key: number; // key for a sales log
     value: {
       cartItem: {
         product_id: number;
@@ -18,21 +19,21 @@ interface POSDbBuffer extends DBSchema {
       store_id: string;
       purchase_time: string;
     };
-    indexes: { storeId: string; productId: string };
+    indexes: { purchase_time: string };
   };
 }
 
 const useBrowserCacheStorage = () => {
   const { toast } = useToast();
-  const { setCartItems, setClientSideItems } = usePos();
+  const { setCartItems, setClientSideItems, handleResync } = usePos();
   // Initializing the browser DB for object storage
   const initDB = openDB<POSDbBuffer>("pos-buffer", 1, {
     upgrade(db) {
       if (!db.objectStoreNames.contains("sales")) {
         const store = db.createObjectStore("sales", {
-          keyPath: "cartItem.product_id",
+          autoIncrement: true,
         });
-        store.createIndex("productId", "cartItem.product_id");
+        store.createIndex("purchase_time", "purchase_time");
       }
     },
   });
@@ -78,12 +79,56 @@ const useBrowserCacheStorage = () => {
     }
   };
 
-  const syncToServer = async () => {
+  const syncToServer = async (store_id: number) => {
     const db = await initDB;
     const sales_records = await db.getAll("sales");
+    if (sales_records.length === 0) {
+      toast({
+        title: "No Sales",
+        description: "No sales to sync",
+      });
+      return;
+    }
+    const bulkPayload = sales_records.reduce((acc, record) => {
+      const existingRecord = acc.find(
+        (r) => r.purchase_time === record.purchase_time
+      );
+
+      if (existingRecord) {
+        existingRecord.purchases.push(record.cartItem);
+      } else {
+        acc.push({
+          purchases: [record.cartItem],
+          purchase_time: record.purchase_time,
+        });
+      }
+      return acc;
+    }, [] as { purchases: POSDbBuffer["sales"]["value"]["cartItem"][]; purchase_time: string }[]);
+
+    try {
+      const update_response = await axios.post("/api/cart/bulk", {
+        sales_records: bulkPayload,
+        store_id,
+      });
+
+      if (update_response.status === 200) {
+        await db.clear("sales");
+        handleResync();
+        toast({
+          title: "Sales Synced",
+          description: "Sales synced to server",
+        });
+      }
+    } catch (error) {
+      console.error("Error syncing sales to server:", error);
+      toast({
+        title: "Sync Failed",
+        description: "Failed to sync sales to server.",
+      });
+    }
   };
 
-  return { saveToCache };
+  return { saveToCache, syncToServer };
 };
 
 export default useBrowserCacheStorage;

@@ -6,7 +6,7 @@ import {
   SetStateAction,
 } from "react";
 import { SessionUserType } from "@/app/types/management/context";
-import { Inventory } from "@prisma/client";
+import { Inventory, Store } from "@prisma/client";
 import { Cart } from "@/app/types/pos/cart";
 
 interface PosContextType {
@@ -14,6 +14,7 @@ interface PosContextType {
   inventoryItems: Inventory[] | null;
   cartItems: Cart[];
   isLoading: boolean;
+  selectedStore: Store | null;
   handleResync: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
@@ -27,6 +28,7 @@ export const PosProvider = ({
   inventoryItems,
   cartItems,
   isLoading,
+  selectedStore,
   handleResync,
   setCartItems,
   setClientSideItems,
@@ -36,6 +38,7 @@ export const PosProvider = ({
   inventoryItems: Inventory[] | null;
   cartItems: Cart[];
   isLoading: boolean;
+  selectedStore: Store | null;
   handleResync: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
@@ -47,6 +50,7 @@ export const PosProvider = ({
         inventoryItems,
         cartItems,
         isLoading,
+        selectedStore,
         handleResync,
         setCartItems,
         setClientSideItems,
