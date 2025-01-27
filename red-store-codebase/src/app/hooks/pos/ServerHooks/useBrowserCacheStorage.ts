@@ -1,5 +1,5 @@
+import { usePos } from "@/app/contexts/pos/PosContext";
 import { useToast } from "@/hooks/use-toast";
-import { Inventory } from "@prisma/client";
 import { openDB, DBSchema } from "idb";
 import { Dispatch, SetStateAction } from "react";
 
@@ -15,6 +15,8 @@ interface POSDbBuffer extends DBSchema {
         product_price: number;
         productQuantity: number;
       };
+      store_id: string;
+      purchase_time: string;
     };
     indexes: { storeId: string; productId: string };
   };
@@ -22,6 +24,7 @@ interface POSDbBuffer extends DBSchema {
 
 const useBrowserCacheStorage = () => {
   const { toast } = useToast();
+  const { setCartItems, setClientSideItems } = usePos();
   // Initializing the browser DB for object storage
   const initDB = openDB<POSDbBuffer>("pos-buffer", 1, {
     upgrade(db) {
@@ -37,14 +40,14 @@ const useBrowserCacheStorage = () => {
   // Adding product to browser DB
   const saveToCache = async (
     records: POSDbBuffer["sales"]["value"][],
-    isSavingToCache: Dispatch<SetStateAction<boolean>>,
-    setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>
+    isSavingToCache: Dispatch<SetStateAction<boolean>>
   ) => {
     const db = await initDB;
     isSavingToCache(true);
     try {
       for (const record of records) {
         await db.add("sales", record); // Ensure each record has a unique `cartItem.product_id`
+        // ensures the client side inventory view is updated
         setClientSideItems((prev) =>
           prev
             ? prev.map((item) =>
@@ -59,7 +62,11 @@ const useBrowserCacheStorage = () => {
             : prev
         );
       }
-      console.log(`${records.length} sales logged successfully.`);
+      setCartItems([]);
+      toast({
+        title: "Purchase Logged",
+        description: `${records.length} sales logged to buffer`,
+      });
     } catch (error) {
       console.error("Error saving to cache:", error);
     } finally {
@@ -69,6 +76,11 @@ const useBrowserCacheStorage = () => {
         description: `${records.length} sales saved to buffer`,
       });
     }
+  };
+
+  const syncToServer = async () => {
+    const db = await initDB;
+    const sales_records = await db.getAll("sales");
   };
 
   return { saveToCache };
