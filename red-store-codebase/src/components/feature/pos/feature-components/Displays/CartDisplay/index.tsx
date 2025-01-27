@@ -15,9 +15,9 @@ const CartDisplay = () => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   return (
-    <div className="w-80 ml-3 p-3 pt-0 flex flex-col justify-between">
+    <div className="w-80 ml-3 p-3 pt-0 flex flex-col  ">
       <Toaster />
-      <div className="flex flex-col">
+      <div className="flex flex-col justify-between">
         <p className="text-xl pb-3 font-semibold">Order Summary</p>
         {/* Scrollable container */}
         <div className="relative h-[450px] overflow-y-auto scrollbar-hide">
