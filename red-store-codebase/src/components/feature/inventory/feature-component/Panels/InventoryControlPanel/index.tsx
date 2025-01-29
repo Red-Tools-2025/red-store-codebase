@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction } from "react";
 import InventroySearch from "./InventorySearch";
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
 import { ColumnFiltersState } from "@tanstack/react-table";
+import { IoIosStar } from "react-icons/io";
 
 interface InventoryControlPanelProps {
   displayState: string;
@@ -15,6 +16,7 @@ interface InventoryControlPanelProps {
   setIsDeleteProdModalOpen: Dispatch<React.SetStateAction<boolean>>;
   setIsAddProdModalOpen: Dispatch<React.SetStateAction<boolean>>;
   setIsTableViewModalOpen: Dispatch<React.SetStateAction<boolean>>;
+  setIsFavortiesModalOpen: Dispatch<React.SetStateAction<boolean>>;
   handleOpenModal: (setModalType: Dispatch<SetStateAction<boolean>>) => void;
   handleRefresh: () => void;
   setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
@@ -30,6 +32,7 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
   setIsRestockProdModalOpen,
   setIsTableViewModalOpen,
   setColumnFilters,
+  setIsFavortiesModalOpen,
 }) => {
   const { inventoryItems } = useInventory();
 
@@ -40,7 +43,7 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
   };
   return (
     <div className="my-5 flex items-center justify-between">
-      <div className="flex w-2/4 items-center space-x-4">
+      <div className="flex items-center space-x-4">
         <InventroySearch setSearchFilter={setSearchFilter} />
         <div className="flex space-x-1">
           {/* Grid Icon */}
@@ -100,6 +103,15 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
           }
         >
           Add Product
+        </Button>
+        <Button
+          onClick={() => handleOpenModal(setIsFavortiesModalOpen)}
+          variant={"secondary"}
+        >
+          <div className="flex items-center ">
+            <IoIosStar className="mr-2 h-3 w-3" />
+            <p>Favorites</p>
+          </div>
         </Button>
       </div>
     </div>

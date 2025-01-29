@@ -16,7 +16,7 @@ const InventroySearch: React.FC<InventorySearchProps> = ({
       type="text"
       placeholder="Search Product"
       onChange={handleInputChange}
-      className="transition-all duration-300 ease-in-out"
+      className="transition-all duration-300 ease-in-out w-80"
     />
   );
 };

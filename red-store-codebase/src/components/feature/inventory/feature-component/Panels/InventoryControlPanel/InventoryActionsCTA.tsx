@@ -43,6 +43,7 @@ const InventoryActionsCTA: React.FC<InventoryActionsCTAProps> = ({
             <Trash className="mr-2 h-4 w-4 text-red-600" />
             Delete
           </DropdownMenuItem>
+
           <DropdownMenuItem onClick={openRestockModal}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Restock

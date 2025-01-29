@@ -18,7 +18,7 @@ import useInventoryTableHook from "../hooks/inventory/StaticHooks/useInventoryTa
 import { ColumnDef, ColumnDefBase, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
-
+import SetFavortiesModal from "@/components/feature/inventory/feature-component/Modals/SetFavoritesModal";
 // interface JsonRenderProps {
 //   item: Inventory;
 //   field: string;
@@ -156,6 +156,8 @@ const InventoryPage = () => {
     useState<boolean>(false);
   const [isDefineStoreModalOpen, setIsDefineStoreModalOpen] =
     useState<boolean>(false);
+  const [isFavortiesModalOpen, setIsFavortiesModalOpen] =
+    useState<boolean>(false);
 
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
@@ -222,6 +224,12 @@ const InventoryPage = () => {
         onSaveChanges={handleSaveTableViews}
       />
 
+      <SetFavortiesModal
+        products={["Product 1", "Product 2", "Product 3"]}
+        isOpen={isFavortiesModalOpen}
+        onClose={() => handleCloseModal(setIsFavortiesModalOpen)}
+      />
+
       {/* Inventory Control Panel */}
       <InventoryControlPanel
         displayState={displayState}
@@ -233,6 +241,7 @@ const InventoryPage = () => {
         setIsDeleteProdModalOpen={setIsDeleteProdModalOpen}
         setIsRestockProdModalOpen={setIsRestockProdModalOpen}
         setIsTableViewModalOpen={setIsTableViewModalOpen}
+        setIsFavortiesModalOpen={setIsFavortiesModalOpen}
       />
 
       <InventoryFilterPanel
