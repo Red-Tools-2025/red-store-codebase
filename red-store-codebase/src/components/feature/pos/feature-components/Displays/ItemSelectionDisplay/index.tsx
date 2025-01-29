@@ -1,5 +1,6 @@
 import { Inventory } from "@prisma/client";
 import ItemSelectionCard from "./ItemSelectionCard";
+import { usePos } from "@/app/contexts/pos/PosContext";
 
 interface ItemSelectionDisplayProps {
   isLoading: boolean;
@@ -10,6 +11,7 @@ const ItemSelectionDisplay: React.FC<ItemSelectionDisplayProps> = ({
   inventoryItems,
   isLoading,
 }) => {
+  const {} = usePos();
   return (
     <div className="w-full">
       {isLoading ? (

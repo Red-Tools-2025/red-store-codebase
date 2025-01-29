@@ -9,18 +9,21 @@ import { SessionUserType } from "@/app/types/management/context";
 import { Inventory, Store } from "@prisma/client";
 
 interface InventoryContextType {
+  infoPanelOpenState: boolean;
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
+  inventoryItemDetails?: Inventory;
   isLoading: boolean;
   selectedStore: Store | null;
   intializedScanner: boolean;
   license: string;
-  handleRefresh: () => void;
   currentPage: number;
   pageSize: number;
   total_count: number;
   setCurrentPage: Dispatch<SetStateAction<number>>;
   setPageSize: Dispatch<SetStateAction<number>>;
+  handleRefresh: () => void;
+  toggleInfoPanel: () => void;
 }
 
 const InventoryContext = createContext<InventoryContextType | undefined>(
@@ -31,20 +34,25 @@ export const InventoryProvider = ({
   children,
   sessionData,
   inventoryItems,
+  inventoryItemDetails,
   selectedStore,
   isLoading,
   intializedScanner,
+  infoPanelOpenState,
   license,
   total_count,
   handleRefresh,
   setCurrentPage,
+  toggleInfoPanel,
   setPageSize,
   pageSize,
   currentPage,
 }: {
   children: ReactNode;
+  infoPanelOpenState: boolean;
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
+  inventoryItemDetails?: Inventory;
   selectedStore: Store | null;
   isLoading: boolean;
   intializedScanner: boolean;
@@ -55,12 +63,14 @@ export const InventoryProvider = ({
   handleRefresh: () => void;
   setCurrentPage: Dispatch<SetStateAction<number>>;
   setPageSize: Dispatch<SetStateAction<number>>;
+  toggleInfoPanel: () => void;
 }) => {
   return (
     <InventoryContext.Provider
       value={{
         sessionData,
         inventoryItems,
+        inventoryItemDetails,
         isLoading,
         selectedStore,
         intializedScanner,
@@ -68,9 +78,11 @@ export const InventoryProvider = ({
         total_count,
         handleRefresh,
         setCurrentPage,
+        toggleInfoPanel,
         setPageSize,
         pageSize,
         currentPage,
+        infoPanelOpenState,
       }}
     >
       {children}
