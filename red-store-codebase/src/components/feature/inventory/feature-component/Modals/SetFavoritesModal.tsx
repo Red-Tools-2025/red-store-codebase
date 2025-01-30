@@ -74,7 +74,7 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
               {selectedKeys.map((key) => (
                 <span
                   key={key.invId}
-                  className="px-2 py-1 text-xs border border-blue-500 text-blue-500 rounded-md bg-blue-100 flex gap-2"
+                  className="px-2 py-1 text-xs border border-yellow-700 text-yellow-700 rounded-md bg-yellow-100 flex gap-2"
                 >
                   <p>{key.invItem}</p>
                   <p
