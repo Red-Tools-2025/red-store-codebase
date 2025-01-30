@@ -36,6 +36,7 @@ const useProducts = (
   };
 
   useEffect(() => {
+    // for fetching paginated data
     const fetchData = async () => {
       try {
         setIsLoading(true);
