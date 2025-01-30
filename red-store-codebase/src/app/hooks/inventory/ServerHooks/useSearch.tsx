@@ -2,11 +2,7 @@ import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import useBrowserCache from "./useBrowserCache";
-
-interface InventoryKey {
-  invItem: string;
-  invId: number;
-}
+import { InventoryKey } from "@/app/types/inventory/components";
 
 interface ProductKeysServerFetch {
   message: string | null;

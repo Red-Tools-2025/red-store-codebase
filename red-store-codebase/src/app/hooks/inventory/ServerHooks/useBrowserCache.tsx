@@ -1,9 +1,5 @@
+import { InventoryKey } from "@/app/types/inventory/components";
 import { DBSchema, openDB } from "idb";
-
-interface InventoryKey {
-  invItem: string;
-  invId: number;
-}
 
 interface SearchKeysCache extends DBSchema {
   keys: {

@@ -25,6 +25,7 @@ export async function GET(req: Request) {
       select: {
         invId: true,
         invItem: true,
+        invItemBrand: true,
       },
     });
 
