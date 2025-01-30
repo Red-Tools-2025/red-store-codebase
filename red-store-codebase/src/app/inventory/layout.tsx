@@ -26,10 +26,16 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
 
+  // inventory items
+  const [isInfoPanelOpen, setIsInfoPanelOpen] = useState<boolean>(false);
+
   // Fetching store data and inventory data
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
     sessionUser?.id ?? ""
   );
+
+  // toggling info panel
+  const toggleInfoPanel = () => setIsInfoPanelOpen(!isInfoPanelOpen);
 
   // Use useEffect to set initial store when stores are loaded
   React.useEffect(() => {
@@ -52,6 +58,8 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
 
   return (
     <InventoryProvider
+      toggleInfoPanel={toggleInfoPanel}
+      infoPanelOpenState={isInfoPanelOpen}
       total_count={total_count}
       pageSize={pageSize}
       currentPage={currentPage}

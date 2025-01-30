@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { flexRender, Table as TableType } from "@tanstack/react-table";
 import { motion, AnimatePresence } from "framer-motion";
 import { GiEmptyMetalBucketHandle } from "react-icons/gi";
@@ -11,12 +11,25 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Inventory } from "@prisma/client";
+import { useInventory } from "@/app/contexts/inventory/InventoryContext";
+import InventoryItemInfoPanel from "../../Panels/InventoryItemInfoPanel";
 
 interface InventoryDataTableProps {
   table: TableType<Inventory>;
 }
 
 const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
+  const { toggleInfoPanel, infoPanelOpenState } = useInventory();
+  const [inventoryItem, setInventoryItem] = useState<Inventory | null>(null);
+
+  const handleCellClick = (inventory: Inventory) => {
+    console.log("Clicked Inventory Object:", inventory);
+    toggleInfoPanel();
+    setInventoryItem(inventory);
+    // You can also pass this object to a state or context for further use
+    // Example: toggleInfoPanel(inventory);
+  };
+
   const listVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -37,6 +50,15 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
 
   return (
     <>
+      {inventoryItem ? (
+        <InventoryItemInfoPanel
+          inventoryItemDetails={inventoryItem}
+          InfoPanelOpenState={infoPanelOpenState}
+          toggleInfoPanel={toggleInfoPanel}
+        />
+      ) : (
+        <></>
+      )}
       <motion.div
         initial="hidden"
         animate="visible"
@@ -78,7 +100,10 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
                     }`}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        onClick={() => handleCellClick(row.original)}
+                        key={cell.id}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()

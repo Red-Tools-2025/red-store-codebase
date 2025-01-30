@@ -75,6 +75,20 @@ export interface ProcessCartRequestBody {
   purchase_time?: string; // defaults to today, just for testing
 }
 
+export interface ProcessBulkCartRequest {
+  sales_records: {
+    purchases: {
+      product_id: number;
+      product_current_stock: number;
+      product_name: string;
+      product_price: number;
+      productQuantity: number;
+    }[];
+    purchase_time: string;
+  }[]; // Array of cart items for bulk processing
+  store_id: number;
+}
+
 export type TimeSeries =
   Database["public"]["Tables"]["inventory_timeseries"]["Row"];
 
