@@ -6,7 +6,7 @@ import { SessionUserType } from "../types/management/context";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Inventory, Store } from "@prisma/client";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
-import useProducts from "../hooks/inventory/FetchHooks/useProducts";
+import useProducts from "../hooks/inventory/ServerHooks/useProducts";
 import { PosProvider } from "../contexts/pos/PosContext";
 import { Cart } from "../types/pos/cart";
 import useItems from "../hooks/pos/ServerHooks/useItems";

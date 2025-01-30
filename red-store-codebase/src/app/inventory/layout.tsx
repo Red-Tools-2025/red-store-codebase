@@ -6,10 +6,10 @@ import React, { useState } from "react";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Store } from "@prisma/client";
-import useProducts from "../hooks/inventory/FetchHooks/useProducts";
+import useProducts from "../hooks/inventory/ServerHooks/useProducts";
 import { InventoryProvider } from "../contexts/inventory/InventoryContext";
 import useScanner from "../hooks/scanner/StaticHooks/useScanner";
-import useSearch from "../hooks/inventory/FetchHooks/useSearch";
+import useSearch from "../hooks/inventory/ServerHooks/useSearch";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
