@@ -1,55 +1,66 @@
 import { DBSchema, openDB } from "idb";
 
+interface InventoryKey {
+  invItem: string;
+  invId: number;
+}
+
 interface SearchKeysCache extends DBSchema {
   keys: {
-    key: number;
+    key: string; // store_id as the primary key
     value: {
-      search_keys: {
-        invItem: string;
-        invId: number;
-      }[];
+      search_keys: InventoryKey[];
       store_id: string;
     };
-    indexes: {
-      store_id: number;
-    };
+    indexes: { store_id: string };
   };
 }
 
 const useBrowserCache = () => {
-  // initialize the cache store
-  const initKeysCache = openDB<SearchKeysCache>("keys-cache", 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains("keys")) {
-        const keys_store = db.createObjectStore("keys", {
-          autoIncrement: true,
-        });
-        keys_store.createIndex("store_id", "store_id");
-      }
-    },
-  });
+  // Initialize the IndexedDB store
+  const initKeysCache = () =>
+    openDB<SearchKeysCache>("keys-cache", 1, {
+      upgrade(db) {
+        if (!db.objectStoreNames.contains("keys")) {
+          const keysStore = db.createObjectStore("keys", {
+            keyPath: "store_id",
+          });
+          keysStore.createIndex("store_id", "store_id");
+        }
+      },
+    });
 
-  // function to store to cache
+  // Store data to cache
   const storeToCache = async (
-    search_keys: { invItem: string; invId: number }[],
-    store_id
+    search_keys: InventoryKey[],
+    store_id: string
   ) => {
-    const db = await initKeysCache;
-    await db.add("keys", { store_id, search_keys });
+    const db = await initKeysCache();
+    const existingEntry = await db.get("keys", store_id);
+
+    if (!existingEntry) {
+      console.log(`Storing new entry for store_id: ${store_id}`);
+      await db.put("keys", { store_id, search_keys });
+    } else {
+      console.log(`Cache already exists for store_id: ${store_id}, skipping.`);
+    }
   };
 
-  // get key from cache
-  const getKeyFromCache = async (invId: number, store_id: number) => {
-    const db = await initKeysCache;
-    const key_store = await db.get("keys", store_id);
-    if (!key_store) return null;
-    const search_key = await key_store.search_keys.find(
-      (key) => key.invId === invId
-    );
-    return key_store || null;
+  // Get specific key from cache
+  const getKeyFromCache = async (store_id: string, invId: number) => {
+    const db = await initKeysCache();
+    const keyStore = await db.get("keys", store_id);
+    if (!keyStore) return null;
+    return keyStore.search_keys.find((key) => key.invId === invId) || null;
   };
 
-  return { getKeyFromCache, storeToCache };
+  // Check if cache exists for a store
+  const checkCacheForStore = async (store_id: string) => {
+    const db = await initKeysCache();
+    return (await db.get("keys", store_id)) !== undefined;
+  };
+
+  return { getKeyFromCache, storeToCache, checkCacheForStore };
 };
 
 export default useBrowserCache;
