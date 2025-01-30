@@ -47,11 +47,10 @@ const useBrowserCache = () => {
   };
 
   // Get specific key from cache
-  const getKeyFromCache = async (store_id: string, invId: number) => {
+  const getKeysFromCache = async (store_id: string, invId: number) => {
     const db = await initKeysCache();
     const keyStore = await db.get("keys", store_id);
-    if (!keyStore) return null;
-    return keyStore.search_keys.find((key) => key.invId === invId) || null;
+    return keyStore;
   };
 
   // Check if cache exists for a store
@@ -60,7 +59,7 @@ const useBrowserCache = () => {
     return (await db.get("keys", store_id)) !== undefined;
   };
 
-  return { getKeyFromCache, storeToCache, checkCacheForStore };
+  return { getKeysFromCache, storeToCache, checkCacheForStore };
 };
 
 export default useBrowserCache;
