@@ -78,7 +78,9 @@ const InventoryItemInfoPanel: React.FC<InventoryItemInfoPanelProps> = ({
         <DrawerFooter>
           <div className="flex gap-3">
             <Button variant="secondary">Edit Product</Button>
-            <Button variant="primary">Restock</Button>
+            <Button variant="primary" onClick={toggleInfoPanel}>
+              Close
+            </Button>
           </div>
         </DrawerFooter>
       </DrawerContent>
