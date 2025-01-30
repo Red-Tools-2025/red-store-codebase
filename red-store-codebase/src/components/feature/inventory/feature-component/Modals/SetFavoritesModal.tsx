@@ -31,7 +31,11 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
   store_id,
   searchKeys,
 }) => {
-  const { getFavoritesForStore, storeFavoriteKeyToCache } = useBrowserCache();
+  const {
+    getFavoritesForStore,
+    storeFavoriteKeyToCache,
+    removeFavoriteKeyFromCache,
+  } = useBrowserCache();
   const [search, setSearch] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<InventoryKey[]>([]);
 
@@ -76,7 +80,7 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
       const updatedKeys = prev.filter(
         (key) => key.invItem !== searchKey.invItem
       );
-      storeFavoriteKeyToCache(updatedKeys, store_id); // Save to cache
+      removeFavoriteKeyFromCache(searchKey, store_id);
       return updatedKeys;
     });
   };

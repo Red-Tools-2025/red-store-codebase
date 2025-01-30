@@ -119,6 +119,43 @@ const useBrowserCache = () => {
     }
   };
 
+  // Remove a favorite key from the cache
+  const removeFavoriteKeyFromCache = async (
+    favorite_key: InventoryKey, // The key to be removed
+    store_id: string
+  ) => {
+    try {
+      const db = await initStoreCache();
+      const existingFavorites = await db.get("favorites", store_id);
+
+      if (existingFavorites) {
+        // Find the index of the favorite key to remove
+        const favoriteIndex = existingFavorites.favorite_keys.findIndex(
+          (key) => key.invId === favorite_key.invId
+        );
+
+        if (favoriteIndex !== -1) {
+          // Remove the key from the favorites array
+          existingFavorites.favorite_keys.splice(favoriteIndex, 1);
+
+          // Update the cache with the modified list of favorites
+          await db.put("favorites", {
+            store_id,
+            favorite_keys: existingFavorites.favorite_keys,
+          });
+          console.log(`Favorite product removed for store ${store_id}.`);
+        } else {
+          console.log(`Product not found in favorites for store ${store_id}.`);
+        }
+      } else {
+        console.log(`No favorites found for store ${store_id}.`);
+      }
+    } catch (error) {
+      console.error(`Error removing favorite for store ${store_id}:`, error);
+      throw error;
+    }
+  };
+
   // Get favorites for a specific store
   const getFavoritesForStore = async (store_id: string) => {
     try {
@@ -137,6 +174,7 @@ const useBrowserCache = () => {
     checkCacheForStore,
     getFavoritesForStore,
     storeFavoriteKeyToCache,
+    removeFavoriteKeyFromCache,
   };
 };
 
