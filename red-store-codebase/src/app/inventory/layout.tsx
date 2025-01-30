@@ -62,12 +62,11 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     pageSize
   );
 
-  console.log({ searchKeys });
-
   return (
     <InventoryProvider
       toggleInfoPanel={toggleInfoPanel}
       infoPanelOpenState={isInfoPanelOpen}
+      searchKeys={searchKeys}
       total_count={total_count}
       pageSize={pageSize}
       currentPage={currentPage}

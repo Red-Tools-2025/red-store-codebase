@@ -47,7 +47,7 @@ const useBrowserCache = () => {
   };
 
   // Get specific key from cache
-  const getKeysFromCache = async (store_id: string, invId: number) => {
+  const getKeysFromCache = async (store_id: string) => {
     const db = await initKeysCache();
     const keyStore = await db.get("keys", store_id);
     return keyStore;

@@ -11,19 +11,20 @@ import {
   CommandList,
   CommandItem,
   CommandGroup,
+  CommandEmpty,
 } from "@/components/ui/command";
 import { useState } from "react";
 
 interface SetFavoritesModalProps {
   isOpen: boolean;
   onClose: () => void;
-  products: string[]; // List of product names
+  searchKeys: { invItem: string; invId: number }[];
 }
 
 const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
   isOpen,
   onClose,
-  products,
+  searchKeys,
 }) => {
   const [search, setSearch] = useState("");
 
@@ -37,24 +38,31 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
             your fastest-moving products.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-2">
           <p className="text-sm text-gray-600">Find your product</p>
-          <Command>
+          <Command className="relative w-full border rounded-md">
             <CommandInput
               placeholder="Enter product name..."
               value={search}
               onValueChange={setSearch}
-              className="border border-gray-400"
+              className="border-b border-gray-300 px-2 py-1 text-sm"
             />
-            <CommandList>
+            <CommandList className="max-h-60 overflow-y-auto bg-white border rounded-md shadow-sm">
+              <CommandEmpty className="p-2 text-sm text-gray-500">
+                {`No matching products found :(`}
+              </CommandEmpty>
               <CommandGroup heading="Suggestions">
-                {products
-                  .filter((product) =>
-                    product.toLowerCase().includes(search.toLowerCase())
+                {searchKeys
+                  .filter((key) =>
+                    key.invItem.toLowerCase().includes(search.toLowerCase())
                   )
-                  .map((product) => (
-                    <CommandItem key={product} value={product}>
-                      {product}
+                  .map((key) => (
+                    <CommandItem
+                      key={key.invId}
+                      value={key.invItem}
+                      className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 aria-selected:bg-gray-200"
+                    >
+                      {key.invItem}
                     </CommandItem>
                   ))}
               </CommandGroup>

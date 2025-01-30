@@ -19,24 +19,8 @@ import { ColumnDef, ColumnDefBase, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 import SetFavortiesModal from "@/components/feature/inventory/feature-component/Modals/SetFavoritesModal";
-// interface JsonRenderProps {
-//   item: Inventory;
-//   field: string;
-// }
+import useSearch from "../hooks/inventory/ServerHooks/useSearch";
 
-// const JsonRender: React.FC<JsonRenderProps> = ({ item, field }) => {
-//   return (
-//     <p>
-//       {typeof item.invAdditional === "object" &&
-//       item.invAdditional !== null &&
-//       field in item.invAdditional
-//         ? String((item.invAdditional as Record<string, unknown>)[field])
-//         : ""}
-//     </p>
-//   );
-// };
-
-// Inventory Display Component
 interface InventoryDisplayProps {
   displayState: "list" | "grid";
   inventoryItems: Inventory[];
@@ -118,6 +102,7 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
 
 // Main Inventory Page Component
 const InventoryPage = () => {
+  const { searchKeys } = useInventory();
   const [viewableColumns, setViewableColumns] = useState<
     ColumnDef<Inventory>[]
   >(InventoryDataTableColumns);
@@ -225,7 +210,7 @@ const InventoryPage = () => {
       />
 
       <SetFavortiesModal
-        products={["Product 1", "Product 2", "Product 3"]}
+        searchKeys={searchKeys}
         isOpen={isFavortiesModalOpen}
         onClose={() => handleCloseModal(setIsFavortiesModalOpen)}
       />
