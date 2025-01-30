@@ -7,6 +7,7 @@ import {
 } from "react";
 import { SessionUserType } from "@/app/types/management/context";
 import { Inventory, Store } from "@prisma/client";
+import { InventoryKey } from "@/app/types/inventory/components";
 
 interface InventoryContextType {
   infoPanelOpenState: boolean;
