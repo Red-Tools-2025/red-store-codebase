@@ -28,6 +28,8 @@ export async function GET(req: Request) {
       },
     });
 
+    console.log({ inventoryKeys });
+
     if (inventoryKeys.length === 0) {
       return NextResponse.json(
         {

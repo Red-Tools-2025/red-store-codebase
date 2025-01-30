@@ -9,12 +9,11 @@ interface InventoryKey {
 
 interface ProductKeysServerFetch {
   message: string | null;
-  inventoryItems: InventoryKey[];
+  inventoryKeys: InventoryKey[];
 }
 
 // for fetching search keys to store to cache
 const useSearch = (storeId: string, storeManagerId: string) => {
-  const { toast } = useToast();
   const [fetchingKeys, setFetchingKeys] = useState<boolean>(false);
   const [searchKeys, setSearchKeys] = useState<InventoryKey[]>([]);
 
@@ -32,19 +31,15 @@ const useSearch = (storeId: string, storeManagerId: string) => {
           }
         );
 
-        if (data.inventoryItems) {
-          setSearchKeys(data.inventoryItems);
+        if (data.inventoryKeys) {
+          setSearchKeys(data.inventoryKeys);
           setFetchingKeys(false);
         }
+
+        console.log({ searchKeys: data.inventoryKeys });
       } catch (err) {
         console.log(err);
         setFetchingKeys(false);
-        toast({
-          title: "Error",
-          variant: "destructive",
-          description:
-            "Unable to initialize your search keys try refreshing the page",
-        });
       }
     };
 

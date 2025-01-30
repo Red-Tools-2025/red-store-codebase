@@ -9,6 +9,7 @@ import { Store } from "@prisma/client";
 import useProducts from "../hooks/inventory/FetchHooks/useProducts";
 import { InventoryProvider } from "../contexts/inventory/InventoryContext";
 import useScanner from "../hooks/scanner/StaticHooks/useScanner";
+import useSearch from "../hooks/inventory/FetchHooks/useSearch";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -29,7 +30,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   // inventory items
   const [isInfoPanelOpen, setIsInfoPanelOpen] = useState<boolean>(false);
 
-  // Fetching store data and inventory data
+  // Fetching store data, inventory data & search keys
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
     sessionUser?.id ?? ""
   );
@@ -44,6 +45,11 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     }
   }, [userStores]);
 
+  const { fetchingKeys, searchKeys } = useSearch(
+    selectedStore ? String(selectedStore.storeId) : "",
+    sessionUser?.id ?? ""
+  );
+
   const {
     inventoryItems,
     isLoading: isLoadingProducts,
@@ -55,6 +61,8 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     currentPage,
     pageSize
   );
+
+  console.log({ searchKeys });
 
   return (
     <InventoryProvider
@@ -77,7 +85,11 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
         {session ? (
           <>
             {isLoadingStores ? (
-              <div>Loading...</div>
+              fetchingKeys ? (
+                <div>Getting your search keys...</div>
+              ) : (
+                <div>Loading...</div>
+              )
             ) : userStores && userStores.length > 0 ? (
               <>
                 <div className="flex justify-between">
