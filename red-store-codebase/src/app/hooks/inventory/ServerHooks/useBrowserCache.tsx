@@ -77,19 +77,58 @@ const useBrowserCache = () => {
 
   // Store keys to favorites cache
   const storeFavoriteKeyToCache = async (
-    favorite_keys: InventoryKey[],
+    favorite_keys: InventoryKey[], // Expecting an array of favorite keys now
     store_id: string
   ) => {
-    const db = await initStoreCache();
-    await db.put("favorites", { store_id, favorite_keys });
-    console.log(`Favorite items for store ${store_id} stored.`);
+    try {
+      const db = await initStoreCache();
+      const existingFavorites = await db.get("favorites", store_id);
+
+      if (existingFavorites) {
+        // Check if the products already exist in the favorites
+        const existingFavoriteIds = existingFavorites.favorite_keys.map(
+          (key) => key.invId
+        );
+
+        // Add only the keys that are not already in the favorites
+        const newFavoriteKeys = favorite_keys.filter(
+          (key) => !existingFavoriteIds.includes(key.invId)
+        );
+
+        if (newFavoriteKeys.length > 0) {
+          // Add the new favorites to the existing list
+          existingFavorites.favorite_keys.push(...newFavoriteKeys);
+          await db.put("favorites", {
+            store_id,
+            favorite_keys: existingFavorites.favorite_keys,
+          });
+          console.log(`New favorite products added for store ${store_id}.`);
+        } else {
+          console.log(
+            `No new favorites to add for store ${store_id}, skipping.`
+          );
+        }
+      } else {
+        // If no favorites exist, create a new list with the provided favorite products
+        await db.put("favorites", { store_id, favorite_keys });
+        console.log(`First favorite products added for store ${store_id}.`);
+      }
+    } catch (error) {
+      console.error(`Error storing favorite for store ${store_id}:`, error);
+      throw error;
+    }
   };
 
   // Get favorites for a specific store
   const getFavoritesForStore = async (store_id: string) => {
-    const db = await initStoreCache();
-    const favorites = await db.getAllFromIndex("favorites", "store_id");
-    return favorites;
+    try {
+      const db = await initStoreCache();
+      const favorites = await db.get("favorites", store_id);
+      return favorites?.favorite_keys;
+    } catch (error) {
+      console.error(`Error fetching favorites for store ${store_id}:`, error);
+      return null;
+    }
   };
 
   return {

@@ -13,7 +13,7 @@ import {
   CommandGroup,
   CommandEmpty,
 } from "@/components/ui/command";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { InventoryKey } from "@/app/types/inventory/components";
 import { X } from "lucide-react";
 import useBrowserCache from "@/app/hooks/inventory/ServerHooks/useBrowserCache";
@@ -35,45 +35,50 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
   const [search, setSearch] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<InventoryKey[]>([]);
 
-  // Handles selection & toggling of items
-  const handleItem = (searchKey: InventoryKey) => {
-    if (selectedKeys.length <= 25) {
-      console.log("ji");
-      setSelectedKeys((prev) => {
-        const exists = prev.some((item) => item.invId === searchKey.invId);
-
-        // If the item exists, remove it, otherwise add it if not already in the array
-        const newSelectedKeys = exists
-          ? prev.filter((item) => item.invId !== searchKey.invId)
-          : [...prev, { ...searchKey }];
-
-        // Ensure the selectedKeys array does not exceed 25 items
-        return newSelectedKeys.slice(0, 25);
-      });
-    }
-  };
-
-  // Store the selected keys to the cache
-  const saveFavoritesToCache = async () => {
-    await storeFavoriteKeyToCache(selectedKeys, store_id);
-    console.log(`Favorites for store ${store_id} saved.`);
-  };
-
+  // Load favorites from the cache when the modal opens
   useEffect(() => {
-    saveFavoritesToCache();
-    console.log("hit");
-  }, [selectedKeys]);
+    const loadFavorites = async () => {
+      const favorites = await getFavoritesForStore(store_id);
+      setSelectedKeys(favorites as InventoryKey[]);
+    };
+
+    if (isOpen) {
+      loadFavorites();
+    }
+  }, [isOpen, store_id]);
+
+  // Handles selection & toggling of items
+  const handleItem = async (searchKey: InventoryKey) => {
+    setSelectedKeys((prev) => {
+      const exists = prev.some((item) => item.invId === searchKey.invId);
+
+      // If the item exists, remove it, otherwise add it if not already in the array
+      const newSelectedKeys = exists
+        ? prev.filter((item) => item.invId !== searchKey.invId)
+        : [...prev, { ...searchKey }];
+
+      // Save to cache immediately
+      storeFavoriteKeyToCache(newSelectedKeys, store_id);
+
+      // Ensure the selectedKeys array does not exceed 25 items
+      return newSelectedKeys.slice(0, 25);
+    });
+  };
 
   // Handle closing the modal, and save favorites to cache if changes are made
   const handleClose = () => {
-    saveFavoritesToCache(); // Save changes before closing
+    storeFavoriteKeyToCache(selectedKeys, store_id); // Save changes before closing
     onClose();
   };
 
   const handleRemoveProduct = (searchKey: InventoryKey) => {
-    setSelectedKeys((prev) =>
-      prev.filter((key) => key.invItem !== searchKey.invItem)
-    );
+    setSelectedKeys((prev) => {
+      const updatedKeys = prev.filter(
+        (key) => key.invItem !== searchKey.invItem
+      );
+      storeFavoriteKeyToCache(updatedKeys, store_id); // Save to cache
+      return updatedKeys;
+    });
   };
 
   return (
