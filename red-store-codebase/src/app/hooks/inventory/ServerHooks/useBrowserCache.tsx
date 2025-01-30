@@ -16,19 +16,17 @@ interface InventoryStoreCache extends DBSchema {
   favorites: {
     key: string; // store_id as the primary key
     value: {
-      item_id: number;
+      favorite_keys: InventoryKey[];
       store_id: string;
-      item_name: string;
-      key: string;
     };
-    indexes: { store_id: string; item_id: number };
+    indexes: { store_id: string };
   };
 }
 
 const useBrowserCache = () => {
   // Initialize the IndexedDB store
   const initStoreCache = () =>
-    openDB<InventoryStoreCache>("keys-cache", 1, {
+    openDB<InventoryStoreCache>("inventory-cache", 1, {
       upgrade(db) {
         // facilitating creation of keys cache
         if (!db.objectStoreNames.contains("keys")) {
@@ -41,9 +39,8 @@ const useBrowserCache = () => {
         // facilitating creation of favorites cache
         if (!db.objectStoreNames.contains("favorites")) {
           const favoriteProducts = db.createObjectStore("favorites", {
-            keyPath: "key",
+            keyPath: "store_id",
           });
-          favoriteProducts.createIndex("item_id", "item_id");
           favoriteProducts.createIndex("store_id", "store_id");
         }
       },
@@ -80,28 +77,18 @@ const useBrowserCache = () => {
 
   // Store keys to favorites cache
   const storeFavoriteKeyToCache = async (
-    item_id: number,
-    store_id: string,
-    item_name: string
+    favorite_keys: InventoryKey[],
+    store_id: string
   ) => {
     const db = await initStoreCache();
-    await db.put("favorites", {
-      key: `${store_id}-${item_id}`,
-      item_id,
-      store_id,
-      item_name,
-    });
-    console.log(`Favorite item ${item_id} for store ${store_id} stored.`);
+    await db.put("favorites", { store_id, favorite_keys });
+    console.log(`Favorite items for store ${store_id} stored.`);
   };
 
   // Get favorites for a specific store
   const getFavoritesForStore = async (store_id: string) => {
     const db = await initStoreCache();
-    const favorites = await db.getAllFromIndex(
-      "favorites",
-      "store_id",
-      store_id
-    );
+    const favorites = await db.getAllFromIndex("favorites", "store_id");
     return favorites;
   };
 

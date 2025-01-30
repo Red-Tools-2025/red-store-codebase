@@ -19,7 +19,6 @@ import { ColumnDef, ColumnDefBase, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 import SetFavortiesModal from "@/components/feature/inventory/feature-component/Modals/SetFavoritesModal";
-import useSearch from "../hooks/inventory/ServerHooks/useSearch";
 
 interface InventoryDisplayProps {
   displayState: "list" | "grid";
@@ -210,6 +209,7 @@ const InventoryPage = () => {
       />
 
       <SetFavortiesModal
+        store_id={selectedStore ? String(selectedStore.storeId) : ""}
         searchKeys={searchKeys}
         isOpen={isFavortiesModalOpen}
         onClose={() => handleCloseModal(setIsFavortiesModalOpen)}

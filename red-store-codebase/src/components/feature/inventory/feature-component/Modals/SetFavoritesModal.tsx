@@ -13,27 +13,32 @@ import {
   CommandGroup,
   CommandEmpty,
 } from "@/components/ui/command";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { InventoryKey } from "@/app/types/inventory/components";
 import { X } from "lucide-react";
+import useBrowserCache from "@/app/hooks/inventory/ServerHooks/useBrowserCache";
 
 interface SetFavoritesModalProps {
   isOpen: boolean;
   onClose: () => void;
+  store_id: string;
   searchKeys: InventoryKey[];
 }
 
 const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
   isOpen,
   onClose,
+  store_id,
   searchKeys,
 }) => {
+  const { getFavoritesForStore, storeFavoriteKeyToCache } = useBrowserCache();
   const [search, setSearch] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<InventoryKey[]>([]);
 
   // Handles selection & toggling of items
   const handleItem = (searchKey: InventoryKey) => {
-    if (searchKeys.length <= 25) {
+    if (selectedKeys.length <= 25) {
+      console.log("ji");
       setSelectedKeys((prev) => {
         const exists = prev.some((item) => item.invId === searchKey.invId);
 
@@ -46,7 +51,23 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
         return newSelectedKeys.slice(0, 25);
       });
     }
-    setSearch(""); // Optional: Clears search input after selection
+  };
+
+  // Store the selected keys to the cache
+  const saveFavoritesToCache = async () => {
+    await storeFavoriteKeyToCache(selectedKeys, store_id);
+    console.log(`Favorites for store ${store_id} saved.`);
+  };
+
+  useEffect(() => {
+    saveFavoritesToCache();
+    console.log("hit");
+  }, [selectedKeys]);
+
+  // Handle closing the modal, and save favorites to cache if changes are made
+  const handleClose = () => {
+    saveFavoritesToCache(); // Save changes before closing
+    onClose();
   };
 
   const handleRemoveProduct = (searchKey: InventoryKey) => {
@@ -56,7 +77,7 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
           <DialogTitle>Set Favorites</DialogTitle>
