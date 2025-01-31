@@ -161,7 +161,7 @@ const useBrowserCache = () => {
     try {
       const db = await initStoreCache();
       const favorites = await db.get("favorites", store_id);
-      return favorites?.favorite_keys;
+      return favorites?.favorite_keys || [];
     } catch (error) {
       console.error(`Error fetching favorites for store ${store_id}:`, error);
       return null;

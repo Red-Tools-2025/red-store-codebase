@@ -43,7 +43,7 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
   useEffect(() => {
     const loadFavorites = async () => {
       const favorites = await getFavoritesForStore(store_id);
-      setSelectedKeys(favorites as InventoryKey[]);
+      setSelectedKeys(favorites === null ? [] : favorites);
     };
 
     if (isOpen) {
@@ -99,7 +99,7 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
         {/* Selected Products Display */}
         {selectedKeys.length > 0 && (
           <div className="text-[15px] flex flex-col">
-            <p className="font-medium">{`Selected Products (${selectedKeys.length}/25)`}</p>
+            <p className="font-medium">{`Current Favorites (${selectedKeys.length}/25)`}</p>
             <div className="flex flex-wrap gap-2 pt-2">
               {selectedKeys.map((key) => (
                 <span
