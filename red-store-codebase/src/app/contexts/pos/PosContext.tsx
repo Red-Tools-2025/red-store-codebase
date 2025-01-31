@@ -12,6 +12,8 @@ import { Cart } from "@/app/types/pos/cart";
 interface PosContextType {
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
+  favoriteProducts: Inventory[] | null;
+  originalProducts: Inventory[] | null;
   cartItems: Cart[];
   isLoading: boolean;
   selectedStore: Store | null;
@@ -29,6 +31,8 @@ export const PosProvider = ({
   cartItems,
   isLoading,
   selectedStore,
+  favoriteProducts,
+  originalProducts,
   handleResync,
   setCartItems,
   setClientSideItems,
@@ -36,6 +40,8 @@ export const PosProvider = ({
   children: ReactNode;
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
+  favoriteProducts: Inventory[] | null;
+  originalProducts: Inventory[] | null;
   cartItems: Cart[];
   isLoading: boolean;
   selectedStore: Store | null;
@@ -51,6 +57,8 @@ export const PosProvider = ({
         cartItems,
         isLoading,
         selectedStore,
+        favoriteProducts,
+        originalProducts,
         handleResync,
         setCartItems,
         setClientSideItems,

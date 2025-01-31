@@ -11,7 +11,7 @@ interface FetchProductsFetchResponse {
 
 interface FavoriteProductsFetchResponse {
   message: string;
-  favoriteProducts: Inventory[] | null;
+  favorite_products: Inventory[] | null;
 }
 
 // hook for syncing operations with the server
@@ -30,6 +30,9 @@ const useItems = (
     useState<boolean>(false);
 
   const [favoriteProducts, setFavoriteProducts] = useState<Inventory[] | null>(
+    []
+  );
+  const [originalProducts, setOriginalProducts] = useState<Inventory[] | null>(
     []
   );
 
@@ -58,6 +61,7 @@ const useItems = (
         );
         if (data.inventoryItems) {
           setClientSideItems(data.inventoryItems);
+          setOriginalProducts(data.inventoryItems);
           setMessage(data.message);
         }
         setIsLoading(false);
@@ -71,8 +75,8 @@ const useItems = (
 
     const fetchFavorites = async () => {
       try {
+        setIsFetchingFavorites(true);
         const favorites = await getFavoritesForStore(storeId);
-        console.log({ favorites });
         if (favorites == null || favorites.length === 0) {
           setFavoriteProducts(null);
           console.log("Nothing to see here bro");
@@ -87,9 +91,14 @@ const useItems = (
               },
             }
           );
-          console.log({ favorites: data });
+          console.log({ data });
+          if (data.favorite_products) {
+            setFavoriteProducts(data.favorite_products);
+            setIsFetchingFavorites(false);
+          }
         }
       } catch (err) {
+        setIsFetchingFavorites(false);
         console.log(err);
       }
     };
@@ -102,7 +111,6 @@ const useItems = (
     currentPage,
     pageSize,
     resyncInventory,
-    favoriteProducts,
     message,
     error,
   ]);
@@ -110,6 +118,8 @@ const useItems = (
   return {
     handleResync,
     isLoading,
+    favoriteProducts,
+    originalProducts,
   };
 };
 
