@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Coins, CalendarClock, ChartSpline, Database } from "lucide-react";
 import axios from "axios";
+import { useSales } from "@/app/contexts/sales/SalesContext";
 
 interface InfoCardProps {
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -52,6 +53,7 @@ interface SalesMetricsResponse {
 
 const InfoCards = () => {
   // State for storing fetched metrics data
+  const { selectedStore } = useSales();
   const [avgDailySales, setAvgDailySales] = useState<string>("Loading...");
   const [avgMonthlySales, setAvgMonthlySales] = useState<string>("Loading...");
 
@@ -64,11 +66,15 @@ const InfoCards = () => {
     const fetchMetrics = async () => {
       try {
         const response = await axios.get<SalesMetricsResponse>(
-          "/api/inventory/timeseries/metrics?store_id=7"
+          `/api/inventory/timeseries/metrics?store_id=${selectedStore?.storeId}`
         );
+
+        console.log({ response });
 
         if (response.data && response.data.data.length > 0) {
           const metrics = response.data.data[0];
+
+          console.log({ metrics });
 
           setAvgDailySales(formatNumber(metrics.avg_daily_sales || 0));
           setAvgMonthlySales(formatNumber(metrics.avg_monthly_sales || 0));

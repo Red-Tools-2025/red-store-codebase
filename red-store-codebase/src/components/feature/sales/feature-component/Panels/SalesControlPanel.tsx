@@ -42,8 +42,6 @@ const SalesControlPanel = () => {
     currentPageSize
   );
 
-  console.log({ totalPages, totalCount });
-
   const handleRefresh = () => setRefreshInventory(!refreshInventory);
 
   return (
