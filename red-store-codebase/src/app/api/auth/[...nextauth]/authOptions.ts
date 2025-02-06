@@ -116,6 +116,18 @@ const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true, // This ensures the cookie is not accessible via JavaScript
+        secure: process.env.NODE_ENV === "production", // Ensures the cookie is only sent over HTTPS
+        sameSite: "lax", // Helps prevent CSRF attacks
+        maxAge: 24 * 60 * 60, // 24 hours
+        path: "/",
+      },
+    },
+  },
 };
 
 export default authOptions;
