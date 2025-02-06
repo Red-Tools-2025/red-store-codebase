@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 
 interface Product {
@@ -71,6 +72,14 @@ const CardFirst: React.FC<{ product: Product | null; loading: boolean }> = ({
   );
 };
 
+interface TopTenRevenueProducts {
+  product_id: number;
+  total_sales: number;
+  revenue: number;
+  stock: number;
+  status: string;
+}
+
 const TopProductsTable: React.FC<CardContentProps> = ({ storeId }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -80,19 +89,21 @@ const TopProductsTable: React.FC<CardContentProps> = ({ storeId }) => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/inventory/timeseries/metrics/top-ten-revenue-stock?store_id_input=${storeId}`
+        const response = await axios.get<{ data: TopTenRevenueProducts[] }>(
+          `/api/inventory/timeseries/metrics/top-ten-revenue-stock?store_id_input=${storeId}`
         );
-        const data = await response.json();
-        setProducts(data.data);
-        if (data.data.length > 0) {
-          setSelectedProduct(data.data[0]);
+
+        const fetchedProducts = response.data.data || []; // Ensure it's always an array
+        setProducts(fetchedProducts);
+
+        if (fetchedProducts.length > 0) {
+          setSelectedProduct(fetchedProducts[0]);
         } else {
           setSelectedProduct(null);
         }
       } catch (error) {
         console.error("Error fetching product data:", error);
-        setProducts([]);
+        setProducts([]); // Ensure products is always an array
         setSelectedProduct(null);
       } finally {
         setLoading(false);

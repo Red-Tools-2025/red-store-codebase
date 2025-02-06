@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Coins, CalendarClock, ChartSpline, Database } from "lucide-react";
+import axios from "axios";
 
 interface InfoCardProps {
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -42,6 +43,13 @@ const InfoCard: React.FC<InfoCardProps> = ({
   );
 };
 
+interface SalesMetricsResponse {
+  data: {
+    avg_daily_sales: number;
+    avg_monthly_sales: number;
+  }[];
+}
+
 const InfoCards = () => {
   // State for storing fetched metrics data
   const [avgDailySales, setAvgDailySales] = useState<string>("Loading...");
@@ -53,19 +61,21 @@ const InfoCards = () => {
   };
 
   useEffect(() => {
-    // Fetch the metrics data from the API
     const fetchMetrics = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3000/api/inventory/timeseries/metrics?store_id=7"
+        const response = await axios.get<SalesMetricsResponse>(
+          "/api/inventory/timeseries/metrics?store_id=7"
         );
-        const data = await response.json();
-        // Assuming data structure: { "data": [{ "avg_daily_sales": number, "avg_monthly_sales": number }] }
-        const metrics = data.data[0];
 
-        // Format the numbers with commas and update the state
-        setAvgDailySales(formatNumber(metrics.avg_daily_sales));
-        setAvgMonthlySales(formatNumber(metrics.avg_monthly_sales));
+        if (response.data && response.data.data.length > 0) {
+          const metrics = response.data.data[0];
+
+          setAvgDailySales(formatNumber(metrics.avg_daily_sales || 0));
+          setAvgMonthlySales(formatNumber(metrics.avg_monthly_sales || 0));
+        } else {
+          setAvgDailySales("0");
+          setAvgMonthlySales("0");
+        }
       } catch (error) {
         console.error("Failed to fetch metrics data:", error);
         setAvgDailySales("Error");

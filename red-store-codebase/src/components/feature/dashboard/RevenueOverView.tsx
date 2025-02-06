@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import axios from "axios";
 
 interface ApiResponse {
   month: string;
@@ -24,11 +25,16 @@ interface SalesOverviewCardProps {
 }
 
 const fetchData = async (storeId: number): Promise<ApiResponse[]> => {
-  const response = await fetch(
-    `http://localhost:3000/api/inventory/timeseries/metrics/revenue-monthly?store_id=${storeId}`
-  );
-  const data = await response.json();
-  return data.data;
+  try {
+    const response = await axios.get<{ data: ApiResponse[] }>(
+      "/api/inventory/timeseries/metrics/revenue-monthly",
+      { params: { store_id: storeId } }
+    );
+    return response.data.data; // Ensure we always return an array
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return []; // Return an empty array on error to prevent crashes
+  }
 };
 
 export const SalesOverviewCard: React.FC<SalesOverviewCardProps> = ({

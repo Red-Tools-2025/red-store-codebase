@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardDescription,
 } from "@/components/ui/card";
+import axios from "axios";
 
 // Define the types of the API response data
 interface ApiResponse {
@@ -19,12 +20,17 @@ interface TotalInventoryWorthCardProps {
   storeId: number | null | undefined;
 }
 
-const fetchData = async (storeId: number): Promise<ApiResponse> => {
-  const response = await fetch(
-    `http://localhost:3000/api/inventory/timeseries/metrics/inventory-worth?store_id=${storeId}`
-  );
-  const data = await response.json();
-  return data.data[0]; // Assuming the data array always contains one object
+const fetchData = async (storeId: number): Promise<ApiResponse | null> => {
+  try {
+    const response = await axios.get<{ data: ApiResponse[] }>(
+      "/api/inventory/timeseries/metrics/inventory-worth",
+      { params: { store_id: storeId } }
+    );
+    return response.data.data[0] ?? null;
+  } catch (error) {
+    console.error("Error fetching inventory data:", error);
+    return null;
+  }
 };
 
 const TotalInventoryWorthCard: React.FC<TotalInventoryWorthCardProps> = ({

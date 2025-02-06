@@ -17,6 +17,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import useStoreRevenueData from "@/app/hooks/dashboard/useStoreRevenueData";
+import axios from "axios";
 
 // Helper function to convert month number to month name
 const getMonthName = (month: number) => {
@@ -37,6 +38,11 @@ const getMonthName = (month: number) => {
   return months[month - 1];
 };
 
+interface RevenueMonthYearResponse {
+  year: number;
+  month: number;
+}
+
 const StoreRevenueChart = ({ storeId }: { storeId: number }) => {
   const [availableYearMonthData, setAvailableYearMonthData] = useState<
     { year: number; month: number }[]
@@ -54,10 +60,10 @@ const StoreRevenueChart = ({ storeId }: { storeId: number }) => {
     // Fetch available year and month data from the API
     const fetchYearMonthData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/inventory/timeseries/metrics/get-month-year?store_id=${storeId}`
+        const response = await axios.get<RevenueMonthYearResponse[]>(
+          `/api/inventory/timeseries/metrics/get-month-year?store_id=${storeId}`
         );
-        const data = await response.json();
+        const data = response.data;
         setAvailableYearMonthData(data);
 
         // Set the default selected year and month based on the fetched data

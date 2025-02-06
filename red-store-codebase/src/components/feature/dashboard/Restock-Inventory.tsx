@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardDescription,
 } from "@/components/ui/card";
+import axios from "axios";
 
 // Define the types of the API response data
 interface ApiResponse {
@@ -20,12 +21,26 @@ interface RestockInventoryCardProps {
   storeId: number | null | undefined;
 }
 
-const fetchData = async (storeId: number): Promise<ApiResponse> => {
-  const response = await fetch(
-    `http://localhost:3000/api/inventory/timeseries/metrics/restock-inventory?store_id=${storeId}`
-  );
-  const data = await response.json();
-  return data.data[0]; // Assuming the data array always contains one object
+const fetchData = async (storeId: number): Promise<ApiResponse | null> => {
+  try {
+    const response = await axios.get<{ data: { data: ApiResponse[] } }>(
+      `/api/inventory/timeseries/metrics/restock-inventory?store_id=${storeId}`
+    );
+
+    if (
+      response.data.data && // Ensure `data` exists
+      Array.isArray(response.data.data) &&
+      response.data.data.length > 0
+    ) {
+      return response.data.data[0]; // Corrected access to API response
+    } else {
+      console.warn("No valid data found in response.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching restock data:", error);
+    return null;
+  }
 };
 
 const RestockInventoryCard: React.FC<RestockInventoryCardProps> = ({
