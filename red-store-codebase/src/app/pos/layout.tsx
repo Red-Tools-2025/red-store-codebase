@@ -6,7 +6,6 @@ import { SessionUserType } from "../types/management/context";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Inventory, Store } from "@prisma/client";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
-import useProducts from "../hooks/inventory/ServerHooks/useProducts";
 import { PosProvider } from "../contexts/pos/PosContext";
 import { Cart } from "../types/pos/cart";
 import useItems from "../hooks/pos/ServerHooks/useItems";
@@ -22,8 +21,6 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
 
   // pagination
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(20);
 
   // cart
   const [cartItems, setCartItems] = useState<Cart[]>([]);
@@ -66,8 +63,8 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
     selectedStore ? String(selectedStore.storeId) : "",
     sessionUser?.id ?? "",
     setClientSideItems,
-    currentPage,
-    pageSize
+    1,
+    20
   );
 
   return (

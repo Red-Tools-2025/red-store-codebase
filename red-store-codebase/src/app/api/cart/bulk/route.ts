@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ProcessBulkCartRequest, TimeSeries } from "@/app/types/inventory/api";
 
 import { db } from "@/lib/prisma";

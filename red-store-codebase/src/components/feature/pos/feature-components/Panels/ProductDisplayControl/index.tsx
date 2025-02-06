@@ -5,17 +5,10 @@ import { RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { IoIosStar } from "react-icons/io";
 
-interface ProductDisplayControlProps {
-  handleRefresh?: () => void;
-}
-
-const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
-  handleRefresh,
-}) => {
+const ProductDisplayControl = () => {
   const { syncToServer } = useBrowserCacheStorage();
   const {
     selectedStore,
-    inventoryItems,
     originalProducts,
     favoriteProducts,
     setClientSideItems,

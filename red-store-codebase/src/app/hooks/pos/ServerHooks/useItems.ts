@@ -120,6 +120,7 @@ const useItems = (
     isLoading,
     favoriteProducts,
     originalProducts,
+    isFetchingFavorites,
   };
 };
 

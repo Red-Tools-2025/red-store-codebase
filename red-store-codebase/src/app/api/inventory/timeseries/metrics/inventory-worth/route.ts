@@ -1,13 +1,6 @@
 import { NextResponse } from "next/server";
 import supabase from "../../../../../../../supabase/client"; // Adjust the path based on your project structure
 
-interface InventoryWorthResponse {
-  total_worth: number;
-  previous_month_worth: number;
-  increase_amount: number | null;
-  increase_percentage: number | null;
-}
-
 export async function GET(req: Request) {
   try {
     // Parse the store_id from the query parameters
