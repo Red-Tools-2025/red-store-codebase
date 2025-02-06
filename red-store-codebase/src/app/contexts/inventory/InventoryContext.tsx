@@ -7,11 +7,13 @@ import {
 } from "react";
 import { SessionUserType } from "@/app/types/management/context";
 import { Inventory, Store } from "@prisma/client";
+import { InventoryKey } from "@/app/types/inventory/components";
 
 interface InventoryContextType {
   infoPanelOpenState: boolean;
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
+  searchKeys: InventoryKey[];
   inventoryItemDetails?: Inventory;
   isLoading: boolean;
   selectedStore: Store | null;
@@ -37,6 +39,7 @@ export const InventoryProvider = ({
   inventoryItemDetails,
   selectedStore,
   isLoading,
+  searchKeys,
   intializedScanner,
   infoPanelOpenState,
   license,
@@ -52,6 +55,7 @@ export const InventoryProvider = ({
   infoPanelOpenState: boolean;
   sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
+  searchKeys: InventoryKey[];
   inventoryItemDetails?: Inventory;
   selectedStore: Store | null;
   isLoading: boolean;
@@ -71,6 +75,7 @@ export const InventoryProvider = ({
         sessionData,
         inventoryItems,
         inventoryItemDetails,
+        searchKeys,
         isLoading,
         selectedStore,
         intializedScanner,

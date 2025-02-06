@@ -6,7 +6,7 @@ import { SessionUserType } from "../types/management/context";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Inventory, Store } from "@prisma/client";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
-import useProducts from "../hooks/inventory/FetchHooks/useProducts";
+import useProducts from "../hooks/inventory/ServerHooks/useProducts";
 import { PosProvider } from "../contexts/pos/PosContext";
 import { Cart } from "../types/pos/cart";
 import useItems from "../hooks/pos/ServerHooks/useItems";
@@ -57,7 +57,12 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   //   pageSize
   // );
 
-  const { handleResync, isLoading: isLoadingProducts } = useItems(
+  const {
+    handleResync,
+    isLoading: isLoadingProducts,
+    favoriteProducts,
+    originalProducts,
+  } = useItems(
     selectedStore ? String(selectedStore.storeId) : "",
     sessionUser?.id ?? "",
     setClientSideItems,
@@ -68,13 +73,15 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   return (
     <PosProvider
       selectedStore={selectedStore}
+      favoriteProducts={favoriteProducts}
+      originalProducts={originalProducts}
       cartItems={cartItems}
-      setCartItems={setCartItems}
-      handleResync={handleResync}
-      setClientSideItems={setClientSideItems}
       isLoading={isLoadingProducts}
       inventoryItems={clientSideItems}
       sessionData={sessionUser ?? null}
+      setCartItems={setCartItems}
+      handleResync={handleResync}
+      setClientSideItems={setClientSideItems}
     >
       <div className="p-5 font-inter">
         {session ? (

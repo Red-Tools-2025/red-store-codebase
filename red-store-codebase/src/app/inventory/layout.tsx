@@ -6,9 +6,10 @@ import React, { useState } from "react";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Store } from "@prisma/client";
-import useProducts from "../hooks/inventory/FetchHooks/useProducts";
+import useProducts from "../hooks/inventory/ServerHooks/useProducts";
 import { InventoryProvider } from "../contexts/inventory/InventoryContext";
 import useScanner from "../hooks/scanner/StaticHooks/useScanner";
+import useSearch from "../hooks/inventory/ServerHooks/useSearch";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -29,7 +30,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   // inventory items
   const [isInfoPanelOpen, setIsInfoPanelOpen] = useState<boolean>(false);
 
-  // Fetching store data and inventory data
+  // Fetching store data, inventory data & search keys
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
     sessionUser?.id ?? ""
   );
@@ -43,6 +44,11 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
       setIsSelectedStore(userStores[0]);
     }
   }, [userStores]);
+
+  const { fetchingKeys, searchKeys } = useSearch(
+    selectedStore ? String(selectedStore.storeId) : "",
+    sessionUser?.id ?? ""
+  );
 
   const {
     inventoryItems,
@@ -60,6 +66,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     <InventoryProvider
       toggleInfoPanel={toggleInfoPanel}
       infoPanelOpenState={isInfoPanelOpen}
+      searchKeys={searchKeys}
       total_count={total_count}
       pageSize={pageSize}
       currentPage={currentPage}
@@ -77,7 +84,11 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
         {session ? (
           <>
             {isLoadingStores ? (
-              <div>Loading...</div>
+              fetchingKeys ? (
+                <div>Getting your search keys...</div>
+              ) : (
+                <div>Loading...</div>
+              )
             ) : userStores && userStores.length > 0 ? (
               <>
                 <div className="flex justify-between">

@@ -1,9 +1,15 @@
+import { InventoryKey } from "@/app/types/inventory/components";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function POST(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
+
+    // Taking input param as favorite keys
+    const body: { favorite_keys: InventoryKey[] } = await req.json();
+    const { favorite_keys } = body;
+
     const storeIdStr = searchParams.get("storeId");
     const storeManagerId = searchParams.get("storeManagerId");
 
@@ -16,37 +22,27 @@ export async function GET(req: Request) {
 
     const storeId = parseInt(storeIdStr);
 
-    const inventoryKeys = await db.inventory.findMany({
+    const favorite_products = await db.inventory.findMany({
       where: {
         storeId: storeId,
         storeManagerId: storeManagerId,
-      },
-      select: {
-        invId: true,
-        invItem: true,
+        invId: { in: favorite_keys.map((keys) => keys.invId) },
       },
     });
 
-    if (inventoryKeys.length === 0) {
+    if (!favorite_products.length) {
       return NextResponse.json(
-        {
-          message: "No inventory items available for this store.",
-          inventoryKeys,
-        },
-        { status: 200 }
+        { message: "No favorite products found" },
+        { status: 404 }
       );
     }
 
-    // Return the inventory items if found
     return NextResponse.json(
-      {
-        message: "Keys retrieved & stored to cache",
-        inventoryKeys,
-      },
+      { message: "Got your favorite products", favorite_products },
       { status: 200 }
     );
   } catch (err: unknown) {
-    console.log("Error fetching inventory items for store");
+    console.error("Error fetching inventory items for store", err);
     const errMessage =
       err instanceof Error ? err.message : "An unknown error occurred";
     return NextResponse.json(
