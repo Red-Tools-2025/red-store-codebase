@@ -1,6 +1,9 @@
+import { Toaster } from "@/components/ui/toaster";
+
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="h-full w-full flex items-center">
+      <Toaster />
       {/* Main wrapper for both the form and the grey area */}
       <div className="flex w-full h-full rounded-lg overflow-hidden">
         {/* Form Area - Takes full width on mobile and 1/4 on larger screens */}

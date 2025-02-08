@@ -2,18 +2,20 @@ import { NextResponse, NextRequest } from "next/server";
 import { db } from "@/lib/prisma";
 
 import bcrypt from "bcryptjs";
+import authClient from "@/lib/supabaseAuth/client";
 
 // Always declare a custom request Interface to have a custom request body pass through the API call
 interface RegisterRouteRequestType extends NextRequest {
   name: string;
   email: string;
   password: string;
+  phone?: string;
 }
 
 export async function POST(req: RegisterRouteRequestType) {
   try {
     const body = await req.json();
-    const { name, email, password } = body;
+    const { name, email, password, phone } = body;
     const existingUser = await db.user.findUnique({
       where: { email: email },
     });
@@ -27,6 +29,17 @@ export async function POST(req: RegisterRouteRequestType) {
         { status: 400 }
       );
 
+    const { data: AuthResponse, error: AuthErrorResponse } =
+      await authClient.auth.signUp({
+        email: email,
+        password: password,
+        phone: phone,
+      });
+
+    if (AuthErrorResponse) throw AuthErrorResponse;
+
+    console.log({ AuthResponse });
+
     // Hashing password on 10 salt rounds
     const hashedPwd = await bcrypt.hash(password, 10);
 
@@ -34,7 +47,8 @@ export async function POST(req: RegisterRouteRequestType) {
     const user = await db.user.create({
       data: {
         password: hashedPwd,
-        email: email,
+        email: AuthResponse.user?.email,
+        id: AuthResponse.user?.id,
         name: name,
         roleId: 2, // roleID - 2 corresponds to manager
       },

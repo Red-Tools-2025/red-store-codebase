@@ -3,10 +3,13 @@ import {
   HandleRegisterInputObject,
   RegisterResponse,
 } from "@/app/types/auth/register";
+import { useToast } from "@/hooks/use-toast";
 import axios, { AxiosResponse } from "axios";
 import { signIn } from "next-auth/react";
 
 const useAuthServerHook = () => {
+  const { toast } = useToast();
+
   const handleRegister = async (obj: HandleRegisterInputObject) => {
     const { email, name, password, phone, router, setError, setIsLoading } =
       obj;
@@ -33,7 +36,13 @@ const useAuthServerHook = () => {
         // Registration successful
         console.log(response.data.message);
         // Redirect to login page or dashboard
-        router.push("/dashboard");
+        // router.push("/dashboard");
+        toast({
+          title: "Welcome to Red Store !!",
+          description:
+            "Your Account has been created, please head over to your email to confirm your sign-up",
+          variant: "default",
+        });
       }
       if (response.status === 400) {
         setError(response.data.message);

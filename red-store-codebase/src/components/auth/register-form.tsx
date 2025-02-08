@@ -19,6 +19,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation"; // For navigation
 import { HandleRegisterInputObject } from "@/app/types/auth/register"; // Adjust path as needed
 import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook"; // Adjust path as needed
+import { Spinner } from "../ui/spinner";
 
 export const RegisterForm = () => {
   const router = useRouter();
@@ -26,7 +27,7 @@ export const RegisterForm = () => {
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const [isPending] = useTransition();
-  const [, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
@@ -61,6 +62,8 @@ export const RegisterForm = () => {
         backButtonHref="/auth/login"
         showSocial
       >
+        <FormError message={error} />
+        <div className="my-5" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onRegister)}>
             <div className="space-y-4">
@@ -136,14 +139,20 @@ export const RegisterForm = () => {
                 )}
               />
             </div>
-            <FormError message={error} />
             <FormSuccess message={success} />
             <Button
               type="submit"
               className="w-full  font-inter mt-4"
-              disabled={isPending}
+              disabled={isPending || isLoading}
             >
-              Create an Account
+              {isLoading ? (
+                <div className="flex flex-row ">
+                  <p className="text-sm text-white">Almost There </p>
+                  <Spinner className="text-white h-5" />
+                </div>
+              ) : (
+                "Create an Account"
+              )}
             </Button>
           </form>
         </Form>
