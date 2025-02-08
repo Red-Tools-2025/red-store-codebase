@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonValue } from "@prisma/client/runtime/library";
-import { Database } from "../../../../supabase/database.types";
+import { Database } from "../../../lib/supabase/database.types";
 
 //interface for the incoming request body for adding inventory
 export interface AddInventoryRequestBody {

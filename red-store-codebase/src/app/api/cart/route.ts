@@ -2,7 +2,7 @@ import { ProcessCartRequestBody, TimeSeries } from "@/app/types/inventory/api";
 
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import supabase from "../../../../supabase/client";
+import supabase from "../../../lib/supabase/client";
 
 export async function OPTIONS() {
   // Handle preflight OPTIONS request for CORS
