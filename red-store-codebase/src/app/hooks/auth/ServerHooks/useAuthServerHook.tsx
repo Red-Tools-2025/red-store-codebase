@@ -1,11 +1,14 @@
 import { HandleLoginInputObject } from "@/app/types/auth/login";
 import {
   HandleRegisterInputObject,
+  LoginResponse,
+  LoginResponseFailure,
   RegisterResponse,
 } from "@/app/types/auth/register";
 import { useToast } from "@/hooks/use-toast";
+
+import authClient from "@/lib/supabaseAuth/client";
 import axios, { AxiosResponse } from "axios";
-import { signIn } from "next-auth/react";
 
 const useAuthServerHook = () => {
   const { toast } = useToast();
@@ -66,21 +69,25 @@ const useAuthServerHook = () => {
     setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      });
+      const response: AxiosResponse<LoginResponse> = await axios.post(
+        "/api/auth/login",
+        {
+          email,
+          password,
+        }
+      );
 
-      if (result?.error) {
-        setError(result.error);
-      } else {
-        // Login successful
-        router.push("/dashboard");
+      if (response.status === 200) {
+        console.log({ response });
       }
-    } catch (err) {
-      setError("An unexpected error occurred during login.");
-      console.error(err);
+    } catch (error) {
+      // Improved error handling logic
+      if (axios.isAxiosError(error)) {
+        const errorData = await error.response;
+        setError((errorData?.data as LoginResponseFailure).error);
+      } else {
+        console.log("Something went wrong login again");
+      }
     } finally {
       setIsLoading(false);
     }

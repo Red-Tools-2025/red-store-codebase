@@ -19,6 +19,7 @@ import { useState, useTransition } from "react";
 import { HandleLoginInputObject } from "@/app/types/auth/login";
 import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
 import { useRouter } from "next/navigation";
+import { Spinner } from "../ui/spinner";
 
 export const LoginForm = () => {
   const router = useRouter();
@@ -26,7 +27,7 @@ export const LoginForm = () => {
   const [error, setError] = useState<string>("");
   const [success] = useState<string | undefined>("");
   const [isPending] = useTransition();
-  const [, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -55,6 +56,8 @@ export const LoginForm = () => {
         backButtonHref="/auth/register"
         showSocial
       >
+        <FormError message={error} />
+        <div className="my-5" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-4">
@@ -87,7 +90,7 @@ export const LoginForm = () => {
                       <Input
                         {...field}
                         className=" w-full"
-                        disabled={isPending}
+                        disabled={isPending || isLoading}
                         placeholder="Password"
                         type="password"
                       />
@@ -97,14 +100,20 @@ export const LoginForm = () => {
                 )}
               />
             </div>
-            <FormError message={error} />
             <FormSuccess message={success} />
             <Button
               type="submit"
               className="w-full mt-4 font-inter"
               disabled={isPending}
             >
-              Sign in
+              {isLoading ? (
+                <div className="flex flex-row ">
+                  <p className="text-sm text-white">Almost There </p>
+                  <Spinner className="text-white h-5" />
+                </div>
+              ) : (
+                "Sign in"
+              )}
             </Button>
           </form>
         </Form>
