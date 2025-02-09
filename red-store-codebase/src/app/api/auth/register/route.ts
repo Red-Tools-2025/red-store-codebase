@@ -34,6 +34,9 @@ export async function POST(req: RegisterRouteRequestType) {
         email: email,
         password: password,
         phone: phone,
+        options: {
+          emailRedirectTo: "http://localhost:3000/auth/confirmed",
+        },
       });
 
     if (AuthErrorResponse) throw AuthErrorResponse;
