@@ -113,15 +113,11 @@ const useAuthServerHook = () => {
         } else {
           setError(AuthError.message || "An error occurred during login.");
         }
-        return; // Important: Stop execution after setting the error
+        return;
       }
 
       // Login successful
       console.log("Supabase sign-in success:", AuthResponse);
-
-      // Optionally, you can access AuthResponse.user and AuthResponse.session here
-      // and use it to update application state, etc.  For example:
-      // setUser(AuthResponse.user);
 
       router.push("/dashboard");
     } catch (error) {
