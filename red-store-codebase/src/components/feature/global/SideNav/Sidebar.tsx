@@ -11,7 +11,6 @@ import {
   UserCog,
   FileCheck2,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link"; // Import Link for navigation
 
 import UserItem from "./UserItem";

@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ThemeProvider from "@/app/providers/theme-provider";
-import NextAuthProvider from "./providers/NextAuthProvider";
-import { getSession } from "next-auth/react";
 import StructureProvider from "./providers/StructureProvider";
 import { AuthProvider } from "./providers/AuthProvider";
 

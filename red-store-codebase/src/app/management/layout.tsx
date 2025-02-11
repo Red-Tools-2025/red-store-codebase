@@ -1,9 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
 import { IoMdPersonAdd } from "react-icons/io";
 import { IoStorefront } from "react-icons/io5";
-import { SessionUserType } from "../types/management/context";
 import { MdOutlineAssignment } from "react-icons/md";
 import { ManagementProvider } from "../contexts/management/ManagementContext";
 

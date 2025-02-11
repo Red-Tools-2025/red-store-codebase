@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { AuthError, Session } from "@supabase/supabase-js";
+import { Session } from "@supabase/supabase-js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { Dispatch, SetStateAction } from "react";
 

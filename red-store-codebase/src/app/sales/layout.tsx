@@ -1,5 +1,4 @@
 "use client";
-import { useSession } from "next-auth/react";
 import { SessionUserType } from "../types/management/context";
 
 import React, { useState } from "react";

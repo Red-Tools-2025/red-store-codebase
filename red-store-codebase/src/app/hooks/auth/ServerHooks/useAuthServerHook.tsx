@@ -1,8 +1,6 @@
 import { HandleLoginInputObject } from "@/app/types/auth/login";
 import {
   HandleRegisterInputObject,
-  LoginResponse,
-  LoginResponseFailure,
   RegisterResponse,
 } from "@/app/types/auth/register";
 import { useToast } from "@/hooks/use-toast";
@@ -14,8 +12,7 @@ const useAuthServerHook = () => {
   const { toast } = useToast();
 
   const handleRegister = async (obj: HandleRegisterInputObject) => {
-    const { email, name, password, phone, router, setError, setIsLoading } =
-      obj;
+    const { email, name, password, phone, setError, setIsLoading } = obj;
     setError("");
     setIsLoading(true);
 
