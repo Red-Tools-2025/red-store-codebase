@@ -294,6 +294,58 @@ DROP COLUMN invitemsize;
 ALTER TABLE inventory
 DROP COLUMN invitemid;
 
+/////////////////////////////////////
+CREATE  TABLE Favorites (
+    favId SERIAL,                    -- Automatically incrementing favorite ID
+    storeId INT NOT NULL,             -- Foreign key to the Store table
+    storeManagerId TEXT NOT NULL,     -- Manager ID to match the composite key in Store
+    invId INT NOT NULL,               -- Inventory ID (foreign key to Inventory table)
+    invItem TEXT NOT NULL,            -- Item name from Inventory
+    invItemBrand TEXT,                -- Nullable brand name from Inventory
+    addedAt TIMESTAMP DEFAULT now(),  -- Timestamp when the item was added to favorites
+
+    -- Composite foreign key referencing the Store table
+    CONSTRAINT fk_store_favorites FOREIGN KEY (storeId, storeManagerId)
+        REFERENCES Store (storeId, storeManagerId)
+        ON DELETE CASCADE,
+
+    -- Foreign key referencing the Inventory table
+    CONSTRAINT fk_inventory_favorites FOREIGN KEY (storeId, invId)
+        REFERENCES Inventory (storeId, invId)
+        ON DELETE CASCADE,
+
+    -- Composite primary key using storeId and favId
+    PRIMARY KEY (storeId, favId)
+
+) PARTITION BY LIST (storeId);
+
+/////
+CREATE OR REPLACE FUNCTION check_and_create_favorites_partition(store_id INT)
+RETURNS BOOLEAN AS $$
+DECLARE
+    partition_name TEXT := format('favorites_store_%s', store_id);
+BEGIN
+    -- Check if the partition already exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_tables
+        WHERE schemaname = 'public' AND tablename = partition_name
+    ) THEN
+        -- Create the partition if it does not exist
+        EXECUTE format(
+            'CREATE TABLE %I PARTITION OF Favorites FOR VALUES IN (%L)',
+            partition_name,
+            store_id
+        );
+        
+        -- Return NULL as the partition was created
+        RETURN NULL;
+    ELSE
+        -- Return TRUE if the partition already exists
+        RETURN TRUE;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
 
 
 

@@ -9,42 +9,703 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      inventory_timeseries: {
+      Account: {
         Row: {
-          closing_stock: number | null
-          mrp_per_bottle: number | null
-          opening_stock: number | null
-          product_id: number
-          product_name: string
-          received_stock: number | null
-          sale_amount: number | null
-          sales: number | null
-          store_id: number
-          time: string
+          access_token: string | null
+          expires_at: number | null
+          id: string
+          id_token: string | null
+          provider: string
+          providerAccountId: string
+          refresh_token: string | null
+          scope: string | null
+          session_state: string | null
+          token_type: string | null
+          type: string
+          userId: string
         }
         Insert: {
-          closing_stock?: number | null
-          mrp_per_bottle?: number | null
-          opening_stock?: number | null
-          product_id: number
-          product_name: string
-          received_stock?: number | null
-          sale_amount?: number | null
-          sales?: number | null
-          store_id: number
-          time: string
+          access_token?: string | null
+          expires_at?: number | null
+          id: string
+          id_token?: string | null
+          provider: string
+          providerAccountId: string
+          refresh_token?: string | null
+          scope?: string | null
+          session_state?: string | null
+          token_type?: string | null
+          type: string
+          userId: string
         }
         Update: {
-          closing_stock?: number | null
-          mrp_per_bottle?: number | null
-          opening_stock?: number | null
-          product_id?: number
-          product_name?: string
-          received_stock?: number | null
-          sale_amount?: number | null
-          sales?: number | null
-          store_id?: number
-          time?: string
+          access_token?: string | null
+          expires_at?: number | null
+          id?: string
+          id_token?: string | null
+          provider?: string
+          providerAccountId?: string
+          refresh_token?: string | null
+          scope?: string | null
+          session_state?: string | null
+          token_type?: string | null
+          type?: string
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Account_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "User"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee: {
+        Row: {
+          createdat: string | null
+          empid: number
+          empname: string
+          empphone: string
+          empstatus: boolean
+          roleid: number[] | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          createdat?: string | null
+          empid?: number
+          empname: string
+          empphone: string
+          empstatus: boolean
+          roleid?: number[] | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          createdat?: string | null
+          empid?: number
+          empname?: string
+          empphone?: string
+          empstatus?: boolean
+          roleid?: number[] | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: []
+      }
+      employee_store_1: {
+        Row: {
+          createdat: string | null
+          empid: number
+          empname: string
+          empphone: string
+          empstatus: boolean
+          roleid: number[] | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          createdat?: string | null
+          empid?: number
+          empname: string
+          empphone: string
+          empstatus: boolean
+          roleid?: number[] | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          createdat?: string | null
+          empid?: number
+          empname?: string
+          empphone?: string
+          empstatus?: boolean
+          roleid?: number[] | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: []
+      }
+      employee_store_2: {
+        Row: {
+          createdat: string | null
+          empid: number
+          empname: string
+          empphone: string
+          empstatus: boolean
+          roleid: number[] | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          createdat?: string | null
+          empid?: number
+          empname: string
+          empphone: string
+          empstatus: boolean
+          roleid?: number[] | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          createdat?: string | null
+          empid?: number
+          empname?: string
+          empphone?: string
+          empstatus?: boolean
+          roleid?: number[] | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: []
+      }
+      employee_store_4: {
+        Row: {
+          createdat: string | null
+          empid: number
+          empname: string
+          empphone: string
+          empstatus: boolean
+          roleid: number[] | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          createdat?: string | null
+          empid?: number
+          empname: string
+          empphone: string
+          empstatus: boolean
+          roleid?: number[] | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          createdat?: string | null
+          empid?: number
+          empname?: string
+          empphone?: string
+          empstatus?: boolean
+          roleid?: number[] | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: []
+      }
+      favorites: {
+        Row: {
+          addedat: string | null
+          favid: number
+          invid: number
+          invitem: string
+          invitembrand: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          addedat?: string | null
+          favid?: number
+          invid: number
+          invitem: string
+          invitembrand?: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          addedat?: string | null
+          favid?: number
+          invid?: number
+          invitem?: string
+          invitembrand?: string | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_inventory_favorites"
+            columns: ["storeid", "invid"]
+            isOneToOne: false
+            referencedRelation: "inventory"
+            referencedColumns: ["storeid", "invid"]
+          },
+          {
+            foreignKeyName: "fk_store_favorites"
+            columns: ["storeid", "storemanagerid"]
+            isOneToOne: false
+            referencedRelation: "store"
+            referencedColumns: ["storeid", "storemanagerid"]
+          },
+        ]
+      }
+      favorites_store_101: {
+        Row: {
+          addedat: string | null
+          favid: number
+          invid: number
+          invitem: string
+          invitembrand: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          addedat?: string | null
+          favid?: number
+          invid: number
+          invitem: string
+          invitembrand?: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          addedat?: string | null
+          favid?: number
+          invid?: number
+          invitem?: string
+          invitembrand?: string | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: []
+      }
+      favorites_store_2: {
+        Row: {
+          addedat: string | null
+          favid: number
+          invid: number
+          invitem: string
+          invitembrand: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          addedat?: string | null
+          favid?: number
+          invid: number
+          invitem: string
+          invitembrand?: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          addedat?: string | null
+          favid?: number
+          invid?: number
+          invitem?: string
+          invitembrand?: string | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: []
+      }
+      inventory: {
+        Row: {
+          invadditional: Json | null
+          invcreateddate: string | null
+          invid: number
+          invitem: string
+          invitembarcode: string | null
+          invitembrand: string | null
+          invitemprice: number
+          invitemstock: number
+          invitemtype: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          invadditional?: Json | null
+          invcreateddate?: string | null
+          invid?: number
+          invitem: string
+          invitembarcode?: string | null
+          invitembrand?: string | null
+          invitemprice: number
+          invitemstock: number
+          invitemtype?: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          invadditional?: Json | null
+          invcreateddate?: string | null
+          invid?: number
+          invitem?: string
+          invitembarcode?: string | null
+          invitembrand?: string | null
+          invitemprice?: number
+          invitemstock?: number
+          invitemtype?: string | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_store_inventory"
+            columns: ["storeid", "storemanagerid"]
+            isOneToOne: false
+            referencedRelation: "store"
+            referencedColumns: ["storeid", "storemanagerid"]
+          },
+        ]
+      }
+      inventory_store_1: {
+        Row: {
+          invadditional: Json | null
+          invcreateddate: string | null
+          invid: number
+          invitem: string
+          invitembarcode: string | null
+          invitembrand: string | null
+          invitemprice: number
+          invitemstock: number
+          invitemtype: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          invadditional?: Json | null
+          invcreateddate?: string | null
+          invid?: number
+          invitem: string
+          invitembarcode?: string | null
+          invitembrand?: string | null
+          invitemprice: number
+          invitemstock: number
+          invitemtype?: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          invadditional?: Json | null
+          invcreateddate?: string | null
+          invid?: number
+          invitem?: string
+          invitembarcode?: string | null
+          invitembrand?: string | null
+          invitemprice?: number
+          invitemstock?: number
+          invitemtype?: string | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: []
+      }
+      inventory_store_2: {
+        Row: {
+          invadditional: Json | null
+          invcreateddate: string | null
+          invid: number
+          invitem: string
+          invitembarcode: string | null
+          invitembrand: string | null
+          invitemprice: number
+          invitemstock: number
+          invitemtype: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          invadditional?: Json | null
+          invcreateddate?: string | null
+          invid?: number
+          invitem: string
+          invitembarcode?: string | null
+          invitembrand?: string | null
+          invitemprice: number
+          invitemstock: number
+          invitemtype?: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          invadditional?: Json | null
+          invcreateddate?: string | null
+          invid?: number
+          invitem?: string
+          invitembarcode?: string | null
+          invitembrand?: string | null
+          invitemprice?: number
+          invitemstock?: number
+          invitemtype?: string | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: []
+      }
+      inventory_store_4: {
+        Row: {
+          invadditional: Json | null
+          invcreateddate: string | null
+          invid: number
+          invitem: string
+          invitembarcode: string | null
+          invitembrand: string | null
+          invitemprice: number
+          invitemstock: number
+          invitemtype: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Insert: {
+          invadditional?: Json | null
+          invcreateddate?: string | null
+          invid?: number
+          invitem: string
+          invitembarcode?: string | null
+          invitembrand?: string | null
+          invitemprice: number
+          invitemstock: number
+          invitemtype?: string | null
+          storeid: number
+          storemanagerid: string
+        }
+        Update: {
+          invadditional?: Json | null
+          invcreateddate?: string | null
+          invid?: number
+          invitem?: string
+          invitembarcode?: string | null
+          invitembrand?: string | null
+          invitemprice?: number
+          invitemstock?: number
+          invitemtype?: string | null
+          storeid?: number
+          storemanagerid?: string
+        }
+        Relationships: []
+      }
+      Role: {
+        Row: {
+          roleId: number
+          roleType: Database["public"]["Enums"]["RoleType"]
+        }
+        Insert: {
+          roleId?: number
+          roleType: Database["public"]["Enums"]["RoleType"]
+        }
+        Update: {
+          roleId?: number
+          roleType?: Database["public"]["Enums"]["RoleType"]
+        }
+        Relationships: []
+      }
+      Sale: {
+        Row: {
+          invId: number
+          saleDate: string
+          saleId: number
+          salePrice: number
+          saleQuantity: number
+          storeId: number
+          storeManagerId: string
+        }
+        Insert: {
+          invId: number
+          saleDate: string
+          saleId?: number
+          salePrice: number
+          saleQuantity: number
+          storeId: number
+          storeManagerId: string
+        }
+        Update: {
+          invId?: number
+          saleDate?: string
+          saleId?: number
+          salePrice?: number
+          saleQuantity?: number
+          storeId?: number
+          storeManagerId?: string
+        }
+        Relationships: []
+      }
+      Session: {
+        Row: {
+          expires: string
+          id: string
+          sessionToken: string
+          userId: string
+        }
+        Insert: {
+          expires: string
+          id: string
+          sessionToken: string
+          userId: string
+        }
+        Update: {
+          expires?: string
+          id?: string
+          sessionToken?: string
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Session_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "User"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store: {
+        Row: {
+          createdat: string | null
+          customfields: Json | null
+          storeid: number
+          storelocation: string | null
+          storemanagerid: string
+          storename: string
+          storestatus: boolean
+        }
+        Insert: {
+          createdat?: string | null
+          customfields?: Json | null
+          storeid?: number
+          storelocation?: string | null
+          storemanagerid: string
+          storename: string
+          storestatus: boolean
+        }
+        Update: {
+          createdat?: string | null
+          customfields?: Json | null
+          storeid?: number
+          storelocation?: string | null
+          storemanagerid?: string
+          storename?: string
+          storestatus?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_user"
+            columns: ["storemanagerid"]
+            isOneToOne: false
+            referencedRelation: "User"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_manager_cm53jfy2y0001141joy1n113v: {
+        Row: {
+          createdat: string | null
+          customfields: Json | null
+          storeid: number
+          storelocation: string | null
+          storemanagerid: string
+          storename: string
+          storestatus: boolean
+        }
+        Insert: {
+          createdat?: string | null
+          customfields?: Json | null
+          storeid?: number
+          storelocation?: string | null
+          storemanagerid: string
+          storename: string
+          storestatus: boolean
+        }
+        Update: {
+          createdat?: string | null
+          customfields?: Json | null
+          storeid?: number
+          storelocation?: string | null
+          storemanagerid?: string
+          storename?: string
+          storestatus?: boolean
+        }
+        Relationships: []
+      }
+      store_manager_cm5i1aq0f0001l52flaqt4z43: {
+        Row: {
+          createdat: string | null
+          customfields: Json | null
+          storeid: number
+          storelocation: string | null
+          storemanagerid: string
+          storename: string
+          storestatus: boolean
+        }
+        Insert: {
+          createdat?: string | null
+          customfields?: Json | null
+          storeid?: number
+          storelocation?: string | null
+          storemanagerid: string
+          storename: string
+          storestatus: boolean
+        }
+        Update: {
+          createdat?: string | null
+          customfields?: Json | null
+          storeid?: number
+          storelocation?: string | null
+          storemanagerid?: string
+          storename?: string
+          storestatus?: boolean
+        }
+        Relationships: []
+      }
+      User: {
+        Row: {
+          createdAt: string
+          email: string | null
+          emailVerified: string | null
+          id: string
+          image: string | null
+          name: string | null
+          password: string
+          phone: string | null
+          roleId: number
+        }
+        Insert: {
+          createdAt?: string
+          email?: string | null
+          emailVerified?: string | null
+          id: string
+          image?: string | null
+          name?: string | null
+          password: string
+          phone?: string | null
+          roleId: number
+        }
+        Update: {
+          createdAt?: string
+          email?: string | null
+          emailVerified?: string | null
+          id?: string
+          image?: string | null
+          name?: string | null
+          password?: string
+          phone?: string | null
+          roleId?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "User_roleId_fkey"
+            columns: ["roleId"]
+            isOneToOne: false
+            referencedRelation: "Role"
+            referencedColumns: ["roleId"]
+          },
+        ]
+      }
+      VerificationToken: {
+        Row: {
+          expires: string
+          identifier: string
+          token: string
+        }
+        Insert: {
+          expires: string
+          identifier: string
+          token: string
+        }
+        Update: {
+          expires?: string
+          identifier?: string
+          token?: string
         }
         Relationships: []
       }
@@ -53,227 +714,33 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      calculate_inventory_worth: {
+      check_and_create_employee_partition: {
         Args: {
-          store_id_input: number
+          store_id: number
         }
-        Returns: {
-          total_worth: number
-          previous_month_worth: number
-          increase_amount: number
-          increase_percentage: number
-        }[]
+        Returns: undefined
       }
-      calculate_monthly_transaction_metrics: {
+      check_and_create_favorites_partition: {
         Args: {
-          store_id_input: number
+          store_id: number
         }
-        Returns: {
-          month: string
-          average_transaction: number
-          total_transactions: number
-          highest_transaction: number
-          lowest_transaction: number
-        }[]
+        Returns: boolean
       }
-      calculate_restock_data: {
+      check_and_create_inventory_partition: {
         Args: {
-          store_id_input: number
+          store_id: number
         }
-        Returns: {
-          current_month_total_value: number
-          previous_month_total_value: number
-          percentage_change: number
-          current_month_frequency: number
-          previous_month_frequency: number
-        }[]
+        Returns: boolean
       }
-      calculate_store_revenue: {
+      check_and_create_store_partition: {
         Args: {
-          store_id_input: number
-          year_input: number
-          month_input: number
+          manager_id: string
         }
-        Returns: {
-          period: string
-          total_revenue: number
-          currency: string
-        }[]
-      }
-      get_available_years_and_months: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          year: number
-          month: number
-        }[]
-      }
-      get_mean_transaction_value_by_day: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          bucket: string
-          mean_transaction: number
-        }[]
-      }
-      get_monthly_inventory_summary: {
-        Args: {
-          store_id_input: number
-          month_input: string
-        }
-        Returns: {
-          product_name: string
-          product_id: number
-          year: number
-          month: number
-          opening_stock: number
-          received_stock: number
-          closing_stock: number
-          sales: number
-          sale_amount: number
-          total_value: number
-        }[]
-      }
-      get_monthly_sales: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          month: string
-          total_sales: number
-          currency: string
-        }[]
-      }
-      get_sales_averages: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          avg_daily_sales: number
-          avg_monthly_sales: number
-        }[]
-      }
-      get_sales_by_hour: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          hour: number
-          total_sales: number
-        }[]
-      }
-      get_sales_by_hour_date_range: {
-        Args: {
-          store_id_input: number
-          start_date: string
-          end_date: string
-        }
-        Returns: {
-          hour: number
-          total_sales: number
-        }[]
-      }
-      get_store_revenue_by_date_range: {
-        Args: {
-          store_id_input: number
-          start_date: string
-          end_date: string
-        }
-        Returns: {
-          bucket: string
-          total_revenue: number
-          currency: string
-        }[]
-      }
-      get_store_revenue_last_30_days: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          bucket: string
-          total_revenue: number
-          currency: string
-        }[]
-      }
-      get_timeseries_status: {
-        Args: {
-          p_store_id: number
-          p_product_id: number
-          p_timestamp: string
-        }
-        Returns: {
-          last_closing_stock: number
-          last_received_stock: number
-          same_day_received_stock: number
-          has_same_day_record: boolean
-        }[]
-      }
-      get_top_10_best_selling_products: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          product_id: number
-          total_sales: number
-        }[]
-      }
-      get_top_10_best_selling_products_by_revenue_stock_status: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          product_id: number
-          total_sales: number
-          revenue: number
-          stock: number
-          status: string
-        }[]
-      }
-      get_top_10_best_selling_products_date_range: {
-        Args: {
-          store_id_input: number
-          start_date: string
-          end_date: string
-        }
-        Returns: {
-          product_id: number
-          total_sales: number
-        }[]
-      }
-      get_top_10_worst_selling_products: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          product_id: number
-          total_sales: number
-        }[]
-      }
-      get_weekday_transaction_averages: {
-        Args: {
-          store_id_input: number
-        }
-        Returns: {
-          weekday: string
-          mean_transaction_value: number
-        }[]
-      }
-      get_weekday_transaction_averages_date_range: {
-        Args: {
-          store_id_input: number
-          start_date: string
-          end_date: string
-        }
-        Returns: {
-          weekday: string
-          mean_transaction_value: number
-        }[]
+        Returns: undefined
       }
     }
     Enums: {
-      [_ in never]: never
+      RoleType: "SALES" | "MANAGER" | "INVENTORY_STAFF" | "STORE_MANAGER"
     }
     CompositeTypes: {
       [_ in never]: never
