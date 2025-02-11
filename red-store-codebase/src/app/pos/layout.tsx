@@ -9,14 +9,16 @@ import DropDownStoreSelect from "@/components/feature/management/feature-compone
 import { PosProvider } from "../contexts/pos/PosContext";
 import { Cart } from "../types/pos/cart";
 import useItems from "../hooks/pos/ServerHooks/useItems";
+import { useAuth } from "../providers/AuthProvider";
+import SessionValidator from "@/components/feature/global/layouts/SessionValidator";
 
 interface POSLayoutProps {
   children: React.ReactNode;
 }
 
 const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
-  const { data: session } = useSession();
-  const sessionUser = session?.user as SessionUserType | undefined;
+  const { session, isLoading: isLoadingSession } = useAuth();
+  const sessionUser = session?.user;
 
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
 
@@ -81,32 +83,28 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       setClientSideItems={setClientSideItems}
     >
       <div className="p-5 font-inter">
-        {session ? (
-          <>
-            {isLoadingStores ? (
-              <div>Loading...</div>
-            ) : userStores && userStores.length > 0 ? (
-              <>
-                <div className="flex justify-between">
-                  <h1 className="text-2xl font-semibold">Point of Sales</h1>
-                  <div className="flex gap-2">
-                    <DropDownStoreSelect
-                      data={userStores}
-                      isDisabled={userStores.length === 0}
-                      setSelectedStore={setIsSelectedStore}
-                      selectedStore={selectedStore}
-                    />
-                  </div>
+        <SessionValidator session={session} isLoading={isLoadingSession}>
+          {isLoadingStores ? (
+            <div>Loading...</div>
+          ) : userStores && userStores.length > 0 ? (
+            <>
+              <div className="flex justify-between">
+                <h1 className="text-2xl font-semibold">Point of Sales</h1>
+                <div className="flex gap-2">
+                  <DropDownStoreSelect
+                    data={userStores}
+                    isDisabled={userStores.length === 0}
+                    setSelectedStore={setIsSelectedStore}
+                    selectedStore={selectedStore}
+                  />
                 </div>
-                {children}
-              </>
-            ) : (
-              <div>No stores found</div>
-            )}
-          </>
-        ) : (
-          <main>Session not found. Please log in again.</main>
-        )}
+              </div>
+              {children}
+            </>
+          ) : (
+            <div>No stores found</div>
+          )}
+        </SessionValidator>
       </div>
     </PosProvider>
   );

@@ -15,17 +15,21 @@ import AddEmployeeModal from "@/components/feature/management/feature-component/
 import { Store } from "@prisma/client";
 import useEmployeeServerFetch from "../hooks/management/ServerHooks/useEmployeeServerFetch";
 import AssignEmployeeModal from "@/components/feature/management/feature-component/FormModals/AssignEmployeeModal";
+import { useAuth } from "../providers/AuthProvider";
+import SessionValidator from "@/components/feature/global/layouts/SessionValidator";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
-  const { data: session } = useSession();
-  const sessionUser = session?.user as SessionUserType | undefined;
-  console.log(sessionUser?.id);
+  // Fetching session details
+  const { session, isLoading: isLoadingSession } = useAuth();
+  const sessionUser = session?.user;
 
-  const { data, isLoading } = useStoreServerFetch(sessionUser?.id ?? "");
+  const { data, isLoading: isLoadingStores } = useStoreServerFetch(
+    sessionUser?.id ?? ""
+  );
   const { data: employeeData } = useEmployeeServerFetch(sessionUser?.id ?? ""); // Fetch employee data
 
   const [isStoreModalOpen, setisStoreModalOpen] = useState<boolean>(false);
@@ -75,70 +79,66 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
       employeeData={employeeData}
     >
       <div className="p-5">
-        {session ? (
-          <>
-            {isLoading && !data?.length ? (
-              <>Loading</>
-            ) : (
-              <>
-                <div className="flex justify-between">
-                  <h1 className="text-2xl font-semibold">
-                    User and Store Management
-                  </h1>
-                  <div className="flex gap-2">
-                    <DropDownStoreSelect
-                      data={data ?? []}
-                      isDisabled={data?.length === 0}
-                      setSelectedStore={setIsSelectedStore}
-                      selectedStore={selectedStore}
-                    />
-                    <Button
-                      disabled={selectedStore ? false : true}
-                      onClick={() => handleOpenModal(setAssignModalOpen)}
-                      variant={"icon-left"}
-                    >
-                      <MdOutlineAssignment className="mr-2" />
-                      Assign Employee
-                    </Button>
-                    <Button
-                      disabled={selectedStore ? false : true}
-                      onClick={() => handleOpenModal(setIsEmpModalOpen)}
-                      variant={"icon-left"}
-                    >
-                      <IoMdPersonAdd className="mr-2" />
-                      Add Employee
-                    </Button>
-                    <Button
-                      onClick={() => handleOpenModal(setisStoreModalOpen)}
-                      variant={"icon-left"}
-                    >
-                      <IoStorefront className="mr-2" />
-                      Add Store
-                    </Button>
-                    {/* Modals */}
-                    <AddStoreModal
-                      isOpen={isStoreModalOpen}
-                      onClose={() => handleCloseModal(setisStoreModalOpen)}
-                    />
-                    <AddEmployeeModal
-                      isOpen={isEmpModalOpen}
-                      onClose={() => handleCloseModal(setIsEmpModalOpen)}
-                    />
-                    <AssignEmployeeModal
-                      empDataMap={empMap}
-                      storeDataMap={storeMap}
-                      isOpen={isAssignModalOpen}
-                      onClose={() => handleCloseModal(setAssignModalOpen)}
-                    />
-                  </div>
+        <SessionValidator session={session} isLoading={isLoadingSession}>
+          {isLoadingStores && !data?.length ? (
+            <>Loading</>
+          ) : (
+            <>
+              <div className="flex justify-between">
+                <h1 className="text-2xl font-semibold">
+                  User and Store Management
+                </h1>
+                <div className="flex gap-2">
+                  <DropDownStoreSelect
+                    data={data ?? []}
+                    isDisabled={data?.length === 0}
+                    setSelectedStore={setIsSelectedStore}
+                    selectedStore={selectedStore}
+                  />
+                  <Button
+                    disabled={selectedStore ? false : true}
+                    onClick={() => handleOpenModal(setAssignModalOpen)}
+                    variant={"icon-left"}
+                  >
+                    <MdOutlineAssignment className="mr-2" />
+                    Assign Employee
+                  </Button>
+                  <Button
+                    disabled={selectedStore ? false : true}
+                    onClick={() => handleOpenModal(setIsEmpModalOpen)}
+                    variant={"icon-left"}
+                  >
+                    <IoMdPersonAdd className="mr-2" />
+                    Add Employee
+                  </Button>
+                  <Button
+                    onClick={() => handleOpenModal(setisStoreModalOpen)}
+                    variant={"icon-left"}
+                  >
+                    <IoStorefront className="mr-2" />
+                    Add Store
+                  </Button>
+                  {/* Modals */}
+                  <AddStoreModal
+                    isOpen={isStoreModalOpen}
+                    onClose={() => handleCloseModal(setisStoreModalOpen)}
+                  />
+                  <AddEmployeeModal
+                    isOpen={isEmpModalOpen}
+                    onClose={() => handleCloseModal(setIsEmpModalOpen)}
+                  />
+                  <AssignEmployeeModal
+                    empDataMap={empMap}
+                    storeDataMap={storeMap}
+                    isOpen={isAssignModalOpen}
+                    onClose={() => handleCloseModal(setAssignModalOpen)}
+                  />
                 </div>
-                {children}
-              </>
-            )}
-          </>
-        ) : (
-          <main>Session not found please login again</main>
-        )}
+              </div>
+              {children}
+            </>
+          )}
+        </SessionValidator>
       </div>
     </ManagementProvider>
   );
