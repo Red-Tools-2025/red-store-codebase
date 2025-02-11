@@ -6,8 +6,8 @@ import {
   RegisterResponse,
 } from "@/app/types/auth/register";
 import { useToast } from "@/hooks/use-toast";
-
 import authClient from "@/lib/supabaseAuth/client";
+
 import axios, { AxiosResponse } from "axios";
 
 const useAuthServerHook = () => {
@@ -38,8 +38,6 @@ const useAuthServerHook = () => {
       if (response.status === 201) {
         // Registration successful
         console.log(response.data.message);
-        // Redirect to login page or dashboard
-        // router.push("/dashboard");
         toast({
           title: "Welcome to Red Store !!",
           description:
@@ -63,31 +61,72 @@ const useAuthServerHook = () => {
     }
   };
 
+  // const handleLogin = async (obj: HandleLoginInputObject) => {
+  //   const { email, password, router, setError, setIsLoading } = obj;
+  //   setError("");
+  //   setIsLoading(true);
+
+  //   try {
+  //     const response: AxiosResponse<LoginResponse> = await axios.post(
+  //       "/api/auth/login",
+  //       {
+  //         email,
+  //         password,
+  //       }
+  //     );
+
+  //     if (response.status === 200) {
+  //       router.push("/dashboard");
+  //     }
+  //   } catch (error) {
+  //     // Improved error handling logic
+  //     if (axios.isAxiosError(error)) {
+  //       const errorData = await error.response;
+  //       setError((errorData?.data as LoginResponseFailure).error);
+  //     } else {
+  //       console.log("Something went wrong login again");
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const handleLogin = async (obj: HandleLoginInputObject) => {
     const { email, password, router, setError, setIsLoading } = obj;
     setError("");
     setIsLoading(true);
 
     try {
-      const response: AxiosResponse<LoginResponse> = await axios.post(
-        "/api/auth/login",
-        {
+      const { data: AuthResponse, error: AuthError } =
+        await authClient.auth.signInWithPassword({
           email,
           password,
-        }
-      );
+        });
 
-      if (response.status === 200) {
-        console.log({ response });
+      if (AuthError) {
+        console.error("Supabase sign-in error:", AuthError);
+
+        if (AuthError.code === "email_not_confirmed") {
+          setError("Please confirm your email address to log in.");
+        } else if (AuthError.message.includes("Invalid email or password")) {
+          setError("Invalid email or password");
+        } else {
+          setError(AuthError.message || "An error occurred during login.");
+        }
+        return; // Important: Stop execution after setting the error
       }
+
+      // Login successful
+      console.log("Supabase sign-in success:", AuthResponse);
+
+      // Optionally, you can access AuthResponse.user and AuthResponse.session here
+      // and use it to update application state, etc.  For example:
+      // setUser(AuthResponse.user);
+
+      router.push("/dashboard");
     } catch (error) {
-      // Improved error handling logic
-      if (axios.isAxiosError(error)) {
-        const errorData = await error.response;
-        setError((errorData?.data as LoginResponseFailure).error);
-      } else {
-        console.log("Something went wrong login again");
-      }
+      console.error("General error during login:", error);
+      setError("An error occurred during login. Please try again.");
     } finally {
       setIsLoading(false);
     }

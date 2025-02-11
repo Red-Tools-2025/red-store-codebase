@@ -1,4 +1,5 @@
 import authClient from "@/lib/supabaseAuth/client";
+import { serialize } from "cookie";
 import { NextRequest, NextResponse } from "next/server";
 
 interface LoginRouteRequestType extends NextRequest {
@@ -38,7 +39,6 @@ export async function POST(req: LoginRouteRequestType) {
           { status: 401 }
         );
       } else {
-        console.log("Im here");
         return NextResponse.json(
           {
             error: AuthError.message || "An error occurred during login.", // Generic message
@@ -50,14 +50,28 @@ export async function POST(req: LoginRouteRequestType) {
     }
 
     console.log(AuthResponse);
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         message: "Logged in",
         user: AuthResponse.user,
-        sesson: AuthResponse.session,
+        session: AuthResponse.session,
       },
       { status: 200 }
     );
+
+    if (AuthResponse.session?.access_token) {
+      response.headers.set(
+        "Set-Cookie",
+        serialize("supabase-access-token", AuthResponse.session.access_token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 7, // 7 days
+        })
+      );
+    }
+
+    return response;
   } catch (err) {
     // response when internet correction weak, or error during dev
     console.error("Error during login:", err); // Log the overall error

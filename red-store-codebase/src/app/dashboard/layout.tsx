@@ -17,6 +17,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const sessionUser = session?.user;
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
 
+  console.log({ session });
+
   // Fetching relevant store data
   const { data: storeData, isLoading } = useStoreServerFetch(
     sessionUser?.id ?? ""
