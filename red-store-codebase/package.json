@@ -34,6 +34,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
+    "cookie": "^1.0.2",
     "date-fns": "^3.0.0",
     "dayjs": "^1.11.13",
     "dynamsoft-camera-enhancer": "3.3.1",
@@ -48,6 +49,7 @@
     "next": "14.2.13",
     "next-auth": "^4.24.8",
     "next-themes": "^0.3.0",
+    "prisma": "^5.20.0",
     "quagga": "^0.12.1",
     "react": "^18",
     "react-day-picker": "8.10.1",
@@ -64,8 +66,7 @@
     "vaul": "^1.1.2",
     "xlsx": "^0.18.5",
     "yup": "^1.4.0",
-    "zod": "^3.23.8",
-    "prisma": "^5.20.0"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import supabase from "../../../../../../../supabase/client";
+import supabase from "../../../../../../lib/supabase/client";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import dayjs from "dayjs";

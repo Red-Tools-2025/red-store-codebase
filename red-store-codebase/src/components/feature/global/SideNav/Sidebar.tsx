@@ -11,7 +11,6 @@ import {
   UserCog,
   FileCheck2,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link"; // Import Link for navigation
 
 import UserItem from "./UserItem";
@@ -24,10 +23,11 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: session } = useSession();
+  const { session } = useAuth();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -59,7 +59,7 @@ export default function Sidebar() {
         {/* Sidebar Content */}
         <div className="flex-1 p-4 overflow-y-auto">
           <div>
-            <UserItem name={session?.user?.name} email={session?.user?.email} />
+            <UserItem name={"Jhon"} email={session?.user?.email} />
           </div>
 
           <div className="grow mt-8">

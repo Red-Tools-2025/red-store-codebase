@@ -12,7 +12,8 @@ export default function StructureProvider({
   const isAuthPage =
     pathname === "/auth/login" ||
     pathname === "/auth/register" ||
-    pathname === "/test";
+    pathname === "/test" ||
+    pathname == "/auth/confirmed";
 
   return (
     <div className="flex w-full h-screen overflow-hidden">

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import supabase from "../../../../../../../supabase/client";
+import supabase from "../../../../../../lib/supabase/client";
 
 export async function GET(req: Request) {
   try {
@@ -16,9 +16,9 @@ export async function GET(req: Request) {
 
     // Call the Supabase RPC function with store_id as an argument
     const { data, error } = await supabase.rpc(
-      "get_monthly_sales",  // Your function name
+      "get_monthly_sales", // Your function name
       {
-        store_id_input: store_id,  // Passing the store_id_input argument
+        store_id_input: store_id, // Passing the store_id_input argument
       }
     );
 

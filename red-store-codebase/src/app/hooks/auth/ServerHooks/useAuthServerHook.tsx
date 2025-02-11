@@ -3,13 +3,16 @@ import {
   HandleRegisterInputObject,
   RegisterResponse,
 } from "@/app/types/auth/register";
+import { useToast } from "@/hooks/use-toast";
+import authClient from "@/lib/supabaseAuth/client";
+
 import axios, { AxiosResponse } from "axios";
-import { signIn } from "next-auth/react";
 
 const useAuthServerHook = () => {
+  const { toast } = useToast();
+
   const handleRegister = async (obj: HandleRegisterInputObject) => {
-    const { email, name, password, phone, router, setError, setIsLoading } =
-      obj;
+    const { email, name, password, phone, setError, setIsLoading } = obj;
     setError("");
     setIsLoading(true);
 
@@ -32,8 +35,12 @@ const useAuthServerHook = () => {
       if (response.status === 201) {
         // Registration successful
         console.log(response.data.message);
-        // Redirect to login page or dashboard
-        router.push("/dashboard");
+        toast({
+          title: "Welcome to Red Store !!",
+          description:
+            "Your Account has been created, please head over to your email to confirm your sign-up",
+          variant: "default",
+        });
       }
       if (response.status === 400) {
         setError(response.data.message);
@@ -51,27 +58,68 @@ const useAuthServerHook = () => {
     }
   };
 
+  // const handleLogin = async (obj: HandleLoginInputObject) => {
+  //   const { email, password, router, setError, setIsLoading } = obj;
+  //   setError("");
+  //   setIsLoading(true);
+
+  //   try {
+  //     const response: AxiosResponse<LoginResponse> = await axios.post(
+  //       "/api/auth/login",
+  //       {
+  //         email,
+  //         password,
+  //       }
+  //     );
+
+  //     if (response.status === 200) {
+  //       router.push("/dashboard");
+  //     }
+  //   } catch (error) {
+  //     // Improved error handling logic
+  //     if (axios.isAxiosError(error)) {
+  //       const errorData = await error.response;
+  //       setError((errorData?.data as LoginResponseFailure).error);
+  //     } else {
+  //       console.log("Something went wrong login again");
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const handleLogin = async (obj: HandleLoginInputObject) => {
     const { email, password, router, setError, setIsLoading } = obj;
     setError("");
     setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      });
+      const { data: AuthResponse, error: AuthError } =
+        await authClient.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      if (result?.error) {
-        setError(result.error);
-      } else {
-        // Login successful
-        router.push("/dashboard");
+      if (AuthError) {
+        console.error("Supabase sign-in error:", AuthError);
+
+        if (AuthError.code === "email_not_confirmed") {
+          setError("Please confirm your email address to log in.");
+        } else if (AuthError.message.includes("Invalid email or password")) {
+          setError("Invalid email or password");
+        } else {
+          setError(AuthError.message || "An error occurred during login.");
+        }
+        return;
       }
-    } catch (err) {
-      setError("An unexpected error occurred during login.");
-      console.error(err);
+
+      // Login successful
+      console.log("Supabase sign-in success:", AuthResponse);
+
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("General error during login:", error);
+      setError("An error occurred during login. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
-import supabase from "../../../../../../../supabase/client";
+import supabase from "../../../../../../lib/supabase/client";
 
 export async function GET(req: Request) {
   try {
     // Parse query parameters
     const url = new URL(req.url);
-    const store_id = parseInt(url.searchParams.get("store_id_input") || "0", 10);
+    const store_id = parseInt(
+      url.searchParams.get("store_id_input") || "0",
+      10
+    );
 
     // Validate the store_id_input parameter
     if (!store_id || isNaN(store_id)) {

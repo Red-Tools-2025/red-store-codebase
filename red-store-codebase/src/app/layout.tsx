@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ThemeProvider from "@/app/providers/theme-provider";
-import NextAuthProvider from "./providers/NextAuthProvider";
-import { getSession } from "next-auth/react";
 import StructureProvider from "./providers/StructureProvider";
+import { AuthProvider } from "./providers/AuthProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,7 +26,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
   return (
     <html lang="en">
       <body
@@ -39,9 +37,9 @@ export default async function RootLayout({
           enableSystem
           defaultTheme="light"
         >
-          <NextAuthProvider session={session}>
+          <AuthProvider>
             <StructureProvider>{children}</StructureProvider>
-          </NextAuthProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
