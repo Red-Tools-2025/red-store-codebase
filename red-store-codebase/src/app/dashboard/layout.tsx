@@ -12,7 +12,7 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-  // loading session and getting all results
+  // loading session details
   const { session, isLoading: isLoadingSession } = useAuth();
   const sessionUser = session?.user;
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
