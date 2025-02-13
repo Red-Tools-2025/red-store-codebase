@@ -1,28 +1,29 @@
 import { Session } from "@supabase/supabase-js";
 import React from "react";
 
-interface SessionValidator {
+interface SessionValidatorProps {
   session: Session | null;
   isLoading: boolean;
   children: React.ReactNode;
 }
 
-const SessionValidator: React.FC<SessionValidator> = ({
+const SessionValidator: React.FC<SessionValidatorProps> = ({
   children,
   isLoading,
   session,
 }) => {
-  return (
-    <div>
-      {isLoading ? (
-        <div>Fetching Session details</div>
-      ) : session ? (
-        <>{children}</>
-      ) : (
-        <div>Session not found or expired</div>
-      )}
-    </div>
-  );
+  if (isLoading) {
+    return <div>Fetching Session details</div>;
+  }
+
+  if (!session) {
+    // Redirect to /auth/login if no session
+    window.location.href = "/auth/login";
+    return null; // Important: Return null to prevent rendering anything else
+  }
+
+  // Session exists, render children
+  return <>{children}</>;
 };
 
 export default SessionValidator;
