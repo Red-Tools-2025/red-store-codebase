@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
 interface MobLoginRouteRequestType {
   empphone: string;
@@ -75,10 +76,26 @@ export async function POST(req: Request) {
       );
     }
 
+    // Create Web Token
+    const token = jwt.sign(
+      {
+        empId: emp[0].empId,
+        empName: emp[0].empName,
+        empPhone: emp[0].empPhone,
+        storeId: emp[0].storeId,
+        storeManagerId: emp[0].storeManagerId,
+      },
+      "emp-token-key",
+      {
+        expiresIn: "2h",
+      }
+    );
+
     // Employee found, return response
     return NextResponse.json(
       {
         emp,
+        token,
       },
       {
         status: 200,
