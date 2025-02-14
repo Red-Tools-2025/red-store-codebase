@@ -1,4 +1,7 @@
-import { HandleLoginInputObject } from "@/app/types/auth/login";
+import {
+  HandleLoginInputObject,
+  HandleMobileLoginInputObject,
+} from "@/app/types/auth/login";
 import {
   HandleRegisterInputObject,
   RegisterResponse,
@@ -120,6 +123,27 @@ const useAuthServerHook = () => {
     } catch (error) {
       console.error("General error during login:", error);
       setError("An error occurred during login. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEmployeeLogin = async (obj: HandleMobileLoginInputObject) => {
+    const { empname, empstore, phone, setError, setIsLoading } = obj;
+    try {
+      setIsLoading(true);
+      const response: AxiosResponse<{}> = await axios.post(
+        "/api/auth/moblogin",
+        {
+          empname,
+          empphone: phone,
+          storename: empstore,
+        }
+      );
+      console.log({ mobLoginResponse: response });
+    } catch (error) {
+      console.log("Error hi");
+      console.log({ mobLoginError: error });
     } finally {
       setIsLoading(false);
     }

@@ -16,6 +16,7 @@ import { useState } from "react";
 import { FormError } from "../form-error";
 import { Spinner } from "../ui/spinner";
 import { PhoneInput } from "../ui/phone-input";
+import { HandleMobileLoginInputObject } from "@/app/types/auth/login";
 
 const EmployeeLoginSchema = Yup.object().shape({
   storeName: Yup.string().required("Store Name is required"),
@@ -36,10 +37,19 @@ export const EmployeeLoginForm = () => {
     },
   });
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (
+    values: Yup.InferType<typeof EmployeeLoginSchema>
+  ) => {
+    const loginInput: HandleMobileLoginInputObject = {
+      empname: values.employeeName,
+      empstore: values.storeName,
+      phone: values.employeePhone,
+      setError: setError,
+      setIsLoading: setIsLoading,
+    };
     setError("");
     setIsLoading(true);
-    console.log(values);
+    console.log(loginInput);
 
     // Simulate API request (replace with actual login logic)
     try {

@@ -10,6 +10,14 @@ export interface HandleLoginInputObject {
   setError: Dispatch<SetStateAction<string>>;
 }
 
+export interface HandleMobileLoginInputObject {
+  empname: string;
+  empstore: string;
+  phone: string;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  setError: Dispatch<SetStateAction<string>>;
+}
+
 // server interfaces
 export interface LoginResponse {
   message: string;
