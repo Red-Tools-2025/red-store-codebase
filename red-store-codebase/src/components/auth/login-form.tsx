@@ -48,7 +48,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <div>
+    <div className="font-inter">
       <CardWrapper
         headerHeading="Login"
         headerLabel="Please login to continue to your account"

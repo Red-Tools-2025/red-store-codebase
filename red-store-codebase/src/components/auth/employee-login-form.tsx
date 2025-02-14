@@ -1,7 +1,7 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import * as Yup from "yup";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CardWrapper } from "@/components/auth/CardWrapper";
@@ -12,22 +12,23 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { FormError } from "../form-error";
+import { Spinner } from "../ui/spinner";
+import { PhoneInput } from "../ui/phone-input";
 
-const EmployeeLoginSchema = z.object({
-  storeName: z.string().min(1, { message: "Store Name is required" }),
-  employeePhone: z
-    .string()
-    .regex(/^[0-9]{10}$/, { message: "Phone number must be 10 digits" }),
-  employeeName: z.string().min(1, { message: "Employee Name is required" }),
+const EmployeeLoginSchema = Yup.object().shape({
+  storeName: Yup.string().required("Store Name is required"),
+  employeePhone: Yup.string().required("Phone number is required"),
+  employeeName: Yup.string().required("Employee Name is required"),
 });
 
 export const EmployeeLoginForm = () => {
-  const [error, setError] = useState<string>("");
-  const [isPending, setIsPending] = useState<boolean>(false);
-  const form = useForm<z.infer<typeof EmployeeLoginSchema>>({
-    resolver: zodResolver(EmployeeLoginSchema),
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm({
+    resolver: yupResolver(EmployeeLoginSchema),
     defaultValues: {
       storeName: "",
       employeePhone: "",
@@ -35,96 +36,105 @@ export const EmployeeLoginForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof EmployeeLoginSchema>) => {
+  const onSubmit = async (values) => {
     setError("");
-    setIsPending(false);
+    setIsLoading(true);
+    console.log(values);
 
+    // Simulate API request (replace with actual login logic)
     try {
-      const result = await signIn("employeelogin", {
-        redirect: false, // Prevent automatic redirection
-        storeName: values.storeName,
-        employeePhone: values.employeePhone,
-        employeeName: values.employeeName,
-      });
-
-      if (result?.error) {
-        setError(result.error); // Display error message
-      } else if (result?.ok) {
-        console.log(result);
-        // Redirect only if authentication succeeds
-      } else {
-        setError("An unexpected error occurred. Please try again.");
-      }
+      // Example API call
+      // const result = await signIn("employeelogin", {
+      //   redirect: false,
+      //   ...values,
+      // });
+      // if (result?.error) {
+      //   setError(result.error);
+      // } else {
+      //   console.log("Login successful", result);
+      // }
     } catch (err) {
       setError("An unexpected error occurred during login.");
       console.error("Error logging in:", err);
     } finally {
-      setIsPending(false);
+      setIsLoading(false);
     }
   };
+
   return (
-    <CardWrapper
-      headerHeading="Employee Login"
-      headerLabel="Login as Employee"
-      backButtonLabel="Back to User Login"
-      backButtonHref="/auth/login"
-    >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="storeName"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Store Name"
-                    disabled={isPending}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="employeePhone"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Phone Number"
-                    disabled={isPending}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="employeeName"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Employee Name"
-                    disabled={isPending}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full mt-4" disabled={isPending}>
-            Login
-          </Button>
-          {error && <p className="text-red-500 mt-2">{error}</p>}
-        </form>
-      </Form>
-    </CardWrapper>
+    <div className="font-inter">
+      <CardWrapper
+        headerHeading="Employee Login"
+        headerLabel="Login as an Employee to your store"
+        backButtonLabel=""
+        backButtonHref=""
+      >
+        <FormError message={error} />
+        <div className="my-5" />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="storeName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Store Name"
+                      disabled={isLoading}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="employeePhone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <PhoneInput
+                      defaultCountry="IN"
+                      {...field}
+                      placeholder="Phone Number"
+                      disabled={isLoading}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="employeeName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Employee Name"
+                      disabled={isLoading}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-white">Signing in...</span>
+                  <Spinner className="text-white h-5" />
+                </div>
+              ) : (
+                "Log in"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </CardWrapper>
+    </div>
   );
 };

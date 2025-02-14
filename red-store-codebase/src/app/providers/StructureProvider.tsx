@@ -8,12 +8,15 @@ export default function StructureProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const whiteList: String[] = [
+    "/auth/login",
+    "/auth/register",
+    "/test",
+    "/auth/confirmed",
+    "/auth/emp",
+  ];
   const pathname = usePathname();
-  const isAuthPage =
-    pathname === "/auth/login" ||
-    pathname === "/auth/register" ||
-    pathname === "/test" ||
-    pathname == "/auth/confirmed";
+  const isAuthPage = whiteList.includes(pathname);
 
   return (
     <div className="flex w-full h-screen overflow-hidden">
