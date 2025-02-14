@@ -128,10 +128,15 @@ const useAuthServerHook = () => {
     }
   };
 
-  const handleEmployeeLogin = async (obj: HandleMobileLoginInputObject) => {
+  const handleEmployeeLogin = async (
+    obj: HandleMobileLoginInputObject,
+    isLoading: boolean
+  ) => {
     const { empname, empstore, phone, setError, setIsLoading } = obj;
+    setError("");
+    setIsLoading(true);
+    console.log({ isLoading });
     try {
-      setIsLoading(true);
       const response: AxiosResponse<{}> = await axios.post(
         "/api/auth/moblogin",
         {
@@ -142,14 +147,20 @@ const useAuthServerHook = () => {
       );
       console.log({ mobLoginResponse: response });
     } catch (error) {
-      console.log("Error hi");
-      console.log({ mobLoginError: error });
+      if (axios.isAxiosError(error) && error.response) {
+        setError(
+          error.response.data.error || "An error occured while logging you in"
+        );
+      } else {
+        setError("Something went wrong");
+      }
     } finally {
       setIsLoading(false);
+      console.log({ isLoading });
     }
   };
 
-  return { handleRegister, handleLogin };
+  return { handleRegister, handleLogin, handleEmployeeLogin };
 };
 
 export default useAuthServerHook;

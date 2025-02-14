@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     if (!emp || emp.length === 0) {
       return NextResponse.json(
         {
-          error: "Employee details not found",
+          error: "Employee details or not found",
         },
         {
           status: 404,

@@ -17,6 +17,7 @@ import { FormError } from "../form-error";
 import { Spinner } from "../ui/spinner";
 import { PhoneInput } from "../ui/phone-input";
 import { HandleMobileLoginInputObject } from "@/app/types/auth/login";
+import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
 
 const EmployeeLoginSchema = Yup.object().shape({
   storeName: Yup.string().required("Store Name is required"),
@@ -25,10 +26,11 @@ const EmployeeLoginSchema = Yup.object().shape({
 });
 
 export const EmployeeLoginForm = () => {
+  const { handleEmployeeLogin } = useAuthServerHook();
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const form = useForm({
+  const form = useForm<Yup.InferType<typeof EmployeeLoginSchema>>({
     resolver: yupResolver(EmployeeLoginSchema),
     defaultValues: {
       storeName: "",
@@ -47,28 +49,8 @@ export const EmployeeLoginForm = () => {
       setError: setError,
       setIsLoading: setIsLoading,
     };
-    setError("");
-    setIsLoading(true);
     console.log(loginInput);
-
-    // Simulate API request (replace with actual login logic)
-    try {
-      // Example API call
-      // const result = await signIn("employeelogin", {
-      //   redirect: false,
-      //   ...values,
-      // });
-      // if (result?.error) {
-      //   setError(result.error);
-      // } else {
-      //   console.log("Login successful", result);
-      // }
-    } catch (err) {
-      setError("An unexpected error occurred during login.");
-      console.error("Error logging in:", err);
-    } finally {
-      setIsLoading(false);
-    }
+    handleEmployeeLogin(loginInput, isLoading);
   };
 
   return (
