@@ -18,6 +18,7 @@ import { Spinner } from "../ui/spinner";
 import { PhoneInput } from "../ui/phone-input";
 import { HandleMobileLoginInputObject } from "@/app/types/auth/login";
 import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
+import OTPDialog from "./OTPDialog";
 
 const EmployeeLoginSchema = Yup.object().shape({
   storeName: Yup.string().required("Store Name is required"),
@@ -26,11 +27,20 @@ const EmployeeLoginSchema = Yup.object().shape({
 });
 
 export const EmployeeLoginForm = () => {
-  const { handleEmployeeLogin } = useAuthServerHook();
-  const [error, setError] = useState("");
+  const { handleSendOTP, handleVerifyOTP, handleEmployeeLogin } =
+    useAuthServerHook();
+  const [error, setError] = useState<string>("");
+  const [OTPError, setOTPError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLoadingOTPVerification, setIsLoadingOTPVerification] =
-    useState<boolean>(false);
+  const [isVerifyingOTP, setIsVerifyingOTP] = useState<boolean>(false);
+  const [openOTPDialog, setOpenOTPDialog] = useState<boolean>(false);
+
+  // Save form values for later use during OTP verification
+  const [formValues, setFormValues] = useState<{
+    storeName: string;
+    employeePhone: string;
+    employeeName: string;
+  } | null>(null);
 
   const form = useForm<Yup.InferType<typeof EmployeeLoginSchema>>({
     resolver: yupResolver(EmployeeLoginSchema),
@@ -41,23 +51,56 @@ export const EmployeeLoginForm = () => {
     },
   });
 
+  // When form is submitted, send OTP and store values for later use
   const onSubmit = async (
     values: Yup.InferType<typeof EmployeeLoginSchema>
   ) => {
-    const loginInput: HandleMobileLoginInputObject = {
-      empname: values.employeeName,
-      empstore: values.storeName,
+    setError("");
+    setFormValues(values);
+    setIsLoading(true);
+    // Send OTP to the phone number
+    setOpenOTPDialog(true);
+    await handleSendOTP({
       phone: values.employeePhone,
-      setError: setError,
-      setIsLoading: setIsLoading,
-      setIsLoadingOTPVerification: setIsLoadingOTPVerification,
-    };
-    console.log(loginInput);
-    handleEmployeeLogin(loginInput, isLoading);
+      setOTPError,
+      setOpenOTPDialog,
+      setIsVerifyingOtp: setIsVerifyingOTP,
+    });
+    setIsLoading(false);
+  };
+
+  // Callback when OTP is entered in the dialog
+  const onVerifyOTP = async (enteredOtp: string) => {
+    if (!formValues) return;
+    await handleVerifyOTP({
+      phone: formValues.employeePhone,
+      empname: formValues.employeeName,
+      empstore: formValues.storeName,
+      otp: enteredOtp,
+      setOTPError,
+      setIsVerifyingOtp: setIsVerifyingOTP,
+      setOpenOTPDialog,
+      onSuccess: async (data) => {
+        await handleEmployeeLogin({
+          empname: formValues.employeeName,
+          empstore: formValues.storeName,
+          phone: formValues.employeePhone,
+          setError: setError,
+          setIsLoading: setIsLoading,
+        });
+        console.log("Login successful:", data);
+      },
+    });
   };
 
   return (
     <div className="font-inter">
+      <OTPDialog
+        error={error}
+        isVerifyingOTP={isVerifyingOTP}
+        isOpen={openOTPDialog}
+        onVerifyOTP={onVerifyOTP}
+      />
       <CardWrapper
         headerHeading="Employee Login"
         headerLabel="Login as an Employee to your store"

@@ -1,6 +1,7 @@
 import {
   HandleLoginInputObject,
   HandleMobileLoginInputObject,
+  HandleVerifyInputOTPObject,
   MobileLoginResponse,
   MobileOtpResponse,
 } from "@/app/types/auth/login";
@@ -130,49 +131,95 @@ const useAuthServerHook = () => {
     }
   };
 
-  const handleVerifyOTP = async (obj: HandleMobileLoginInputObject) => {
-    const { phone, setError } = obj;
+  const handleSendOTP = async (obj: {
+    phone: string;
+    setOTPError: (msg: string) => void;
+    setOpenOTPDialog: (open: boolean) => void;
+    setIsVerifyingOtp: (loading: boolean) => void;
+  }) => {
+    const { phone, setOTPError, setOpenOTPDialog, setIsVerifyingOtp } = obj;
+    setOTPError("");
+    setIsVerifyingOtp(true);
     try {
-      const OtpResponse: AxiosResponse<MobileOtpResponse> = await axios.post(
-        "/api/auth/emp",
-        {
-          phonenumber: phone,
-        }
+      // This endpoint should trigger sending the OTP to the phone.
+      const otpResponse: AxiosResponse<MobileOtpResponse> = await axios.post(
+        "/api/auth/send-otp",
+        { phonenumber: phone }
       );
-
-      const {
-        data: { expiryTime, condition, opt, message },
-      } = OtpResponse;
+      // Optionally, you might not want to expose the OTP to the client
+      // Instead, just confirm that the OTP was sent successfully.
+      setOpenOTPDialog(true);
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        setError(
-          error.response.data.error || "An error occured while logging you in"
-        );
-      } else {
-        setError("Something went wrong");
-      }
+      setOTPError(
+        axios.isAxiosError(error) && error.response
+          ? error.response.data.error
+          : "Error sending OTP"
+      );
+    } finally {
+      setIsVerifyingOtp(false);
     }
   };
 
-  const handleEmployeeLogin = async (
-    obj: HandleMobileLoginInputObject,
-    isLoading: boolean
-  ) => {
+  const handleVerifyOTP = async (obj: {
+    phone: string;
+    empname: string;
+    empstore: string;
+    otp: string;
+    setOTPError: (msg: string) => void;
+    setIsVerifyingOtp: (loading: boolean) => void;
+    setOpenOTPDialog: (open: boolean) => void;
+    onSuccess: (data: MobileLoginResponse) => void;
+  }) => {
+    const {
+      phone,
+      empname,
+      empstore,
+      otp,
+      setOTPError,
+      setIsVerifyingOtp,
+      setOpenOTPDialog,
+      onSuccess,
+    } = obj;
+    setOTPError("");
+    setIsVerifyingOtp(true);
+    try {
+      // Call your OTP verification endpoint.
+      // Ideally, your backend verifies the OTP before logging in.
+      const verifyResponse: AxiosResponse<MobileOtpResponse> = await axios.post(
+        "/api/auth/verify-otp",
+        {
+          phonenumber: phone,
+          otp, // the OTP entered by the user
+        }
+      );
+      // If OTP is verified, now call the login endpoint.
+      const loginResponse: AxiosResponse<MobileLoginResponse> =
+        await axios.post("/api/auth/moblogin", {
+          empname,
+          empphone: phone,
+          storename: empstore,
+        });
+      onSuccess(loginResponse.data);
+      setOpenOTPDialog(false);
+    } catch (error) {
+      setOTPError(
+        axios.isAxiosError(error) && error.response
+          ? error.response.data.error
+          : "Error verifying OTP"
+      );
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleEmployeeLogin = async (obj: HandleMobileLoginInputObject) => {
     const { empname, empstore, phone, setError, setIsLoading } = obj;
     setError("");
     setIsLoading(true);
-    console.log({ isLoading });
 
     // we first make an attempt to send the OPT, if things look good we process and create the token
     // NOT IDEAL AT ALL FOR PRODUCTION WILL MOVE TO REDIS
     try {
-      const OtpResponse: AxiosResponse<MobileOtpResponse> = await axios.post(
-        "/api/auth/emp",
-        {
-          phonenumber: phone,
-        }
-      );
-
       const response: AxiosResponse<MobileLoginResponse> = await axios.post(
         "/api/auth/moblogin",
         {
@@ -192,11 +239,16 @@ const useAuthServerHook = () => {
       }
     } finally {
       setIsLoading(false);
-      console.log({ isLoading });
     }
   };
 
-  return { handleRegister, handleLogin, handleEmployeeLogin };
+  return {
+    handleRegister,
+    handleLogin,
+    handleVerifyOTP,
+    handleSendOTP,
+    handleEmployeeLogin,
+  };
 };
 
 export default useAuthServerHook;

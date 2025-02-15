@@ -1,3 +1,5 @@
+// components/OTPDialog.tsx
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -6,50 +8,79 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
+import { Spinner } from "../ui/spinner";
+import { FormError } from "../form-error";
 
 interface OTPDialogProps {
-  otp: string;
-  isLoadingOTPVerification: boolean;
   isOpen: boolean;
-  handleOpen: Dispatch<SetStateAction<boolean>>;
+  error: string;
+  isVerifyingOTP: boolean;
+  // Callback to pass the entered OTP back to the parent
+  onVerifyOTP: (otp: string) => void;
 }
 
 const OTPDialog: React.FC<OTPDialogProps> = ({
-  otp,
-  isLoadingOTPVerification,
   isOpen,
-  handleOpen,
+  error,
+  isVerifyingOTP,
+  onVerifyOTP,
 }) => {
+  const [otpInput, setOtpInput] = useState<string>("");
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpen}>
+    <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
+          <DialogTitle>Verify OTP</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            An OTP was sent to your mobile number. Please enter the 6-digit code
+            below.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
-          </div>
+        <div className="flex flex-col items-center">
+          <FormError message={error} />
+          <InputOTP
+            onChange={(e) => setOtpInput(e)}
+            maxLength={6}
+            pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+          >
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+            </InputOTPGroup>
+          </InputOTP>
         </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
+        <DialogFooter className="space-x-2">
+          <Button
+            variant="primary"
+            onClick={() => onVerifyOTP(otpInput)}
+            disabled={isVerifyingOTP || otpInput.length < 6}
+          >
+            {isVerifyingOTP ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-white">Verifying...</span>
+                <Spinner className="text-white h-5" />
+              </div>
+            ) : (
+              "Sign in"
+            )}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              /* Add resend OTP logic if needed */
+            }}
+          >
+            Resend OTP
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

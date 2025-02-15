@@ -17,7 +17,12 @@ export interface HandleMobileLoginInputObject {
   empstore: string;
   phone: string;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
-  setIsLoadingOTPVerification: Dispatch<SetStateAction<boolean>>;
+  setError: Dispatch<SetStateAction<string>>;
+}
+
+export interface HandleVerifyInputOTPObject {
+  phone: string;
+  setOpenOTPDialog: Dispatch<SetStateAction<boolean>>;
   setError: Dispatch<SetStateAction<string>>;
 }
 
