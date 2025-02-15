@@ -1,5 +1,7 @@
+import { Employee } from "@prisma/client";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { Dispatch, SetStateAction } from "react";
+import { MessageStatus } from "twilio/lib/rest/api/v2010/account/message";
 
 // function interfaces
 export interface HandleLoginInputObject {
@@ -15,6 +17,7 @@ export interface HandleMobileLoginInputObject {
   empstore: string;
   phone: string;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+  setIsLoadingOTPVerification: Dispatch<SetStateAction<boolean>>;
   setError: Dispatch<SetStateAction<string>>;
 }
 
@@ -26,4 +29,16 @@ export interface LoginResponse {
     name: string;
     email: string;
   };
+}
+
+export interface MobileLoginResponse {
+  emp: Employee;
+  token: string;
+}
+
+export interface MobileOtpResponse {
+  message: string;
+  condition: MessageStatus;
+  opt: string;
+  expiryTime: number;
 }

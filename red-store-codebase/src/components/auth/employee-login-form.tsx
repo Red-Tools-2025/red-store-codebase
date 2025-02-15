@@ -29,6 +29,8 @@ export const EmployeeLoginForm = () => {
   const { handleEmployeeLogin } = useAuthServerHook();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingOTPVerification, setIsLoadingOTPVerification] =
+    useState<boolean>(false);
 
   const form = useForm<Yup.InferType<typeof EmployeeLoginSchema>>({
     resolver: yupResolver(EmployeeLoginSchema),
@@ -48,6 +50,7 @@ export const EmployeeLoginForm = () => {
       phone: values.employeePhone,
       setError: setError,
       setIsLoading: setIsLoading,
+      setIsLoadingOTPVerification: setIsLoadingOTPVerification,
     };
     console.log(loginInput);
     handleEmployeeLogin(loginInput, isLoading);

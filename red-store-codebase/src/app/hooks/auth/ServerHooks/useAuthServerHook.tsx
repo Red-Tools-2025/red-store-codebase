@@ -1,6 +1,8 @@
 import {
   HandleLoginInputObject,
   HandleMobileLoginInputObject,
+  MobileLoginResponse,
+  MobileOtpResponse,
 } from "@/app/types/auth/login";
 import {
   HandleRegisterInputObject,
@@ -9,7 +11,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import authClient from "@/lib/supabaseAuth/client";
 
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 const useAuthServerHook = () => {
   const { toast } = useToast();
@@ -128,6 +130,30 @@ const useAuthServerHook = () => {
     }
   };
 
+  const handleVerifyOTP = async (obj: HandleMobileLoginInputObject) => {
+    const { phone, setError } = obj;
+    try {
+      const OtpResponse: AxiosResponse<MobileOtpResponse> = await axios.post(
+        "/api/auth/emp",
+        {
+          phonenumber: phone,
+        }
+      );
+
+      const {
+        data: { expiryTime, condition, opt, message },
+      } = OtpResponse;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setError(
+          error.response.data.error || "An error occured while logging you in"
+        );
+      } else {
+        setError("Something went wrong");
+      }
+    }
+  };
+
   const handleEmployeeLogin = async (
     obj: HandleMobileLoginInputObject,
     isLoading: boolean
@@ -136,8 +162,18 @@ const useAuthServerHook = () => {
     setError("");
     setIsLoading(true);
     console.log({ isLoading });
+
+    // we first make an attempt to send the OPT, if things look good we process and create the token
+    // NOT IDEAL AT ALL FOR PRODUCTION WILL MOVE TO REDIS
     try {
-      const response: AxiosResponse<{}> = await axios.post(
+      const OtpResponse: AxiosResponse<MobileOtpResponse> = await axios.post(
+        "/api/auth/emp",
+        {
+          phonenumber: phone,
+        }
+      );
+
+      const response: AxiosResponse<MobileLoginResponse> = await axios.post(
         "/api/auth/moblogin",
         {
           empname,
