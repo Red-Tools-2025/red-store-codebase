@@ -95,6 +95,9 @@ dependencies:
   idb:
     specifier: ^8.0.1
     version: 8.0.1
+  input-otp:
+    specifier: ^1.4.2
+    version: 1.4.2(react-dom@18.3.1)(react@18.3.1)
   json2csv:
     specifier: 6.0.0-alpha.2
     version: 6.0.0-alpha.2
@@ -3772,6 +3775,16 @@ packages:
         optional: true
     dependencies:
       prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /input-otp@1.4.2(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-l3jWwYNvrEa6NTCt7BECfCm48GvwuZzkoeG3gBL2w4CHeOXW3eKFmf9UNYkNfYc3mxMrthMnxjIE07MT0zLBQA==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
+    dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
     dev: false
