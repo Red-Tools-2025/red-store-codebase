@@ -44,6 +44,6 @@ export interface MobileLoginResponse {
 export interface MobileOtpResponse {
   message: string;
   condition: MessageStatus;
-  opt: string;
+  otp: string;
   expiryTime: number;
 }

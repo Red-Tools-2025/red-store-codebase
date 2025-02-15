@@ -30,8 +30,12 @@ export const EmployeeLoginForm = () => {
   const { handleSendOTP, handleVerifyOTP, handleEmployeeLogin } =
     useAuthServerHook();
   const [error, setError] = useState<string>("");
-  const [OTPError, setOTPError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // for OTP
+  const [OTPError, setOTPError] = useState<string>("");
+  const [isSendingOTP, setIsSendingOTP] = useState<boolean>(false);
+  const [OTPTemporaryClient, setOTPTemporaryClient] = useState<string>("");
   const [isVerifyingOTP, setIsVerifyingOTP] = useState<boolean>(false);
   const [openOTPDialog, setOpenOTPDialog] = useState<boolean>(false);
 
@@ -63,8 +67,8 @@ export const EmployeeLoginForm = () => {
     await handleSendOTP({
       phone: values.employeePhone,
       setOTPError,
-      setOpenOTPDialog,
-      setIsVerifyingOtp: setIsVerifyingOTP,
+      setOTPTemporaryClient,
+      setIsSendingOTP,
     });
     setIsLoading(false);
   };
@@ -79,8 +83,9 @@ export const EmployeeLoginForm = () => {
       otp: enteredOtp,
       setOTPError,
       setIsVerifyingOtp: setIsVerifyingOTP,
+      OTPTemporaryClient,
       setOpenOTPDialog,
-      onSuccess: async (data) => {
+      onSuccess: async () => {
         await handleEmployeeLogin({
           empname: formValues.employeeName,
           empstore: formValues.storeName,
@@ -88,7 +93,7 @@ export const EmployeeLoginForm = () => {
           setError: setError,
           setIsLoading: setIsLoading,
         });
-        console.log("Login successful:", data);
+        console.log("Login successful:");
       },
     });
   };
@@ -96,7 +101,9 @@ export const EmployeeLoginForm = () => {
   return (
     <div className="font-inter">
       <OTPDialog
+        OTPError={OTPError}
         error={error}
+        isSendingOTP={isSendingOTP}
         isVerifyingOTP={isVerifyingOTP}
         isOpen={openOTPDialog}
         onVerifyOTP={onVerifyOTP}

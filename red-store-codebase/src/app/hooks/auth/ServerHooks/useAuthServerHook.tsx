@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import authClient from "@/lib/supabaseAuth/client";
 
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { Dispatch, SetStateAction } from "react";
 
 const useAuthServerHook = () => {
   const { toast } = useToast();
@@ -133,30 +134,45 @@ const useAuthServerHook = () => {
 
   const handleSendOTP = async (obj: {
     phone: string;
-    setOTPError: (msg: string) => void;
-    setOpenOTPDialog: (open: boolean) => void;
-    setIsVerifyingOtp: (loading: boolean) => void;
+    setOTPError: Dispatch<SetStateAction<string>>;
+    setIsSendingOTP: Dispatch<SetStateAction<boolean>>;
+    // Temporary PLEASE REMOVE LATER TO USE CACHING
+    setOTPTemporaryClient: Dispatch<SetStateAction<string>>;
   }) => {
-    const { phone, setOTPError, setOpenOTPDialog, setIsVerifyingOtp } = obj;
+    const { phone, setOTPError, setIsSendingOTP, setOTPTemporaryClient } = obj;
     setOTPError("");
-    setIsVerifyingOtp(true);
+    setIsSendingOTP(true);
     try {
       // This endpoint should trigger sending the OTP to the phone.
       const otpResponse: AxiosResponse<MobileOtpResponse> = await axios.post(
-        "/api/auth/send-otp",
+        "/api/auth/twilio-otp",
         { phonenumber: phone }
       );
+
+      console.log({ otpResponse });
+      // EXPOSING OTP HERE JUT FOR PURPOSES OF DEMO
+      const {
+        data: { otp, condition, expiryTime, message },
+      } = otpResponse;
+
+      if (condition === "failed")
+        throw new AxiosError("OTP failed to send, try again");
+
+      setIsSendingOTP(false);
+      console.log({ message: "here", otp });
+      setOTPTemporaryClient(otp);
+
       // Optionally, you might not want to expose the OTP to the client
       // Instead, just confirm that the OTP was sent successfully.
-      setOpenOTPDialog(true);
     } catch (error) {
       setOTPError(
         axios.isAxiosError(error) && error.response
           ? error.response.data.error
           : "Error sending OTP"
       );
+      setIsSendingOTP(false);
     } finally {
-      setIsVerifyingOtp(false);
+      setIsSendingOTP(false);
     }
   };
 
@@ -165,10 +181,12 @@ const useAuthServerHook = () => {
     empname: string;
     empstore: string;
     otp: string;
+    // TEMPORARY FOR DEMO PURPOSES REMOVE LATER FOR CACHE
+    OTPTemporaryClient: string;
     setOTPError: (msg: string) => void;
     setIsVerifyingOtp: (loading: boolean) => void;
     setOpenOTPDialog: (open: boolean) => void;
-    onSuccess: (data: MobileLoginResponse) => void;
+    onSuccess: () => void;
   }) => {
     const {
       phone,
@@ -178,35 +196,57 @@ const useAuthServerHook = () => {
       setOTPError,
       setIsVerifyingOtp,
       setOpenOTPDialog,
+      OTPTemporaryClient,
       onSuccess,
     } = obj;
     setOTPError("");
     setIsVerifyingOtp(true);
+    // USE BELOW LATER WHEN MOVING TO CACHE
+    // try {
+    //   // Call your OTP verification endpoint.
+    //   // Ideally, your backend verifies the OTP before logging in.
+    //   const verifyResponse: AxiosResponse<MobileOtpResponse> = await axios.post(
+    //     "/api/auth/verify-otp",
+    //     {
+    //       phonenumber: phone,
+    //       otp, // the OTP entered by the user
+    //     }
+    //   );
+    //   // If OTP is verified, now call the login endpoint.
+    //   const loginResponse: AxiosResponse<MobileLoginResponse> =
+    //     await axios.post("/api/auth/moblogin", {
+    //       empname,
+    //       empphone: phone,
+    //       storename: empstore,
+    //     });
+    //   onSuccess(loginResponse.data);
+    //   setOpenOTPDialog(false);
+    // } catch (error) {
+    //   setOTPError(
+    //     axios.isAxiosError(error) && error.response
+    //       ? error.response.data.error
+    //       : "Error verifying OTP"
+    //   );
+    // } finally {
+    //   setIsVerifyingOtp(false);
+    // }
+
     try {
-      // Call your OTP verification endpoint.
-      // Ideally, your backend verifies the OTP before logging in.
-      const verifyResponse: AxiosResponse<MobileOtpResponse> = await axios.post(
-        "/api/auth/verify-otp",
-        {
-          phonenumber: phone,
-          otp, // the OTP entered by the user
-        }
-      );
-      // If OTP is verified, now call the login endpoint.
-      const loginResponse: AxiosResponse<MobileLoginResponse> =
-        await axios.post("/api/auth/moblogin", {
-          empname,
-          empphone: phone,
-          storename: empstore,
-        });
-      onSuccess(loginResponse.data);
+      console.log({ otp, OTPTemporaryClient });
+      // TEMPORARY: Directly validating OTP before moving to Redis
+      if (otp !== OTPTemporaryClient) {
+        setOTPError("Invalid OTP. Please try again.");
+        return;
+      }
+
+      console.log("OTP verified successfully.");
+
+      // Proceed with employee login
+      onSuccess();
+
       setOpenOTPDialog(false);
     } catch (error) {
-      setOTPError(
-        axios.isAxiosError(error) && error.response
-          ? error.response.data.error
-          : "Error verifying OTP"
-      );
+      setOTPError("Error verifying OTP. Please try again.");
     } finally {
       setIsVerifyingOtp(false);
     }

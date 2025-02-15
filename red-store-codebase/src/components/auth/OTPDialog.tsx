@@ -14,11 +14,14 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Spinner } from "../ui/spinner";
 import { FormError } from "../form-error";
+import { BsPatchCheck, BsPatchExclamation } from "react-icons/bs";
 
 interface OTPDialogProps {
   isOpen: boolean;
   error: string;
   isVerifyingOTP: boolean;
+  isSendingOTP: boolean;
+  OTPError: string;
   // Callback to pass the entered OTP back to the parent
   onVerifyOTP: (otp: string) => void;
 }
@@ -26,16 +29,43 @@ interface OTPDialogProps {
 const OTPDialog: React.FC<OTPDialogProps> = ({
   isOpen,
   error,
+  OTPError,
+  isSendingOTP,
   isVerifyingOTP,
   onVerifyOTP,
 }) => {
   const [otpInput, setOtpInput] = useState<string>("");
 
+  console.log(OTPError);
+
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Verify OTP</DialogTitle>
+          <DialogTitle>
+            <div className="flex gap-2 items-center">
+              <p>Verify OTP</p>
+              {isSendingOTP ? (
+                <div className="text-xs flex items-center gap-1 border border-1 border-blue-500 text-blue-500 px-3 rounded-xl bg-blue-100">
+                  <Spinner className="w-3 text-blue-500" />
+                  <p className="font-normal">Sending...</p>
+                </div>
+              ) : (
+                <>
+                  {OTPError.length !== 0 ? (
+                    <div className="flex text-xl items-center gap-1 border-red-500 text-red-500 rounded-xl">
+                      <BsPatchExclamation className="bg-red-100 rounded-xl" />
+                      <p className="text-sm font-medium">{OTPError}</p>
+                    </div>
+                  ) : (
+                    <div className="flex text-xl items-center gap-1 border-blue-500 text-blue-500 rounded-xl bg-blue-100">
+                      <BsPatchCheck />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </DialogTitle>
           <DialogDescription>
             An OTP was sent to your mobile number. Please enter the 6-digit code
             below.
