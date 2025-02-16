@@ -13,9 +13,7 @@ const ClientLayout = ({ children }: { children: ReactNode }) => {
   return isPOSPage ? (
     <PosAuthProvider>{children}</PosAuthProvider>
   ) : (
-    <AuthProvider>
-      <StructureProvider>{children}</StructureProvider>
-    </AuthProvider>
+    <AuthProvider>{children}</AuthProvider>
   );
 };
 
