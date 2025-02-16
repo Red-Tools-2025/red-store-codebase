@@ -16,7 +16,6 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { FormError } from "../form-error";
 import { Spinner } from "../ui/spinner";
 import { PhoneInput } from "../ui/phone-input";
-import { HandleMobileLoginInputObject } from "@/app/types/auth/login";
 import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
 import OTPDialog from "./OTPDialog";
 
