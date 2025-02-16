@@ -1,7 +1,6 @@
 import {
   HandleLoginInputObject,
   HandleMobileLoginInputObject,
-  HandleVerifyInputOTPObject,
   MobileLoginResponse,
   MobileOtpResponse,
 } from "@/app/types/auth/login";
@@ -151,8 +150,9 @@ const useAuthServerHook = () => {
 
       console.log({ otpResponse });
       // EXPOSING OTP HERE JUT FOR PURPOSES OF DEMO
+      // ADD EXPIRY TIME TOO
       const {
-        data: { otp, condition, expiryTime, message },
+        data: { otp, condition },
       } = otpResponse;
 
       if (condition === "failed")
@@ -189,9 +189,6 @@ const useAuthServerHook = () => {
     onSuccess: () => void;
   }) => {
     const {
-      phone,
-      empname,
-      empstore,
       otp,
       setOTPError,
       setIsVerifyingOtp,
@@ -246,6 +243,7 @@ const useAuthServerHook = () => {
 
       setOpenOTPDialog(false);
     } catch (error) {
+      console.error(error);
       setOTPError("Error verifying OTP. Please try again.");
     } finally {
       setIsVerifyingOtp(false);

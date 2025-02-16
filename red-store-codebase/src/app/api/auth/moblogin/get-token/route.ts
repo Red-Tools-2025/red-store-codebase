@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("authToken")?.value;
@@ -13,6 +13,7 @@ export async function GET(req: Request) {
     const decoded = jwtDecode(token);
     return NextResponse.json({ userData: decoded }, { status: 200 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: "Invalid token" }, { status: 500 });
   }
 }

@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Spinner } from "../ui/spinner";
@@ -24,6 +24,9 @@ interface OTPDialogProps {
   OTPError: string;
   // Callback to pass the entered OTP back to the parent
   onVerifyOTP: (otp: string) => void;
+  handleResendOTP: (
+    setIsResending: Dispatch<SetStateAction<boolean>>
+  ) => Promise<void>;
 }
 
 const OTPDialog: React.FC<OTPDialogProps> = ({
@@ -33,10 +36,10 @@ const OTPDialog: React.FC<OTPDialogProps> = ({
   isSendingOTP,
   isVerifyingOTP,
   onVerifyOTP,
+  handleResendOTP,
 }) => {
   const [otpInput, setOtpInput] = useState<string>("");
-
-  console.log(OTPError);
+  const [isResending, setIsResending] = useState<boolean>(false);
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
@@ -105,11 +108,17 @@ const OTPDialog: React.FC<OTPDialogProps> = ({
           </Button>
           <Button
             variant="secondary"
-            onClick={() => {
-              /* Add resend OTP logic if needed */
-            }}
+            disabled={isVerifyingOTP}
+            onClick={() => void handleResendOTP(setIsResending)}
           >
-            Resend OTP
+            {isResending ? (
+              <div className="flex items-center gap-2">
+                <Spinner className=" h-5" />
+                <span className="text-sm">Resending a new OTP...</span>
+              </div>
+            ) : (
+              "Resend"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

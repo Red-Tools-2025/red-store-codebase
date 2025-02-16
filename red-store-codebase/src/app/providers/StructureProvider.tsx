@@ -8,7 +8,7 @@ export default function StructureProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const whiteList: String[] = [
+  const whiteList: string[] = [
     "/auth/login",
     "/auth/register",
     "/test",

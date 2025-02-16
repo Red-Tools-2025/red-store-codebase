@@ -12,7 +12,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { FormError } from "../form-error";
 import { Spinner } from "../ui/spinner";
 import { PhoneInput } from "../ui/phone-input";
@@ -54,6 +54,20 @@ export const EmployeeLoginForm = () => {
       employeeName: "",
     },
   });
+
+  // for resending OTP
+  const handleResendOTP = async (
+    setIsResending: Dispatch<SetStateAction<boolean>>
+  ) => {
+    setIsResending(true);
+    await handleSendOTP({
+      phone: formValues?.employeePhone ?? "",
+      setIsSendingOTP,
+      setOTPError,
+      setOTPTemporaryClient,
+    });
+    setIsResending(false);
+  };
 
   // When form is submitted, send OTP and store values for later use
   const onSubmit = async (
@@ -107,6 +121,7 @@ export const EmployeeLoginForm = () => {
         isVerifyingOTP={isVerifyingOTP}
         isOpen={openOTPDialog}
         onVerifyOTP={onVerifyOTP}
+        handleResendOTP={handleResendOTP}
       />
       <CardWrapper
         headerHeading="Employee Login"
