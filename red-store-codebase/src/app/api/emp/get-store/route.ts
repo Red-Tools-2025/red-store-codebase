@@ -4,11 +4,14 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const body: GetEmployeeStoreRequestBody = await req.json();
-  const { storeId, storeManagerId } = body;
+  const { store_id, store_manager_id } = body;
   try {
     const store = await db.store.findUnique({
       where: {
-        storeId_storeManagerId: { storeId, storeManagerId },
+        storeId_storeManagerId: {
+          storeId: store_id,
+          storeManagerId: store_manager_id,
+        },
       },
     });
     if (!store) {
