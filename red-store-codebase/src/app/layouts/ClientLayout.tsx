@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
-import StructureProvider from "@/app/providers/StructureProvider";
 import { AuthProvider } from "@/app/providers/AuthProvider";
 import { PosAuthProvider } from "../providers/PosAuthProvider";
 

@@ -14,6 +14,7 @@ export default function StructureProvider({
     "/test",
     "/auth/confirmed",
     "/auth/emp",
+    "/pos",
   ];
   const pathname = usePathname();
   const isAuthPage = whiteList.includes(pathname);
