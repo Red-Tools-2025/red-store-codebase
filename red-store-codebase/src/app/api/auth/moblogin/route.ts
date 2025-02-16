@@ -91,11 +91,10 @@ export async function POST(req: Request) {
       }
     );
 
-    // Employee found, return response
-    return NextResponse.json(
+    // No return of web token store to http-cookie
+    const response = NextResponse.json(
       {
-        emp,
-        token,
+        verifiedRedirect: true,
       },
       {
         status: 200,
@@ -104,6 +103,18 @@ export async function POST(req: Request) {
         },
       }
     );
+
+    response.cookies.set({
+      name: "authToken",
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days expiration
+    });
+
+    return response;
   } catch (err) {
     console.error(err);
     return NextResponse.json(

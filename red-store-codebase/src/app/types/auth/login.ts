@@ -37,8 +37,7 @@ export interface LoginResponse {
 }
 
 export interface MobileLoginResponse {
-  emp: Employee;
-  token: string;
+  verifiedRedirect: boolean;
 }
 
 export interface MobileOtpResponse {

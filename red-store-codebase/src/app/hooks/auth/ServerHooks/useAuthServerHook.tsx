@@ -268,7 +268,9 @@ const useAuthServerHook = () => {
           storename: empstore,
         }
       );
-      console.log({ mobLoginResponse: response });
+      if (response.data.verifiedRedirect) {
+        window.location.href = "/pos";
+      }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setError(
