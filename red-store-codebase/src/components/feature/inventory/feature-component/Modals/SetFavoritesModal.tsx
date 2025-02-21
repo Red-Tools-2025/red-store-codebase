@@ -23,6 +23,7 @@ interface SetFavoritesModalProps {
   onClose: () => void;
   store_id: string;
   searchKeys: InventoryKey[];
+  storemanagerid: string;
 }
 
 const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
@@ -30,6 +31,7 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
   onClose,
   store_id,
   searchKeys,
+  storemanagerid,
 }) => {
   const {
     getFavoritesForStore,
@@ -38,52 +40,58 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
   } = useBrowserCache();
   const [search, setSearch] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<InventoryKey[]>([]);
-
+const [initialKeys, setInitialKeys] = useState<InventoryKey[]>([]);
   // Load favorites from the cache when the modal opens
-  useEffect(() => {
-    const loadFavorites = async () => {
-      const favorites = await getFavoritesForStore(store_id);
-      setSelectedKeys(favorites === null ? [] : favorites);
-    };
+ useEffect(() => {
+   const loadFavorites = async () => {
+     const { favorite_keys} = await getFavoritesForStore(
+       store_id ,storemanagerid
+     );
+    
+       setInitialKeys(favorite_keys); 
+     setSelectedKeys(favorite_keys); // Extract only favorite_keys array
+     console.log("Store Manager ID:", storemanagerid);
+   };
 
-    if (isOpen) {
-      loadFavorites();
-    }
-  }, [isOpen, store_id]);
+   if (isOpen) {
+     loadFavorites();
+   }
+ }, [isOpen, store_id]);
 
   // Handles selection & toggling of items
-  const handleItem = async (searchKey: InventoryKey) => {
-    setSelectedKeys((prev) => {
-      const exists = prev.some((item) => item.invId === searchKey.invId);
+const handleItem = (searchKey: InventoryKey) => {
+  setSelectedKeys((prev) => {
+    const exists = prev.some((item) => item.invId === searchKey.invId);
+    const newSelectedKeys = exists
+      ? prev.filter((item) => item.invId !== searchKey.invId)
+      : [...prev, searchKey];
 
-      // If the item exists, remove it, otherwise add it if not already in the array
-      const newSelectedKeys = exists
-        ? prev.filter((item) => item.invId !== searchKey.invId)
-        : [...prev, { ...searchKey }];
-
-      // Save to cache immediately
-      storeFavoriteKeyToCache(newSelectedKeys, store_id);
-
-      // Ensure the selectedKeys array does not exceed 25 items
-      return newSelectedKeys.slice(0, 25);
-    });
-  };
-
+    return newSelectedKeys.slice(0, 25); // Just update state, don't call API
+  });
+};
   // Handle closing the modal, and save favorites to cache if changes are made
-  const handleClose = () => {
-    storeFavoriteKeyToCache(selectedKeys, store_id); // Save changes before closing
-    onClose();
-  };
+const handleClose = () => {
+  const hasChanges =
+    JSON.stringify(selectedKeys) !== JSON.stringify(initialKeys);
 
-  const handleRemoveProduct = (searchKey: InventoryKey) => {
-    setSelectedKeys((prev) => {
-      const updatedKeys = prev.filter(
-        (key) => key.invItem !== searchKey.invItem
-      );
-      removeFavoriteKeyFromCache(searchKey, store_id);
-      return updatedKeys;
-    });
-  };
+  if (hasChanges) {
+    console.log("Detected changes in favorites. Posting only new items...");
+
+    // ✅ Handle both additions & deletions properly
+    storeFavoriteKeyToCache(selectedKeys, store_id, storemanagerid);
+  } else {
+    console.log("No changes detected, skipping API call.");
+  }
+
+  onClose();
+};
+
+const handleRemoveProduct = (searchKey: InventoryKey) => {
+  setSelectedKeys(
+    (prev) => prev.filter((key) => key.invId !== searchKey.invId) // ✅ Only update state
+  );
+};
+
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>

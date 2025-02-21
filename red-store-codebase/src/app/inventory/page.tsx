@@ -115,6 +115,7 @@ const InventoryPage = () => {
     currentPage,
     pageSize,
     total_count,
+    sessionData,
     handleRefresh,
   } = useInventory();
   const { table, setColumnFilters } = useInventoryTableHook({
@@ -211,6 +212,7 @@ const InventoryPage = () => {
       <SetFavortiesModal
         store_id={selectedStore ? String(selectedStore.storeId) : ""}
         searchKeys={searchKeys}
+        storemanagerid={sessionData? String(sessionData.id): ""}
         isOpen={isFavortiesModalOpen}
         onClose={() => handleCloseModal(setIsFavortiesModalOpen)}
       />
