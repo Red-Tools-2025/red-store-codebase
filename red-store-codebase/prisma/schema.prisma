@@ -167,7 +167,6 @@ model BucketItems {
   inventory Inventory @relation(fields: [invId, storeId], references: [invId, storeId], onDelete: Cascade)
 
   @@id([bucketId, invId])
-  @@map("bucket_items")
 }
 
 enum BucketSize {
