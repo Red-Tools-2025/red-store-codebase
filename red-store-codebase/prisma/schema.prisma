@@ -77,9 +77,9 @@ model Inventory {
   invItemBarcode String?   @map("invitembarcode") @db.VarChar(255)
   invAdditional  Json?     @map("invadditional") @db.Json
   favorites      favorites[]
+  bucketItems    BucketItems[]
   store          Store     @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: Cascade, onUpdate: NoAction, map: "fk_store_inventory")
 
-  buckets        Bucket[]
   @@id([storeId, invId])
   @@map("inventory")
 }
@@ -94,6 +94,7 @@ model Store {
   customfields   Json?
   favorites      favorites[]
   inventory      Inventory[]
+  buckets        Bucket[]
   User           User        @relation(fields: [storeManagerId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
   @@id([storeId, storeManagerId])
@@ -141,18 +142,31 @@ model favorites {
 model Bucket {
   bucketId      Int @default(autoincrement())
   storeId       Int
-  invId         Int
-  invItem       String
+  storeManagerId String
   createdAt     DateTime  @default(now()) @db.Timestamp(6)
   deadline      DateTime @db.Timestamp(6)
   updatedAt     DateTime  @updatedAt
-  bucketQty     BucketSize
   soldQty       Int
   isActive      Boolean
 
-  inventory     Inventory @relation(fields: [storeId, invId], references: [storeId, invId], onDelete: Cascade, onUpdate: NoAction, map: "fk_inventory_bucket")
+  bucketItems BucketItems[]
+
+  store Store @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: NoAction, onUpdate: NoAction, map: "fk_store_bucket")
 
   @@id([storeId, bucketId])
+}
+
+model BucketItems {
+  bucketId Int
+  storeId Int
+  invId Int
+  bucketQty     BucketSize
+
+  bucket Bucket @relation(fields: [bucketId, storeId], references: [bucketId, storeId], onDelete: Cascade)
+  inventory Inventory @relation(fields: [invId, storeId], references: [invId, storeId], onDelete: Cascade)
+
+  @@id([bucketId, invId])
+  @@map("bucket_items")
 }
 
 enum BucketSize {
