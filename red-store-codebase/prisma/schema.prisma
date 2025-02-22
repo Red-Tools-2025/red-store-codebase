@@ -144,6 +144,7 @@ model Bucket {
   invId         Int
   invItem       String
   createdAt     DateTime  @default(now()) @db.Timestamp(6)
+  deadline      DateTime @db.Timestamp(6)
   updatedAt     DateTime  @updatedAt
   bucketQty     BucketSize
   soldQty       Int
