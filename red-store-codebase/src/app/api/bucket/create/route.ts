@@ -5,10 +5,10 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const body: CreateBucketResponseBody = await req.json();
-    const { allotedDeadline, bucketQty, invId, invItemName, storeId } = body;
+    const { allotedDeadline, storeId, storeManagerId, duration } = body;
 
     // gaurd clause for all required params
-    if (!allotedDeadline || !bucketQty || !invId || !invItemName || storeId) {
+    if (!allotedDeadline || !storeId || !storeManagerId || !duration) {
       return NextResponse.json(
         {
           error:
@@ -18,18 +18,29 @@ export async function POST(req: Request) {
       );
     }
 
+    // bucket creation, allot an empty array of bucket Items
     const bucket = await db.bucket.create({
       data: {
-        bucketQty: bucketQty,
         deadline: allotedDeadline,
-        invItem: invItemName,
         isActive: false,
         soldQty: 0,
         createdAt: new Date(),
-        invId: invId,
         storeId: storeId,
+        bucketItems: {
+          create: [],
+        },
+        storeManagerId,
+        duration,
       },
     });
+
+    return NextResponse.json(
+      {
+        message: `Bucket Created successfully`,
+        bucket,
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("Upload Error adding inventory:", err);
     return NextResponse.json(
