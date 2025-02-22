@@ -20,7 +20,6 @@ export const CardWrapper = ({
   backButtonLabel,
   backButtonHref,
   showSocial,
-  
 }: CardWrapperProps) => {
   return (
     <div className="w-full mx-auto  max-w-[400px]">
@@ -40,9 +39,13 @@ export const CardWrapper = ({
       )}
 
       {/* Back Button Section */}
-      <div className="mt-6">
-        <BackButton label={backButtonLabel} href={backButtonHref} />
-      </div>
+      {backButtonHref.length == 0 || backButtonLabel.length == 0 ? (
+        <div className="mt-6">
+          <BackButton label={backButtonLabel} href={backButtonHref} />
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

@@ -5,12 +5,10 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { SessionUserType } from "@/app/types/management/context";
 import { Inventory, Store } from "@prisma/client";
 import { Cart } from "@/app/types/pos/cart";
 
 interface PosContextType {
-  sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
   favoriteProducts: Inventory[] | null;
   originalProducts: Inventory[] | null;
@@ -26,7 +24,6 @@ const PosContext = createContext<PosContextType | undefined>(undefined);
 
 export const PosProvider = ({
   children,
-  sessionData,
   inventoryItems,
   cartItems,
   isLoading,
@@ -38,7 +35,6 @@ export const PosProvider = ({
   setClientSideItems,
 }: {
   children: ReactNode;
-  sessionData: SessionUserType | null;
   inventoryItems: Inventory[] | null;
   favoriteProducts: Inventory[] | null;
   originalProducts: Inventory[] | null;
@@ -52,7 +48,6 @@ export const PosProvider = ({
   return (
     <PosContext.Provider
       value={{
-        sessionData,
         inventoryItems,
         cartItems,
         isLoading,
