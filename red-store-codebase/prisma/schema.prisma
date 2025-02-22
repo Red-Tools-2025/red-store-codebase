@@ -147,6 +147,7 @@ model Bucket {
   deadline      DateTime @db.Timestamp(6)
   updatedAt     DateTime  @updatedAt
   soldQty       Int
+  duration      Int // Bucket duration in hours or minutes
   isActive      Boolean
 
   bucketItems BucketItems[]
