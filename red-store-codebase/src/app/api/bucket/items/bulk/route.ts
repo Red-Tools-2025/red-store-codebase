@@ -97,6 +97,7 @@ export async function DELETE(req: Request) {
     const body: EmptyBucketListRequestBody = await req.json();
     const { bucketId } = body;
 
+    // gaurd clause for checking if bucketId is provided
     if (!bucketId) {
       return NextResponse.json(
         {
@@ -108,6 +109,7 @@ export async function DELETE(req: Request) {
       );
     }
 
+    // empty bucketlist with all items associated with given bucketID
     const empty_bucket = await db.bucketItems.deleteMany({
       where: {
         bucketId: bucketId,
