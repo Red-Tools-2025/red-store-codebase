@@ -16,11 +16,6 @@ export interface AddBucketItemsBulkRequestBody {
   }[];
 }
 
-export interface DeleteBucketItemRequestBody {
+export interface EmptyBucketListRequestBody {
   bucketId: number;
-  storeId: number;
-  bucket_item: {
-    invId: number;
-    bucketQty: BucketSize;
-  };
 }

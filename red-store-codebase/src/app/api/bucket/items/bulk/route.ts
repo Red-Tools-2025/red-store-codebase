@@ -1,6 +1,9 @@
 // Route handles all scenaiors pertaining to add, update and delete in bucket items
 
-import { AddBucketItemsBulkRequestBody } from "@/app/types/buckets/api";
+import {
+  AddBucketItemsBulkRequestBody,
+  EmptyBucketListRequestBody,
+} from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -70,7 +73,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
-        message: `Products added to bucket --> Bucket : ${bucketId}`,
+        message: `Products added to bucket --> Bucket ${bucketId}`,
       },
       {
         status: 200,
@@ -88,5 +91,44 @@ export async function POST(req: Request) {
   }
 }
 
-// Route for deleting buckets list
-export async function DELETE(req: Request) {}
+// Route for emptying the whole bucket list
+export async function DELETE(req: Request) {
+  try {
+    const body: EmptyBucketListRequestBody = await req.json();
+    const { bucketId } = body;
+
+    if (!bucketId) {
+      return NextResponse.json(
+        {
+          error: "All params are required",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const empty_bucket = await db.bucketItems.deleteMany({
+      where: {
+        bucketId: bucketId,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: `Emptied Bucket ${bucketId} : ${empty_bucket.count} bucket items removed`,
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (err) {
+    return NextResponse.json(
+      {
+        error:
+          "An error occurred while emptying the bucket list, Please check your connections and try again",
+      },
+      { status: 500 }
+    );
+  }
+}
