@@ -28,3 +28,8 @@ export interface AddBucketItemRequestBody {
 export interface EmptyBucketListRequestBody {
   bucketId: number;
 }
+
+export interface FetchBucketListsRequestBody {
+  bucketId: number;
+  storeId: number;
+}
