@@ -7,7 +7,16 @@ export interface CreateBucketResponseBody {
   allotedDeadline: Date;
 }
 
-export interface AddBucketItemRequestBody {
+export interface AddBucketItemsBulkRequestBody {
+  bucketId: number;
+  storeId: number;
+  bucket_items: {
+    invId: number;
+    bucketQty: BucketSize;
+  }[];
+}
+
+export interface DeleteBucketItemRequestBody {
   bucketId: number;
   storeId: number;
   bucket_item: {

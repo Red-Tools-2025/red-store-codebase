@@ -65,20 +65,20 @@ model Role {
 }
 
 model Inventory {
-  invId          Int       @default(autoincrement()) @map("invid")
-  storeId        Int       @map("storeid")
-  storeManagerId String    @map("storemanagerid")
-  invItem        String    @map("invitem") @db.VarChar(255)
-  invItemBrand   String?   @map("invitembrand") @db.VarChar(255)
-  invItemStock   Int       @map("invitemstock")
-  invItemPrice   Int       @map("invitemprice")
-  invItemType    String?   @map("invitemtype") @db.VarChar(100)
-  invCreatedDate DateTime? @default(now()) @map("invcreateddate") @db.Timestamp(6)
-  invItemBarcode String?   @map("invitembarcode") @db.VarChar(255)
-  invAdditional  Json?     @map("invadditional") @db.Json
-  favorites      favorites[]
+  invId          Int           @default(autoincrement()) @map("invid")
+  storeId        Int           @map("storeid")
+  storeManagerId String        @map("storemanagerid")
+  invItem        String        @map("invitem") @db.VarChar(255)
+  invItemBrand   String?       @map("invitembrand") @db.VarChar(255)
+  invItemStock   Int           @map("invitemstock")
+  invItemPrice   Int           @map("invitemprice")
+  invItemType    String?       @map("invitemtype") @db.VarChar(100)
+  invCreatedDate DateTime?     @default(now()) @map("invcreateddate") @db.Timestamp(6)
+  invItemBarcode String?       @map("invitembarcode") @db.VarChar(255)
+  invAdditional  Json?         @map("invadditional") @db.Json
   bucketItems    BucketItems[]
-  store          Store     @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: Cascade, onUpdate: NoAction, map: "fk_store_inventory")
+  favorites      favorites[]
+  store          Store         @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: Cascade, onUpdate: NoAction, map: "fk_store_inventory")
 
   @@id([storeId, invId])
   @@map("inventory")
@@ -92,9 +92,9 @@ model Store {
   storeStatus    Boolean     @map("storestatus")
   createdAt      DateTime?   @default(now()) @map("createdat") @db.Timestamptz(6)
   customfields   Json?
+  buckets        Bucket[]
   favorites      favorites[]
   inventory      Inventory[]
-  buckets        Bucket[]
   User           User        @relation(fields: [storeManagerId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
   @@id([storeId, storeManagerId])
@@ -114,12 +114,12 @@ model Sale {
 model Employee {
   empId          Int       @default(autoincrement()) @map("empid")
   storeId        Int       @map("storeid")
-  roleId         Int[]       @map("roleid")
   createdAt      DateTime? @default(now()) @map("createdat") @db.Timestamp(6)
   empName        String    @map("empname") @db.VarChar(255)
   empPhone       String    @map("empphone") @db.VarChar(50)
   empStatus      Boolean   @map("empstatus")
   storeManagerId String    @map("storemanagerid") @db.VarChar(255)
+  roleId         Int[]     @map("roleid")
 
   @@id([storeId, empId])
   @@map("employee")
@@ -140,31 +140,28 @@ model favorites {
 }
 
 model Bucket {
-  bucketId      Int @default(autoincrement())
-  storeId       Int
+  bucketId       Int           @default(autoincrement())
+  storeId        Int
+  createdAt      DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime      @updatedAt
+  soldQty        Int
+  isActive       Boolean
+  deadline       DateTime      @db.Timestamp(6)
   storeManagerId String
-  createdAt     DateTime  @default(now()) @db.Timestamp(6)
-  deadline      DateTime @db.Timestamp(6)
-  updatedAt     DateTime  @updatedAt
-  soldQty       Int
-  duration      Int // Bucket duration in hours or minutes
-  isActive      Boolean
-
-  bucketItems BucketItems[]
-
-  store Store @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: NoAction, onUpdate: NoAction, map: "fk_store_bucket")
+  duration       Int
+  store          Store         @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: NoAction, onUpdate: NoAction, map: "fk_store_bucket")
+  bucketItems    BucketItems[]
 
   @@id([storeId, bucketId])
 }
 
 model BucketItems {
-  bucketId Int
-  storeId Int
-  invId Int
-  bucketQty     BucketSize
-
-  bucket Bucket @relation(fields: [bucketId, storeId], references: [bucketId, storeId], onDelete: Cascade)
-  inventory Inventory @relation(fields: [invId, storeId], references: [invId, storeId], onDelete: Cascade)
+  bucketId  Int
+  storeId   Int
+  invId     Int
+  bucketQty BucketSize
+  bucket    Bucket     @relation(fields: [bucketId, storeId], references: [bucketId, storeId], onDelete: Cascade)
+  inventory Inventory  @relation(fields: [invId, storeId], references: [invId, storeId], onDelete: Cascade)
 
   @@id([bucketId, invId])
 }

@@ -1,21 +1,17 @@
 // Route handles all scenaiors pertaining to add, update and delete in bucket items
 
-import { AddBucketItemRequestBody } from "@/app/types/buckets/api";
+import { AddBucketItemsBulkRequestBody } from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 // For adding items to bucket
 export async function POST(req: Request) {
   try {
-    const body: AddBucketItemRequestBody = await req.json();
-    const {
-      bucketId,
-      bucket_item: { bucketQty, invId },
-      storeId,
-    } = await body;
+    const body: AddBucketItemsBulkRequestBody = await req.json();
+    const { bucketId, bucket_items, storeId } = await body;
 
     // gaurd clause to check all params
-    if (!bucketId || !invId || !bucketQty || !storeId) {
+    if (!bucketId || !bucket_items || !storeId) {
       return NextResponse.json(
         {
           error: "All params are required for adding items to bucket",
@@ -23,6 +19,16 @@ export async function POST(req: Request) {
         {
           status: 400,
         }
+      );
+    }
+
+    // gaurd claude to check empty bucket
+    if (bucket_items.length === 0) {
+      return NextResponse.json(
+        {
+          error: "Bucket List is empty, please add bucket items to continue",
+        },
+        { status: 400 }
       );
     }
 
@@ -51,36 +57,20 @@ export async function POST(req: Request) {
       );
     }
 
-    // then check if the product already exists within the bucket
-    const existing = await db.bucketItems.findUnique({
-      where: {
-        bucketId_invId: { bucketId, invId },
-      },
-    });
+    const bucket_items_new = bucket_items.map((bucket_item) => ({
+      bucketId,
+      storeId,
+      bucketQty: bucket_item.bucketQty,
+      invId: bucket_item.invId,
+    }));
 
-    if (existing) {
-      return NextResponse.json(
-        {
-          error: "Product already allotted to bucket",
-        },
-        {
-          status: 409,
-        }
-      );
-    }
-
-    await db.bucketItems.create({
-      data: {
-        bucketQty,
-        bucketId,
-        invId,
-        storeId,
-      },
+    await db.bucketItems.createMany({
+      data: bucket_items_new,
     });
 
     return NextResponse.json(
       {
-        message: "Product added to inventory",
+        message: `Products added to bucket --> Bucket : ${bucketId}`,
       },
       {
         status: 200,
@@ -97,3 +87,6 @@ export async function POST(req: Request) {
     );
   }
 }
+
+// Route for deleting buckets list
+export async function DELETE(req: Request) {}
