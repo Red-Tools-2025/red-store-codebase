@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
-        message: `Item with Id ${invId} added to Bucket ${bucketId}`,
+        message: `Item with Id ${add_item.invId} added to Bucket ${add_item.bucketId}`,
       },
       {
         status: 200,
