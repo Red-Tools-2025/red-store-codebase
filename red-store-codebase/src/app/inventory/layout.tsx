@@ -42,6 +42,7 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     if (userStores && userStores.length > 0 && !selectedStore) {
       setIsSelectedStore(userStores[0]);
     }
+   
   }, [userStores]);
 
   const { fetchingKeys, searchKeys } = useSearch(
