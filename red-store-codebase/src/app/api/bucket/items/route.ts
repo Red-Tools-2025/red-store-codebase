@@ -90,3 +90,86 @@ export async function POST(req: Request) {
     );
   }
 }
+
+// Route for deleting bucket item from list
+export async function DELETE(req: Request) {
+  try {
+    const { bucketId, invId, storeId } = await req.json();
+
+    // Guard clause to check all params
+    if (!bucketId || !invId || !storeId) {
+      return NextResponse.json(
+        {
+          error: "All params are required",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    // Verify if bucket exists
+    const bucket = await db.bucket.findUnique({
+      where: {
+        storeId_bucketId: { storeId, bucketId },
+      },
+    });
+
+    if (!bucket) {
+      return NextResponse.json({ error: "Bucket not found." }, { status: 404 });
+    }
+
+    // If bucket is active, prevent deletions
+    if (bucket.isActive === true) {
+      return NextResponse.json(
+        {
+          error: "Bucket is currently active, cannot remove items from it",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check if item exists in the bucket
+    const existingItem = await db.bucketItems.findUnique({
+      where: {
+        bucketId_invId: { bucketId, invId },
+      },
+    });
+
+    if (!existingItem) {
+      return NextResponse.json(
+        {
+          error: "Item not found in bucket",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    // Delete the item from the bucket
+    await db.bucketItems.delete({
+      where: {
+        bucketId_invId: { bucketId, invId },
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: `Item with Id ${invId} removed from Bucket ${bucketId}`,
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json(
+      {
+        error:
+          "An error occurred while removing the item from the bucket list. Please check your connections and try again",
+      },
+      { status: 500 }
+    );
+  }
+}
