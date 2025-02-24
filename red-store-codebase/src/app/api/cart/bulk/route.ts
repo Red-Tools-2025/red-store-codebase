@@ -3,7 +3,7 @@ import { ProcessBulkCartRequest, TimeSeries } from "@/app/types/inventory/api";
 
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import supabase from "../../../../../supabase/client";
+import supabase from "../../../../lib/supabase/client";
 
 // bulk processing purchases stored in cache
 export async function POST(req: Request) {

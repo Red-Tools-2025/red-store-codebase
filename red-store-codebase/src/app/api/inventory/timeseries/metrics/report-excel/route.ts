@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import supabase from "../../../../../../../supabase/client";
+import supabase from "../../../../../../lib/supabase/client";
 import * as XLSX from "xlsx";
 
 export async function GET(req: Request) {

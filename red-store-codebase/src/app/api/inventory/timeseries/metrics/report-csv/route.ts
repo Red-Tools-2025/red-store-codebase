@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { parse } from "json2csv";
-import supabase from "../../../../../../../supabase/client";
+import supabase from "../../../../../../lib/supabase/client";
 
 export async function GET(req: Request) {
   try {

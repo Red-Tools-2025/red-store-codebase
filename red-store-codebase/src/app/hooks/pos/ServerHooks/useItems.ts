@@ -76,14 +76,14 @@ const useItems = (
     const fetchFavorites = async () => {
       try {
         setIsFetchingFavorites(true);
-        const favorites = await getFavoritesForStore(storeId);
-        if (favorites == null || favorites.length === 0) {
+        const favorites = await getFavoritesForStore(storeId, storeManagerId);
+        if (favorites == null || favorites.favorite_keys.length === 0) {
           setFavoriteProducts(null);
           console.log("Nothing to see here bro");
         } else {
           const { data } = await axios.post<FavoriteProductsFetchResponse>(
             "/api/inventory/products/search/favorites",
-            { favorite_keys: favorites },
+            { favorite_keys: favorites.favorite_keys },
             {
               params: {
                 storeId,

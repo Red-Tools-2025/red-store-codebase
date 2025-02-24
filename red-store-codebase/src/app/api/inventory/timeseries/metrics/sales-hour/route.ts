@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import supabase from "../../../../../../../supabase/client";
+import supabase from "../../../../../../lib/supabase/client";
 
 export async function GET(req: Request) {
   try {
@@ -15,12 +15,9 @@ export async function GET(req: Request) {
     }
 
     // Call the Supabase RPC function with store_id as an argument
-    const { data, error } = await supabase.rpc(
-      "get_sales_by_hour",
-      {
-        store_id_input: store_id,
-      }
-    );
+    const { data, error } = await supabase.rpc("get_sales_by_hour", {
+      store_id_input: store_id,
+    });
 
     if (error) {
       console.error("Error calling RPC:", error.message);

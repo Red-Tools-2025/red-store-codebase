@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import supabase from "../../../../../../../supabase/client"; // Adjust the path based on your project structure
+import supabase from "../../../../../../lib/supabase/client"; // Adjust the path based on your project structure
 
 export async function GET(req: Request) {
   try {
