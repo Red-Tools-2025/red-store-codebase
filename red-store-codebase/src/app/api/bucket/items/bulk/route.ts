@@ -80,7 +80,7 @@ export async function POST(req: Request) {
       }
     );
   } catch (err) {
-    console.error("Error on item add to bucket", err);
+    console.log("Error on item add to bucket", err);
     return NextResponse.json(
       {
         error:
@@ -125,6 +125,7 @@ export async function DELETE(req: Request) {
       }
     );
   } catch (err) {
+    console.log(err);
     return NextResponse.json(
       {
         error:
