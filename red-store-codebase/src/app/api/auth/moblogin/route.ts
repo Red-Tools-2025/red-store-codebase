@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
 interface MobLoginRouteRequestType {
   empphone: string;
@@ -64,7 +65,7 @@ export async function POST(req: Request) {
     if (!emp || emp.length === 0) {
       return NextResponse.json(
         {
-          error: "Employee details not found",
+          error: "Employee details or not found",
         },
         {
           status: 404,
@@ -75,10 +76,25 @@ export async function POST(req: Request) {
       );
     }
 
-    // Employee found, return response
-    return NextResponse.json(
+    // Create Web Token
+    const token = jwt.sign(
       {
-        emp,
+        empId: emp[0].empId,
+        empName: emp[0].empName,
+        empPhone: emp[0].empPhone,
+        storeId: emp[0].storeId,
+        storeManagerId: emp[0].storeManagerId,
+      },
+      "emp-token-key",
+      {
+        expiresIn: "2h",
+      }
+    );
+
+    // No return of web token store to http-cookie
+    const response = NextResponse.json(
+      {
+        verifiedRedirect: true,
       },
       {
         status: 200,
@@ -87,6 +103,18 @@ export async function POST(req: Request) {
         },
       }
     );
+
+    response.cookies.set({
+      name: "authToken",
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days expiration
+    });
+
+    return response;
   } catch (err) {
     console.error(err);
     return NextResponse.json(

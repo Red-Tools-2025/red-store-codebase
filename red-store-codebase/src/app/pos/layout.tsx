@@ -1,58 +1,38 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import React, { useState } from "react";
-import { SessionUserType } from "../types/management/context";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
 import { Inventory, Store } from "@prisma/client";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import { PosProvider } from "../contexts/pos/PosContext";
 import { Cart } from "../types/pos/cart";
 import useItems from "../hooks/pos/ServerHooks/useItems";
+import { usePosAuth } from "../providers/PosAuthProvider"; // Import the Auth Context
 
 interface POSLayoutProps {
   children: React.ReactNode;
 }
 
 const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
-  const { data: session } = useSession();
-  const sessionUser = session?.user as SessionUserType | undefined;
+  const { isAuthenticated, isGettingToken, userData } = usePosAuth();
 
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
-
-  // pagination
-
-  // cart
   const [cartItems, setCartItems] = useState<Cart[]>([]);
-
-  // inventory display states
   const [clientSideItems, setClientSideItems] = useState<Inventory[] | null>(
     []
   );
 
   // Fetching store data and inventory data
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
-    sessionUser?.id ?? ""
+    userData?.storeManagerId ? String(userData.storeManagerId) : ""
   );
 
-  // Use useEffect to set initial store when stores are loaded
+  // Set initial store when stores are loaded
   React.useEffect(() => {
     if (userStores && userStores.length > 0 && !selectedStore) {
       setIsSelectedStore(userStores[0]);
     }
   }, [userStores]);
-
-  // const {
-  //   inventoryItems,
-  //   isLoading: isLoadingProducts,
-  //   total_count,
-  //   handleResync,
-  // } = useProducts(
-  //   selectedStore ? String(selectedStore.storeId) : "",
-  //   sessionUser?.id ?? "",
-  //   currentPage,
-  //   pageSize
-  // );
 
   const {
     handleResync,
@@ -61,11 +41,21 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
     originalProducts,
   } = useItems(
     selectedStore ? String(selectedStore.storeId) : "",
-    sessionUser?.id ?? "",
+    userData?.storeManagerId ?? "",
     setClientSideItems,
     1,
     20
   );
+
+  // **Show loading while checking authentication**
+  if (isGettingToken) {
+    return <div>Loading authentication...</div>;
+  }
+
+  // **Show nothing if authentication fails (Redirect is handled in PosAuthProvider)**
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <PosProvider
@@ -75,37 +65,30 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       cartItems={cartItems}
       isLoading={isLoadingProducts}
       inventoryItems={clientSideItems}
-      sessionData={sessionUser ?? null}
       setCartItems={setCartItems}
       handleResync={handleResync}
       setClientSideItems={setClientSideItems}
     >
       <div className="p-5 font-inter">
-        {session ? (
+        {isLoadingStores ? (
+          <div>Loading...</div>
+        ) : userStores && userStores.length > 0 ? (
           <>
-            {isLoadingStores ? (
-              <div>Loading...</div>
-            ) : userStores && userStores.length > 0 ? (
-              <>
-                <div className="flex justify-between">
-                  <h1 className="text-2xl font-semibold">Point of Sales</h1>
-                  <div className="flex gap-2">
-                    <DropDownStoreSelect
-                      data={userStores}
-                      isDisabled={userStores.length === 0}
-                      setSelectedStore={setIsSelectedStore}
-                      selectedStore={selectedStore}
-                    />
-                  </div>
-                </div>
-                {children}
-              </>
-            ) : (
-              <div>No stores found</div>
-            )}
+            <div className="flex justify-between">
+              <h1 className="text-2xl font-semibold">Point of Sales</h1>
+              <div className="flex gap-2">
+                <DropDownStoreSelect
+                  data={userStores}
+                  isDisabled={userStores.length === 0}
+                  setSelectedStore={setIsSelectedStore}
+                  selectedStore={selectedStore}
+                />
+              </div>
+            </div>
+            {children}
           </>
         ) : (
-          <main>Session not found. Please log in again.</main>
+          <div>No stores found</div>
         )}
       </div>
     </PosProvider>

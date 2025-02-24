@@ -1,17 +1,13 @@
 "use client";
 import { useState } from "react";
 import {
-  SquareChartGantt,
-  Inbox,
   Receipt,
   User,
   ChevronLeft,
   ChevronRight,
-  SquarePercent,
-  UserCog,
   FileCheck2,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { IoIosAnalytics } from "react-icons/io";
 import Link from "next/link"; // Import Link for navigation
 
 import UserItem from "./UserItem";
@@ -24,26 +20,27 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { useAuth } from "@/app/providers/AuthProvider";
+import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: session } = useSession();
+  const { session } = useAuth();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
 
+  const path = usePathname();
+
   const menuList = [
     {
       group: "General",
       items: [
-        { link: "/dashboard", text: "DashBoard", icon: <User /> },
-        { link: "/", text: "Accounting", icon: <Inbox /> },
-        { link: "/inventory", text: "Inventory", icon: <Receipt /> },
-        { link: "/management", text: "Management", icon: <SquareChartGantt /> },
-        { link: "/", text: "Goods Sold", icon: <SquarePercent /> },
-        { link: "/", text: "Users", icon: <UserCog /> },
-        { link: "/sales", text: "Sales Report", icon: <FileCheck2 /> }, // Update the link for Sales Report
+        { link: "/dashboard", text: "DashBoard", icon: <IoIosAnalytics /> },
+        { link: "/inventory", text: "Inventory", icon: <FileCheck2 /> },
+        { link: "/management", text: "Management", icon: <User /> },
+        { link: "/sales", text: "Sales", icon: <Receipt /> }, // Update the link for Sales Report
       ],
     },
   ];
@@ -59,7 +56,7 @@ export default function Sidebar() {
         {/* Sidebar Content */}
         <div className="flex-1 p-4 overflow-y-auto">
           <div>
-            <UserItem name={session?.user?.name} email={session?.user?.email} />
+            <UserItem name={"Jhon"} email={session?.user?.email} />
           </div>
 
           <div className="grow mt-8">
@@ -75,7 +72,9 @@ export default function Sidebar() {
                       >
                         <Link
                           href={options.link}
-                          className="flex items-center w-full"
+                          className={`flex items-center w-full ${
+                            options.link === path ? "text-blue-600" : ""
+                          }`}
                         >
                           {/* Make sure the icon and text are aligned properly */}
                           <span className="flex-shrink-0">{options.icon}</span>
