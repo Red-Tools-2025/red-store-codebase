@@ -5,10 +5,23 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const body: CreateBucketResponseBody = await req.json();
-    const { allotedDeadline, storeId, storeManagerId, duration } = body;
+    const {
+      allotedDeadline,
+      storeId,
+      storeManagerId,
+      duration,
+      bucket_item_details: { bucketQty, invId },
+    } = body;
 
     // gaurd clause for all required params
-    if (!allotedDeadline || !storeId || !storeManagerId || !duration) {
+    if (
+      !allotedDeadline ||
+      !storeId ||
+      !storeManagerId ||
+      !duration ||
+      !bucketQty ||
+      !invId
+    ) {
       return NextResponse.json(
         {
           error:
@@ -24,14 +37,12 @@ export async function POST(req: Request) {
     // bucket creation, allot an empty array of bucket Items
     const bucket = await db.bucket.create({
       data: {
-        deadline: allotedDeadline,
         isActive: false,
         soldQty: 0,
         createdAt: new Date(),
         storeId: storeId,
-        bucketItems: {
-          create: [],
-        },
+        bucketSize: bucketQty,
+        invId: invId,
         storeManagerId,
         duration,
       },

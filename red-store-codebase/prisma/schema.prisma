@@ -76,8 +76,8 @@ model Inventory {
   invCreatedDate DateTime?     @default(now()) @map("invcreateddate") @db.Timestamp(6)
   invItemBarcode String?       @map("invitembarcode") @db.VarChar(255)
   invAdditional  Json?         @map("invadditional") @db.Json
-  bucketItems    BucketItems[]
   favorites      favorites[]
+  buckets        Bucket[]      
   store          Store         @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: Cascade, onUpdate: NoAction, map: "fk_store_inventory")
 
   @@id([storeId, invId])
@@ -142,28 +142,17 @@ model favorites {
 model Bucket {
   bucketId       Int           @default(autoincrement())
   storeId        Int
+  invId          Int
+  bucketSize     BucketSize
   createdAt      DateTime      @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime      @updatedAt
   soldQty        Int
   isActive       Boolean
-  deadline       DateTime      @db.Timestamp(6)
   storeManagerId String
   duration       Int
   store          Store         @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: NoAction, onUpdate: NoAction, map: "fk_store_bucket")
-  bucketItems    BucketItems[]
+  inventory      Inventory     @relation(fields: [storeId, invId], references: [storeId, invId], onDelete: Cascade, onUpdate: Cascade, map: "fk_bucket_item_id")
 
   @@id([storeId, bucketId])
-}
-
-model BucketItems {
-  bucketId  Int
-  storeId   Int
-  invId     Int
-  bucketQty BucketSize
-  bucket    Bucket     @relation(fields: [bucketId, storeId], references: [bucketId, storeId], onDelete: Cascade)
-  inventory Inventory  @relation(fields: [invId, storeId], references: [invId, storeId], onDelete: Cascade)
-
-  @@id([bucketId, invId])
 }
 
 enum BucketSize {
