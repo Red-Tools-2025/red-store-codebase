@@ -19,6 +19,7 @@ import { ColumnDef, ColumnDefBase, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 import SetFavortiesModal from "@/components/feature/inventory/feature-component/Modals/SetFavoritesModal";
+import EditProductModal from "@/components/feature/inventory/feature-component/FormModals/EditProductModal";
 
 interface InventoryDisplayProps {
   displayState: "list" | "grid";
@@ -131,6 +132,18 @@ const InventoryPage = () => {
   >([]);
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
+
+const [isEditProdModalOpen, setIsEditProdModalOpen] = useState(false);
+const [selectedProduct, setSelectedProduct] = useState<Inventory | null>(null);
+
+const handleOpenEditModal = (product: Inventory) => {
+  setSelectedProduct(product);
+  setIsEditProdModalOpen(true);
+};
+
+
+
+
   const [showAdditionalFilters, setShowAdditionalFilters] =
     useState<boolean>(false);
   const [isTableViewModalOpen, setIsTableViewModalOpen] =
@@ -177,6 +190,14 @@ const InventoryPage = () => {
     <div>
       {/* All modals */}
       <Toaster />
+      {selectedProduct && (
+        <EditProductModal
+          isOpen={isEditProdModalOpen}
+          onClose={() => setIsEditProdModalOpen(false)}
+          productTypes={["G", "P", "C"]}
+          product={selectedProduct}
+        />
+      )}
       <RestockProductModal
         isOpen={isRestockProdModalOpen}
         inventoryItems={inventoryItems ?? []}
@@ -212,7 +233,7 @@ const InventoryPage = () => {
       <SetFavortiesModal
         store_id={selectedStore ? String(selectedStore.storeId) : ""}
         searchKeys={searchKeys}
-        storemanagerid={sessionData? String(sessionData.id): ""}
+        storemanagerid={sessionData ? String(sessionData.id) : ""}
         isOpen={isFavortiesModalOpen}
         onClose={() => handleCloseModal(setIsFavortiesModalOpen)}
       />
