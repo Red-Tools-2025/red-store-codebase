@@ -147,6 +147,7 @@ model Bucket {
   createdAt      DateTime      @default(now()) @db.Timestamp(6)
   soldQty        Int
   isActive       Boolean
+  isCompleted    Boolean
   scheduledTime  DateTime
   storeManagerId String
   duration       Int

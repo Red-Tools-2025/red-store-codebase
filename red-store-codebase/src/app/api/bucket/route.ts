@@ -38,6 +38,7 @@ export async function POST(req: Request) {
     const bucket = await db.bucket.create({
       data: {
         isActive: false,
+        isCompleted: false,
         soldQty: 0,
         createdAt: new Date(),
         scheduledTime,
