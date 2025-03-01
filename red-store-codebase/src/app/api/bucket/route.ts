@@ -1,6 +1,7 @@
 import {
   CreateBucketRequestBody,
   DeleteBucketRequestBody,
+  UpdateBucketRequestBody,
 } from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
 import { BucketStatus } from "@prisma/client";
@@ -73,6 +74,7 @@ export async function POST(req: Request) {
   }
 }
 
+// Route for deleting a bucket only if it is not active
 export async function DELETE(req: Request) {
   try {
     const body: DeleteBucketRequestBody = await req.json();
@@ -121,11 +123,72 @@ export async function DELETE(req: Request) {
       message: `Removed Bucket : ${deleted_bucket.bucketId}`,
     });
   } catch (err) {
-    console.error("Creation error with bucket", err);
+    console.error("Deletion error with bucket", err);
     return NextResponse.json(
       {
         error:
-          "An error occurred while creating the bucket, Please check your connections and try again",
+          "An error occurred while deleting the bucket, Please check your connections and try again",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Route for editing a bucket if and only if the bucket is in an incactive state
+export async function PUT(req: Request) {
+  try {
+    const body: UpdateBucketRequestBody = await req.json();
+    const { bucketId, storeId, scheduledTime, bucketQty } = body;
+
+    // Guard clause for required params
+    if (!bucketId || !storeId || !scheduledTime || !bucketQty) {
+      return NextResponse.json(
+        {
+          error:
+            "Required fields are missing or invalid. Please provide all params.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Find the bucket and ensure it exists and is inactive
+    const bucket = await db.bucket.findUnique({
+      where: { storeId_bucketId: { storeId, bucketId } },
+    });
+
+    if (!bucket) {
+      return NextResponse.json({ error: "Bucket not found." }, { status: 404 });
+    }
+
+    if (bucket.status !== BucketStatus.INACTIVE) {
+      return NextResponse.json(
+        { error: "Bucket can only be edited when it is in an inactive state." },
+        { status: 400 }
+      );
+    }
+
+    // Update the bucket
+    const updatedBucket = await db.bucket.update({
+      where: { storeId_bucketId: { storeId, bucketId } },
+      data: {
+        scheduledTime,
+        bucketSize: bucketQty,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: "Bucket updated successfully.",
+        bucket: updatedBucket,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("Updation error with bucket", err);
+    return NextResponse.json(
+      {
+        error:
+          "An error occurred while updating the bucket. Please check your connections and try again.",
       },
       { status: 500 }
     );

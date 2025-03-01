@@ -11,6 +11,14 @@ export interface CreateBucketRequestBody {
   };
 }
 
+export interface UpdateBucketRequestBody {
+  bucketId: number;
+  storeId: number;
+  storeManagerId: string;
+  scheduledTime: Date;
+  bucketQty: BucketSize;
+}
+
 export interface DeleteBucketRequestBody {
   bucketId: number;
   storeId: number;
