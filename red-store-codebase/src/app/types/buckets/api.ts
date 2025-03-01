@@ -1,6 +1,6 @@
 import { BucketSize, BucketStatus } from "@prisma/client";
 
-export interface CreateBucketResponseBody {
+export interface CreateBucketRequestBody {
   storeId: number;
   duration: number;
   storeManagerId: string;
@@ -9,6 +9,11 @@ export interface CreateBucketResponseBody {
     invId: number;
     bucketQty: BucketSize;
   };
+}
+
+export interface DeleteBucketRequestBody {
+  bucketId: number;
+  storeId: number;
 }
 
 export interface BucketStatusRequestBody {
