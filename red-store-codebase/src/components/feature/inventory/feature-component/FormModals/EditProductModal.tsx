@@ -153,6 +153,11 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
+            {formik.touched.invItem && formik.errors.invItem && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.invItem}
+              </div>
+            )}
           </div>
 
           <div className="col-span-1">
@@ -165,6 +170,11 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
+            {formik.touched.invItemBrand && formik.errors.invItemBrand && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.invItemBrand}
+              </div>
+            )}
           </div>
 
           {/* Dropdown Field for Product Type */}
@@ -222,6 +232,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
               id="invItemBarcode"
               name="invItemBarcode"
               type="text"
+              disabled
               value={formik.values.invItemBarcode}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -266,13 +277,20 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
             </div>
           ))}
 
-          <DialogFooter className="col-span-2 mt-5">
+          <DialogFooter className="col-span-2 mt-5 flex justify-end gap-3">
             <Button
               type="submit"
-              variant="secondary"
+              variant="primary"
               disabled={!formik.dirty || isSubmitting}
             >
               {isSubmitting ? "Saving..." : "Save Changes"}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onClose} // Close modal without saving
+            >
+              Cancel
             </Button>
           </DialogFooter>
         </form>
