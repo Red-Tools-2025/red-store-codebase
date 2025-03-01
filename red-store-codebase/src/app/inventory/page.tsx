@@ -133,16 +133,16 @@ const InventoryPage = () => {
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
 
-const [isEditProdModalOpen, setIsEditProdModalOpen] = useState(false);
-const [selectedProduct, setSelectedProduct] = useState<Inventory | null>(null);
+  const [isEditProdModalOpen, setIsEditProdModalOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedProduct, setSelectedProduct] = useState<Inventory | null>(
+    null
+  );
 
-const handleOpenEditModal = (product: Inventory) => {
+  /* const _handleOpenEditModal = (product: Inventory) => {
   setSelectedProduct(product);
   setIsEditProdModalOpen(true);
-};
-
-
-
+}; */
 
   const [showAdditionalFilters, setShowAdditionalFilters] =
     useState<boolean>(false);
