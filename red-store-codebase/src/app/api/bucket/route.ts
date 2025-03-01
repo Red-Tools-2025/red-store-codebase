@@ -6,18 +6,18 @@ export async function POST(req: Request) {
   try {
     const body: CreateBucketResponseBody = await req.json();
     const {
-      allotedDeadline,
       storeId,
       storeManagerId,
+      scheduledTime,
       duration,
       bucket_item_details: { bucketQty, invId },
     } = body;
 
     // gaurd clause for all required params
     if (
-      !allotedDeadline ||
       !storeId ||
       !storeManagerId ||
+      !scheduledTime ||
       !duration ||
       !bucketQty ||
       !invId
@@ -34,17 +34,19 @@ export async function POST(req: Request) {
     // physical partition creation
     await db.$executeRaw`SELECT check_and_create_buckets_partition(${storeId}::integer);`;
 
-    // bucket creation, allot an empty array of bucket Items
+    // bucket creation
     const bucket = await db.bucket.create({
       data: {
         isActive: false,
         soldQty: 0,
         createdAt: new Date(),
+        scheduledTime,
         storeId: storeId,
         bucketSize: bucketQty,
         invId: invId,
         storeManagerId,
-        duration,
+        // by default for now all durations are set for 1 hour
+        duration: 3600,
       },
     });
 

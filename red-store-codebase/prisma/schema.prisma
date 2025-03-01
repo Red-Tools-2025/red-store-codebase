@@ -147,6 +147,7 @@ model Bucket {
   createdAt      DateTime      @default(now()) @db.Timestamp(6)
   soldQty        Int
   isActive       Boolean
+  scheduledTime  DateTime
   storeManagerId String
   duration       Int
   store          Store         @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: NoAction, onUpdate: NoAction, map: "fk_store_bucket")
