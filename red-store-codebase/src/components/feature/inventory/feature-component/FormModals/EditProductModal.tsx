@@ -49,34 +49,25 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
 }) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [initialValues, setInitialValues] = useState<{ [key: string]: any }>(
-    {}
-  );
   const { selectedStore, handleRefresh } = useInventory();
 
+  // Fetch custom fields from store settings
   const customFields =
     (selectedStore?.customfields as unknown as StoreDefinition[]) || [];
 
-  useEffect(() => {
-    const baseInitialValues = {
-      invItem: product.invItem || "",
-      invItemBrand: product.invItemBrand || "",
-      invItemType: product.invItemType || "",
-      invItemPrice: String(product.invItemPrice) || "",
-      invItemStock: String(product.invItemStock) || "",
-      invItemBarcode: product.invItemBarcode || "",
-    };
-
-    const dynamicInitialValues = customFields.reduce(
-      (acc: { [key: string]: string }, field) => {
-        acc[field.fieldName] = product.invAdditional?.[field.fieldName] || "";
-        return acc;
-      },
-      { ...baseInitialValues }
-    );
-
-    setInitialValues(dynamicInitialValues);
-  }, [customFields, product]);
+  // Set initial values dynamically
+  const initialValues = {
+    invItem: product.invItem || "",
+    invItemBrand: product.invItemBrand || "",
+    invItemType: product.invItemType || "",
+    invItemPrice: String(product.invItemPrice) || "",
+    invItemStock: String(product.invItemStock) || "",
+    invItemBarcode: product.invItemBarcode || "",
+    ...customFields.reduce((acc, field) => {
+      acc[field.fieldName] = product.invAdditional?.[field.fieldName] || "";
+      return acc;
+    }, {} as { [key: string]: string }),
+  };
 
   const formik = useFormik({
     initialValues,
@@ -86,6 +77,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
       try {
         setIsSubmitting(true);
 
+        // Collect dynamic custom field values
         const invAdditional = customFields.reduce(
           (acc: { [key: string]: string }, field) => {
             acc[field.fieldName] = values[field.fieldName];
@@ -104,15 +96,17 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
           invAdditional,
         };
 
-      const requestBody = {
-        storeId: selectedStore?.storeId,
-        updates: updatedProduct,
-      };
+        const requestBody = {
+          storeId: selectedStore?.storeId,
+          updates: updatedProduct,
+        };
 
-      console.log("Sending request to API:", requestBody);
+        console.log("Sending request to API:", requestBody);
 
-      await axios.put(`/api/inventory/products/${product.invId}`, requestBody);
-
+        await axios.put(
+          `/api/inventory/products/${product.invId}`,
+          requestBody
+        );
 
         toast({
           title: "Success",
@@ -148,24 +142,136 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
           onSubmit={formik.handleSubmit}
           className="py-4 grid grid-cols-2 gap-4"
         >
-          {Object.keys(initialValues).map((field) => (
-            <div key={field} className="col-span-1">
-              <Label htmlFor={field}>
-                {field.replace("invItem", "").toUpperCase()}
-              </Label>
-              <Input
-                id={field}
-                name={field}
-                type="text"
-                value={formik.values[field]}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
+          {/* Standard Form Fields */}
+          <div className="col-span-1">
+            <Label htmlFor="invItem">Product Name</Label>
+            <Input
+              id="invItem"
+              name="invItem"
+              type="text"
+              value={formik.values.invItem}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </div>
+
+          <div className="col-span-1">
+            <Label htmlFor="invItemBrand">Brand</Label>
+            <Input
+              id="invItemBrand"
+              name="invItemBrand"
+              type="text"
+              value={formik.values.invItemBrand}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </div>
+
+          {/* Dropdown Field for Product Type */}
+          <div className="col-span-1">
+            <Label htmlFor="invItemType">Package Type</Label>
+            <Select
+              name="invItemType"
+              onValueChange={(value) =>
+                formik.setFieldValue("invItemType", value)
+              }
+              value={formik.values.invItemType}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select package type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {productTypes.map((type, index) => (
+                    <SelectItem key={index} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="col-span-1">
+            <Label htmlFor="invItemPrice">Price</Label>
+            <Input
+              id="invItemPrice"
+              name="invItemPrice"
+              type="number"
+              value={formik.values.invItemPrice}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </div>
+
+          <div className="col-span-1">
+            <Label htmlFor="invItemStock">Stock</Label>
+            <Input
+              id="invItemStock"
+              name="invItemStock"
+              type="number"
+              value={formik.values.invItemStock}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </div>
+
+          <div className="col-span-1">
+            <Label htmlFor="invItemBarcode">Barcode</Label>
+            <Input
+              id="invItemBarcode"
+              name="invItemBarcode"
+              type="text"
+              value={formik.values.invItemBarcode}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </div>
+
+          {/* Custom Fields Dynamically Rendered */}
+          {customFields.map((field, index) => (
+            <div key={index} className="col-span-1">
+              <Label htmlFor={field.fieldName}>{field.label}</Label>
+              {field.type === "select" ? (
+                <Select
+                  name={field.fieldName}
+                  onValueChange={(value) =>
+                    formik.setFieldValue(field.fieldName, value)
+                  }
+                  value={formik.values[field.fieldName]}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={`Select ${field.label}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {field.allowedValues?.map((type, i) => (
+                        <SelectItem key={i} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  id={field.fieldName}
+                  name={field.fieldName}
+                  type="text"
+                  value={formik.values[field.fieldName]}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              )}
             </div>
           ))}
 
           <DialogFooter className="col-span-2 mt-5">
-            <Button type="submit" variant="secondary" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={!formik.dirty || isSubmitting}
+            >
               {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
