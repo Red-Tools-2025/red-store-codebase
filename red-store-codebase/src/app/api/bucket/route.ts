@@ -1,5 +1,6 @@
 import { CreateBucketResponseBody } from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
+import { BucketStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -37,8 +38,7 @@ export async function POST(req: Request) {
     // bucket creation
     const bucket = await db.bucket.create({
       data: {
-        isActive: false,
-        isCompleted: false,
+        status: BucketStatus.INACTIVE,
         soldQty: 0,
         createdAt: new Date(),
         scheduledTime,

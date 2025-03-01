@@ -146,8 +146,7 @@ model Bucket {
   bucketSize     BucketSize
   createdAt      DateTime      @default(now()) @db.Timestamp(6)
   soldQty        Int
-  isActive       Boolean
-  isCompleted    Boolean
+  status         BucketStatus
   scheduledTime  DateTime
   storeManagerId String
   duration       Int
@@ -161,6 +160,12 @@ enum BucketSize {
   FIFTY
   HUNDRED
   ONE_FIFTY
+}
+
+enum BucketStatus {
+  ACTIVE
+  INACTIVE
+  COMPLETED
 }
 
 enum RoleType {

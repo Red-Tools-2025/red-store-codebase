@@ -1,4 +1,4 @@
-import { BucketSize } from "@prisma/client";
+import { BucketSize, BucketStatus } from "@prisma/client";
 
 export interface CreateBucketResponseBody {
   storeId: number;
@@ -14,7 +14,8 @@ export interface CreateBucketResponseBody {
 export interface BucketStatusRequestBody {
   bucketId: number;
   storeId: number;
-  status: boolean;
+  status: BucketStatus;
+  soldQty: number;
 }
 
 export interface FetchBucketListsRequestBody {
