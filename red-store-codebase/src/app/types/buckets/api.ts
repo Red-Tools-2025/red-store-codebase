@@ -19,8 +19,10 @@ export interface UpdateBucketRequestBody {
 }
 
 export interface DeleteBucketRequestBody {
-  bucketId: number;
-  storeId: number;
+  buckets: {
+    bucketId: number;
+    storeId: number;
+  }[];
 }
 
 export interface BucketStatusRequestBody {

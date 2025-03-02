@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     }
 
     // Validate Bucket Size entry
-    if (!["FIFTY", " HUNDRED"].includes(bucketQty)) {
+    if (!["FIFTY", "HUNDRED"].includes(bucketQty)) {
       return NextResponse.json(
         {
           error: "Bucket Quantity Type is Invalid or not allowed",
@@ -133,10 +133,10 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const body: DeleteBucketRequestBody = await req.json();
-    const { bucketId, storeId } = body;
+    const { buckets } = body;
 
     // Guard clause to verify all params
-    if (!bucketId || !storeId) {
+    if (!buckets || buckets.length === 0) {
       return NextResponse.json(
         {
           error:
@@ -146,43 +146,70 @@ export async function DELETE(req: Request) {
       );
     }
 
-    // Verify and delete bucket only if it's inactive or completed
+    if (buckets.length === 1) {
+      // Single bucket deletion
+      const { storeId, bucketId } = buckets[0];
 
-    const bucket = await db.bucket.findUnique({
-      where: { storeId_bucketId: { storeId, bucketId } },
-    });
+      const bucket = await db.bucket.findUnique({
+        where: { storeId_bucketId: { storeId, bucketId } },
+      });
 
-    if (!bucket) {
-      return NextResponse.json(
-        {
-          error: "Bucket already deleted, or not found",
+      if (!bucket) {
+        return NextResponse.json(
+          { error: "Bucket already deleted, or not found" },
+          { status: 404 }
+        );
+      }
+
+      if (bucket.status === "ACTIVE") {
+        return NextResponse.json(
+          { error: "Bucket is already running, cannot delete" },
+          { status: 400 }
+        );
+      }
+
+      const deleted_bucket = await db.bucket.delete({
+        where: { storeId_bucketId: { storeId, bucketId } },
+      });
+
+      return NextResponse.json({
+        message: `Removed Bucket: ${deleted_bucket.bucketId}`,
+      });
+    } else {
+      // Bulk bucket deletion
+      const inactiveBuckets = await db.bucket.findMany({
+        where: {
+          OR: buckets.map(({ storeId, bucketId }) => ({ storeId, bucketId })),
+          status: { not: "ACTIVE" },
         },
-        { status: 404 }
-      );
-    }
+      });
 
-    if (bucket.status === BucketStatus.ACTIVE) {
-      return NextResponse.json(
-        {
-          error: "Bucket is already running cannot delete",
+      if (inactiveBuckets.length === 0) {
+        return NextResponse.json(
+          { error: "No inactive buckets found to delete" },
+          { status: 400 }
+        );
+      }
+
+      const deletedBuckets = await db.bucket.deleteMany({
+        where: {
+          OR: inactiveBuckets.map(({ storeId, bucketId }) => ({
+            storeId,
+            bucketId,
+          })),
         },
-        { status: 400 }
-      );
+      });
+
+      return NextResponse.json({
+        message: `Removed ${deletedBuckets.count} buckets`,
+      });
     }
-
-    const deleted_bucket = await db.bucket.delete({
-      where: { storeId_bucketId: { storeId, bucketId } },
-    });
-
-    return NextResponse.json({
-      message: `Removed Bucket : ${deleted_bucket.bucketId}`,
-    });
   } catch (err) {
     console.error("Deletion error with bucket", err);
     return NextResponse.json(
       {
         error:
-          "An error occurred while deleting the bucket, Please check your connections and try again",
+          "An error occurred while deleting the bucket(s), Please check your connections and try again",
       },
       { status: 500 }
     );
