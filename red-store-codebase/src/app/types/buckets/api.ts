@@ -33,6 +33,12 @@ export interface BucketStatusRequestBody {
   soldQty: number;
 }
 
+export interface BucketCompletionRequestBody {
+  bucketId: number;
+  storeId: number;
+  remainingQty: number;
+}
+
 export type TimeSeries =
   Database["public"]["Tables"]["inventory_timeseries"]["Row"];
 
