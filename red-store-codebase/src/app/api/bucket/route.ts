@@ -4,7 +4,8 @@ import {
   UpdateBucketRequestBody,
 } from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
-import { BucketStatus } from "@prisma/client";
+import { BucketSize, BucketStatus } from "@prisma/client";
+import { error } from "console";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -14,19 +15,11 @@ export async function POST(req: Request) {
       storeId,
       storeManagerId,
       scheduledTime,
-      duration,
       bucket_item_details: { bucketQty, invId },
     } = body;
 
     // gaurd clause for all required params
-    if (
-      !storeId ||
-      !storeManagerId ||
-      !scheduledTime ||
-      !duration ||
-      !bucketQty ||
-      !invId
-    ) {
+    if (!storeId || !storeManagerId || !scheduledTime || !bucketQty || !invId) {
       return NextResponse.json(
         {
           error:
@@ -36,8 +29,70 @@ export async function POST(req: Request) {
       );
     }
 
+    // Validate Bucket Size entry
+    if (!["FIFTY", " HUNDRED"].includes(bucketQty)) {
+      return NextResponse.json(
+        {
+          error: "Bucket Quantity Type is Invalid or not allowed",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validation against quantity of item during creation
+    const inventory_item = await db.inventory.findUnique({
+      where: {
+        storeId_invId: { storeId, invId },
+      },
+    });
+
+    if (!inventory_item) {
+      return NextResponse.json(
+        {
+          error: "Could not find inventory Item, Refresh or check inventory",
+        },
+        { status: 400 }
+      );
+    }
+
+    const bucket_amt = bucketQty === "FIFTY" ? 50 : 100;
+
+    if (inventory_item?.invItemStock < bucket_amt) {
+      return NextResponse.json(
+        {
+          error: "Not enough stock to assign to bucket",
+        },
+        { status: 400 }
+      );
+    }
     // physical partition creation
     await db.$executeRaw`SELECT check_and_create_buckets_partition(${storeId}::integer);`;
+
+    // Validation against number of buckets for the same product
+    const item_bucket_count = await db.bucket.count({
+      where: {
+        storeId,
+        invId,
+        status: {
+          not: BucketStatus.COMPLETED,
+        },
+      },
+    });
+
+    console.log(
+      `Bucket count for item ${invId} at store ${storeId}: ${item_bucket_count}`
+    );
+
+    if (item_bucket_count === 5) {
+      return NextResponse.json(
+        {
+          error: "Item Bucket limit reached, max (5) allowed",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
 
     // bucket creation
     const bucket = await db.bucket.create({

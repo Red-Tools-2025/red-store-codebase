@@ -2,7 +2,6 @@ import { BucketSize, BucketStatus } from "@prisma/client";
 
 export interface CreateBucketRequestBody {
   storeId: number;
-  duration: number;
   storeManagerId: string;
   scheduledTime: Date;
   bucket_item_details: {
