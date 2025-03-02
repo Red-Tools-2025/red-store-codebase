@@ -1,5 +1,7 @@
-import { BucketStatusRequestBody } from "@/app/types/buckets/api";
+import { BucketStatusRequestBody, TimeSeries } from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
+import supabase from "@/lib/supabase/client";
+import { timeStamp } from "console";
 import { NextResponse } from "next/server";
 
 // Route for handling changes in the bucket state (Active or Inactive)
@@ -74,8 +76,7 @@ export async function POST(req: Request) {
       });
     } else if (status === "INACTIVE") {
       // When pausing the inventory, it's best to save it to mark sales for that point and record them later
-      message = `Bucket paused, Items sold so far recorded`;
-      await db.inventory.update({
+      const inventory_item = await db.inventory.update({
         where: {
           storeId_invId: { storeId, invId: statusChange?.invId },
         },
@@ -83,6 +84,35 @@ export async function POST(req: Request) {
           invItemStock: { increment: bucket_amt - soldQty },
         },
       });
+
+      // It's also important you log the time as a measure of how many products where sold at that point of time
+      const timeseries_entry: TimeSeries = {
+        closing_stock: inventory_item.invItemStock,
+        sale_amount: soldQty * inventory_item.invItemPrice,
+        mrp_per_bottle: inventory_item.invItemPrice,
+        opening_stock: inventory_item.invItemStock + soldQty,
+        product_id: inventory_item.invId,
+        product_name: inventory_item.invItem,
+        received_stock: 0,
+        sales: soldQty,
+        store_id: storeId,
+        time: new Date(Date.now()).toISOString(),
+      };
+
+      const { error: TimeseriesInsertionError } = await supabase
+        .from("inventory_timeseries")
+        .insert(timeseries_entry);
+      if (TimeseriesInsertionError)
+        return NextResponse.json(
+          { error: TimeseriesInsertionError.message },
+          {
+            status: 400,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
+        );
+      message = `Bucket paused, Items sold so far recorded`;
     }
 
     return NextResponse.json(

@@ -1,3 +1,4 @@
+import { Database } from "@/lib/supabase/database.types";
 import { BucketSize, BucketStatus } from "@prisma/client";
 
 export interface CreateBucketRequestBody {
@@ -31,6 +32,9 @@ export interface BucketStatusRequestBody {
   status: BucketStatus;
   soldQty: number;
 }
+
+export type TimeSeries =
+  Database["public"]["Tables"]["inventory_timeseries"]["Row"];
 
 export interface FetchBucketListsRequestBody {
   bucketId: number;

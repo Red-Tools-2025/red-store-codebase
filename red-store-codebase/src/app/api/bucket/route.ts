@@ -4,8 +4,7 @@ import {
   UpdateBucketRequestBody,
 } from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
-import { BucketSize, BucketStatus } from "@prisma/client";
-import { error } from "console";
+import { BucketStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
