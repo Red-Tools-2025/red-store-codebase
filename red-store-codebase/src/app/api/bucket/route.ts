@@ -275,3 +275,58 @@ export async function PUT(req: Request) {
     );
   }
 }
+
+// Route to fetch buckets
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const store_id = searchParams.get("storeId");
+
+    if (!store_id) {
+      return NextResponse.json(
+        { error: "storeId and storeManagerId are required" },
+        { status: 400 }
+      );
+    }
+
+    // Convert storeId to a number
+    const storeId = parseInt(store_id, 10);
+
+    const buckets = await db.bucket.findMany({
+      where: {
+        storeId: storeId,
+      },
+      include: {
+        inventory: true,
+      },
+    });
+
+    if (!buckets) {
+      NextResponse.json(
+        {
+          error: "Buckets for store seem not to exist",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: "Successfully fetched bucket data",
+        buckets,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("Updation error with bucket", err);
+    return NextResponse.json(
+      {
+        error:
+          "An error occurred while fetching buckets. Please check your connections and try again.",
+      },
+      { status: 500 }
+    );
+  }
+}
