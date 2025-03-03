@@ -1,14 +1,13 @@
 import { BucketStatusRequestBody, TimeSeries } from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
 import supabase from "@/lib/supabase/client";
-import { timeStamp } from "console";
 import { NextResponse } from "next/server";
 
 // Route for handling changes in the bucket state (Active or Inactive)
 export async function POST(req: Request) {
   try {
     const body: BucketStatusRequestBody = await req.json();
-    const { bucketId, storeId, status, soldQty } = body;
+    const { bucketId, storeId, status, soldQty = 0 } = body;
 
     // gaurd clause for all required params
     if (!bucketId || !storeId || !status) {
@@ -21,8 +20,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate status
     if (!["ACTIVE", "INACTIVE"].includes(status)) {
+      // Validate status
       return NextResponse.json(
         {
           error: "Invalid status provided",
@@ -36,6 +35,25 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error: "Invalid soldQty provided",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Gaurd clause to ensure no repeated activations, or inactivations are allowed (potential API misuse)
+    const existingBucket = await db.bucket.findUnique({
+      where: { storeId_bucketId: { storeId, bucketId } },
+    });
+
+    if (!existingBucket) {
+      return NextResponse.json({ error: "Bucket not found" }, { status: 404 });
+    }
+
+    // Guard clause to prevent updating active status to "ACTIVE" if it's already active
+    if (existingBucket.status === status) {
+      return NextResponse.json(
+        {
+          error: "Bucket is already active, no further action needed",
         },
         { status: 400 }
       );
