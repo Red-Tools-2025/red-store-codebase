@@ -53,7 +53,17 @@ export async function POST(req: Request) {
     if (existingBucket.status === status) {
       return NextResponse.json(
         {
-          error: "Bucket is already active, no further action needed",
+          error: `Bucket is already ${status}, no further action needed`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Guard clause to prevent completed buckets from status change
+    if (existingBucket.status === "COMPLETED") {
+      return NextResponse.json(
+        {
+          error: `Bucket already marked as completed`,
         },
         { status: 400 }
       );
