@@ -98,10 +98,13 @@ export async function POST(req: Request) {
       return acc + (item_bucket.bucketSize === "FIFTY" ? 50 : 100);
     }, 0);
 
-    if (net_bucket_allocation > inventory_item.invItemStock) {
+    const remaining_available_to_allocate =
+      inventory_item.invItemStock - net_bucket_allocation;
+
+    if (net_bucket_allocation > remaining_available_to_allocate) {
       return NextResponse.json({
         error:
-          "Can't further create any more buckets, as allocation exceeds stock amount",
+          "Can't further create any more buckets, as allocation exceeds remaining allocation amount",
       });
     }
     // bucket creation
