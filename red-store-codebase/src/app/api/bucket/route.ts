@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     await db.$executeRaw`SELECT check_and_create_buckets_partition(${storeId}::integer);`;
 
     // Validation against number of buckets for the same product
-    const item_bucket_count = await db.bucket.count({
+    const item_buckets = await db.bucket.findMany({
       where: {
         storeId,
         invId,
@@ -79,10 +79,10 @@ export async function POST(req: Request) {
     });
 
     console.log(
-      `Bucket count for item ${invId} at store ${storeId}: ${item_bucket_count}`
+      `Bucket count for item ${invId} at store ${storeId}: ${item_buckets.length}`
     );
 
-    if (item_bucket_count === 5) {
+    if (item_buckets.length === 5) {
       return NextResponse.json(
         {
           error: "Item Bucket limit reached, max (5) allowed",
@@ -93,6 +93,17 @@ export async function POST(req: Request) {
       );
     }
 
+    // Guard clause for back calculation, against validity of bucket creation below limit
+    const net_bucket_allocation = item_buckets.reduce((acc, item_bucket) => {
+      return acc + (item_bucket.bucketSize === "FIFTY" ? 50 : 100);
+    }, 0);
+
+    if (net_bucket_allocation > inventory_item.invItemStock) {
+      return NextResponse.json({
+        error:
+          "Can't further create any more buckets, as allocation exceeds stock amount",
+      });
+    }
     // bucket creation
     const bucket = await db.bucket.create({
       data: {
@@ -302,7 +313,7 @@ export async function GET(req: Request) {
     });
 
     if (!buckets) {
-      NextResponse.json(
+      return NextResponse.json(
         {
           error: "Buckets for store seem not to exist",
         },
