@@ -9,7 +9,7 @@ const POSPage = () => {
   return (
     <div className="flex flex-col h-screen">
       {/* Header Section */}
-      <div className="p-3">
+      <div className="py-3">
         <ProductDisplayControl />
       </div>
 
@@ -17,7 +17,7 @@ const POSPage = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Scrollable Product Grid */}
         <div className="flex-1 overflow-y-auto">
-          <div className="p-2">
+          <div className="py-2 pr-2">
             <ItemSelectionDisplay
               inventoryItems={inventoryItems}
               isLoading={isLoading}

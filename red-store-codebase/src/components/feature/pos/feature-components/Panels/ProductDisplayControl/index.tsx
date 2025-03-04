@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { IoIosStar } from "react-icons/io";
+import { BsFillBucketFill } from "react-icons/bs";
 
 const ProductDisplayControl = () => {
   const { syncToServer } = useBrowserCacheStorage();
@@ -11,6 +12,8 @@ const ProductDisplayControl = () => {
     selectedStore,
     originalProducts,
     favoriteProducts,
+    bucketMode,
+    setBucketMode,
     setClientSideItems,
   } = usePos();
   const [toggleFavorites, setToggleFavorites] = useState<boolean>(false);
@@ -19,6 +22,8 @@ const ProductDisplayControl = () => {
     setToggleFavorites(!toggleFavorites);
     setClientSideItems(!toggleFavorites ? favoriteProducts : originalProducts);
   };
+
+  const handleToggleBucketMode = () => setBucketMode(!bucketMode);
 
   return (
     <>
@@ -46,6 +51,19 @@ const ProductDisplayControl = () => {
             <div className="flex items-center">
               <IoIosStar className="mr-2 h-3 w-3" />
               <p>Favorites</p>
+            </div>
+          </Button>
+          <Button
+            onClick={handleToggleBucketMode}
+            disabled={!favoriteProducts || favoriteProducts.length === 0}
+            variant={"secondary"}
+            className={
+              bucketMode ? "bg-blue-100 border-blue-700 text-blue-700" : ""
+            }
+          >
+            <div className="flex items-center">
+              <BsFillBucketFill className="mr-2 h-3 w-3" />
+              <p>Buckets</p>
             </div>
           </Button>
         </div>

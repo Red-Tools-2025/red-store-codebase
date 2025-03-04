@@ -15,8 +15,10 @@ interface PosContextType {
   cartItems: Cart[];
   isLoading: boolean;
   selectedStore: Store | null;
+  bucketMode: boolean;
   handleResync: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
+  setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
 }
 
@@ -28,10 +30,12 @@ export const PosProvider = ({
   cartItems,
   isLoading,
   selectedStore,
+  bucketMode,
   favoriteProducts,
   originalProducts,
   handleResync,
   setCartItems,
+  setBucketMode,
   setClientSideItems,
 }: {
   children: ReactNode;
@@ -40,9 +44,11 @@ export const PosProvider = ({
   originalProducts: Inventory[] | null;
   cartItems: Cart[];
   isLoading: boolean;
+  bucketMode: boolean;
   selectedStore: Store | null;
   handleResync: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
+  setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
 }) => {
   return (
@@ -54,9 +60,11 @@ export const PosProvider = ({
         selectedStore,
         favoriteProducts,
         originalProducts,
+        bucketMode,
         handleResync,
         setCartItems,
         setClientSideItems,
+        setBucketMode,
       }}
     >
       {children}

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
-import { Inventory, Store } from "@prisma/client";
+import { Bucket, Inventory, Store } from "@prisma/client";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import { PosProvider } from "../contexts/pos/PosContext";
 import { Cart } from "../types/pos/cart";
@@ -21,6 +21,9 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const [clientSideItems, setClientSideItems] = useState<Inventory[] | null>(
     []
   );
+
+  const [storeBuckets, setStoreBuckets] = useState<Bucket[]>([]);
+  const [bucketMode, setBucketMode] = useState<boolean>(false);
 
   // Fetching store data and inventory data
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
@@ -65,9 +68,11 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       cartItems={cartItems}
       isLoading={isLoadingProducts}
       inventoryItems={clientSideItems}
+      bucketMode={bucketMode}
       setCartItems={setCartItems}
       handleResync={handleResync}
       setClientSideItems={setClientSideItems}
+      setBucketMode={setBucketMode}
     >
       <div className="p-5 font-inter">
         {isLoadingStores ? (
