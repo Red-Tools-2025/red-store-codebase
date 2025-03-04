@@ -58,8 +58,8 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   } = useProducts(
     selectedStore ? String(selectedStore.storeId) : "",
     sessionUser?.id ?? "",
-    currentPage,
-    pageSize
+   /*  currentPage,
+    pageSize */
   );
 
   return (

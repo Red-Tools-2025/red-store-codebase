@@ -111,11 +111,8 @@ const InventoryPage = () => {
     inventoryItems,
     isLoading: isLoadingProducts,
     selectedStore,
-    setCurrentPage,
-    setPageSize,
-    currentPage,
-    pageSize,
-    total_count,
+    
+    
     sessionData,
     handleRefresh,
   } = useInventory();
@@ -287,13 +284,7 @@ const InventoryPage = () => {
       </div>
 
       {/* Inventory Pagination Controls */}
-      <InventoryPaginationPanel
-        total_count={total_count}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        setCurrentPage={setCurrentPage}
-        setPageSize={setPageSize}
-      />
+      <InventoryPaginationPanel table={table}  />
     </div>
   );
 };
