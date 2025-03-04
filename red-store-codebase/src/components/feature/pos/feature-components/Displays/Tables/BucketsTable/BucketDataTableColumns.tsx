@@ -1,8 +1,11 @@
 import { Bucket, Inventory } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { LiaEdit } from "react-icons/lia";
+import { MdDeleteOutline } from "react-icons/md";
 import { format } from "date-fns";
 
+/* Column defination for Buckets table */
 export const BucketDataTableColumns: ColumnDef<
   Bucket & { inventory: Inventory | null }
 >[] = [
@@ -14,15 +17,17 @@ export const BucketDataTableColumns: ColumnDef<
   {
     accessorKey: "product",
     header: "Product",
+    id: "product",
     cell: ({ row }) => {
       const invItem = row.original.inventory;
       return invItem?.invItem || "No Product Assigned";
     },
+    filterFn: "includesString",
   },
   {
     accessorKey: "bucketSize",
     header: "Bucket Size",
-    cell: ({ row }) => `${row.original.bucketSize} kg`,
+    cell: ({ row }) => `${row.original.bucketSize}`,
   },
   {
     accessorKey: "status",
@@ -65,8 +70,8 @@ export const BucketDataTableColumns: ColumnDef<
     cell: ({ row }) => {
       return (
         <div className="flex flex-row gap-2">
-          <p>Edit</p>
-          <p>Delete</p>
+          <LiaEdit className="h-5 w-5 hover:text-blue-500 cursor-pointer transition-all" />
+          <MdDeleteOutline className="h-5 w-5 hover:text-blue-500 cursor-pointer transition-all" />
         </div>
       );
     },

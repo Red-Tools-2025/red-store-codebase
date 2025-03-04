@@ -26,6 +26,7 @@ const ProductDisplayControl = () => {
 
   const handleToggleBucketMode = () => setBucketMode(!bucketMode);
 
+  /* Dynamic Display control render based on bucket mode*/
   return (
     <>
       {selectedStore && selectedStore.storeId ? (
