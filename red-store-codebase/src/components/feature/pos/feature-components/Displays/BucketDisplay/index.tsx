@@ -1,7 +1,7 @@
 import { usePos } from "@/app/contexts/pos/PosContext";
 import useBucketsFromServer from "@/app/hooks/pos/ServerHooks/useBucketsFromServer";
 import { useEffect } from "react";
-import BucketRow from "./BucketRow";
+import BucketTable from "../Tables/BucketsTable";
 
 const BucketDisplay = () => {
   const { selectedStore } = usePos();
@@ -14,12 +14,7 @@ const BucketDisplay = () => {
 
   return (
     <div className="flex flex-col gap-1">
-      <p>Hi bucket display here</p>
-      <div className="flex flex-col gap-1">
-        {buckets.map((bucket, i) => {
-          return <BucketRow bucket={bucket} key={i} />;
-        })}
-      </div>
+      <BucketTable buckets={buckets} />
     </div>
   );
 };
