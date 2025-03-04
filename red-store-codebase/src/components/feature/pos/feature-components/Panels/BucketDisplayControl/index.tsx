@@ -2,6 +2,7 @@ import { BucketSize, BucketStatus } from "@prisma/client";
 import { ColumnFiltersState } from "@tanstack/react-table";
 import React, { Dispatch, SetStateAction } from "react";
 import SelectFilterType from "./SelectFilterType";
+import { DateTimePicker } from "./DateTimePicker";
 
 interface BucketDisplayControlProps {
   setColumnFilters: Dispatch<SetStateAction<ColumnFiltersState>>;
@@ -10,6 +11,12 @@ interface BucketDisplayControlProps {
 const BucketDisplayControl: React.FC<BucketDisplayControlProps> = ({
   setColumnFilters,
 }) => {
+  const handleDateTimeFilter = ({ from, to }: { from: Date; to: Date }) => {
+    setColumnFilters((prev) => [
+      ...prev.filter((f) => f.id !== "scheduledTime"),
+      { id: "scheduledTime", value: { from, to } },
+    ]);
+  };
   return (
     <div className="flex flex-row gap-2">
       <SelectFilterType
