@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { flexRender } from "@tanstack/react-table";
 import useBucketTableHook from "@/app/hooks/pos/StaticHooks/useBucketsTableHook";
+import BucketSearch from "./BucketSearch";
 
 /* Table props to resemble fetched UI on response */
 interface BucketTableProps {
@@ -18,14 +19,19 @@ interface BucketTableProps {
 }
 
 const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
-  const { table } = useBucketTableHook({
+  const { table, setColumnFilters } = useBucketTableHook({
     columns: BucketDataTableColumns,
     data: buckets,
   });
 
+  const setSearchFilter = (value: string) => {
+    setColumnFilters([{ id: "product", value }]);
+  };
+
   /* Dynamic Table render, via created tanstack table */
   return (
     <div className="flex flex-col gap-2">
+      <BucketSearch setSearchFilter={setSearchFilter} />
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

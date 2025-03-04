@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { LiaEdit } from "react-icons/lia";
 import { MdDeleteOutline } from "react-icons/md";
+import { ImSwitch } from "react-icons/im";
 import { format } from "date-fns";
 
 /* Column defination for Buckets table */
@@ -15,7 +16,7 @@ export const BucketDataTableColumns: ColumnDef<
     cell: ({ row }) => `B-#${row.getValue("bucketId")}`,
   },
   {
-    accessorKey: "product",
+    accessorFn: (row) => row.inventory?.invItem || "No Product Assigned",
     header: "Product",
     id: "product",
     cell: ({ row }) => {
@@ -69,9 +70,10 @@ export const BucketDataTableColumns: ColumnDef<
     header: "Actions",
     cell: ({ row }) => {
       return (
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 items-center">
+          <ImSwitch className="h-4 w-4 hover:text-blue-500 cursor-pointer transition-all" />
           <LiaEdit className="h-5 w-5 hover:text-blue-500 cursor-pointer transition-all" />
-          <MdDeleteOutline className="h-5 w-5 hover:text-blue-500 cursor-pointer transition-all" />
+          <MdDeleteOutline className="h-5 w-5 hover:text-red-500 cursor-pointer transition-all" />
         </div>
       );
     },
