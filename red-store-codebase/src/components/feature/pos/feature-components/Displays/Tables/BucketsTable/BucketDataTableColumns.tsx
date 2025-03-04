@@ -26,12 +26,31 @@ export const BucketDataTableColumns: ColumnDef<
     filterFn: "includesString",
   },
   {
-    accessorKey: "bucketSize",
+    accessorFn: (row) => row.bucketSize,
     header: "Bucket Size",
-    cell: ({ row }) => `${row.original.bucketSize}`,
+    id: "bucketSize",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-row gap-1">
+          <p
+            className={`text-xs py-1 px-3 rounded-md ${
+              row.original.bucketSize === "FIFTY"
+                ? "border border-green-600 bg-green-100 text-green-600"
+                : "border border-orange-600 bg-orange-100 bg-orange-200 text-orange-600"
+            }`}
+          >
+            {row.original.bucketSize === "FIFTY"
+              ? "Mini Bucket"
+              : "Large Bucket"}
+          </p>
+        </div>
+      );
+    },
+    filterFn: "equalsString",
   },
   {
     accessorKey: "status",
+    id: "status",
     header: "Bucket Status",
     cell: ({ row }) => {
       const status = row.original.status;
@@ -49,6 +68,7 @@ export const BucketDataTableColumns: ColumnDef<
         </Badge>
       );
     },
+    filterFn: "equalsString",
   },
   {
     accessorKey: "scheduledTime",
