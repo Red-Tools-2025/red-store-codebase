@@ -1,16 +1,18 @@
-import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { IoIosStar } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 import { BsFillBucketFill } from "react-icons/bs";
-import { Inventory, Store } from "@prisma/client";
+import { Bucket, Inventory, Store } from "@prisma/client";
+
+import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 
 interface ProductDisplayControlProps {
   selectedStore: Store | null;
   favoriteProducts: Inventory[] | null;
   originalProducts: Inventory[] | null;
+  buckets: (Bucket & { inventory: Inventory | null })[];
   bucketMode: boolean;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
@@ -21,6 +23,7 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   favoriteProducts,
   originalProducts,
   selectedStore,
+  buckets,
   setBucketMode,
   setClientSideItems,
 }) => {
@@ -70,7 +73,7 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
             <>
               <Button
                 onClick={handleToggleFavorites}
-                disabled={!favoriteProducts || favoriteProducts.length === 0}
+                disabled={!buckets || buckets.length === 0}
                 variant={"secondary"}
                 className={
                   toggleFavorites
@@ -87,7 +90,7 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
           )}
           <Button
             onClick={handleToggleBucketMode}
-            disabled={!favoriteProducts || favoriteProducts.length === 0}
+            disabled={!buckets || buckets.length === 0}
             variant={"secondary"}
             className={
               bucketMode ? "bg-blue-100 border-blue-700 text-blue-700" : ""

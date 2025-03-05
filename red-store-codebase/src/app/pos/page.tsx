@@ -29,6 +29,7 @@ const POSPage = () => {
           bucketMode={bucketMode}
           favoriteProducts={favoriteProducts}
           originalProducts={originalProducts}
+          buckets={buckets}
           setBucketMode={setBucketMode}
           setClientSideItems={setClientSideItems}
         />
