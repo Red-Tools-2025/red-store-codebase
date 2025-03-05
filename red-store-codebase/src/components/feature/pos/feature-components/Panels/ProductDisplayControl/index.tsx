@@ -7,6 +7,7 @@ import { BsFillBucketFill } from "react-icons/bs";
 import { Bucket, Inventory, Store } from "@prisma/client";
 
 import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
+import CreateBucketModal from "../../Modals/CreateBucketModal";
 
 interface ProductDisplayControlProps {
   selectedStore: Store | null;
@@ -29,6 +30,8 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
 }) => {
   const { syncToServer } = useBrowserCacheStorage();
   const [toggleFavorites, setToggleFavorites] = useState<boolean>(false);
+  const [isCreateBucketModalOpen, setIsCreateBucketModalOpen] =
+    useState<boolean>(false);
 
   const handleToggleFavorites = () => {
     setToggleFavorites(!toggleFavorites);
@@ -40,6 +43,11 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   /* Dynamic Display control render based on bucket mode*/
   return (
     <>
+      {/* All action modals here */}
+      <CreateBucketModal
+        isOpen={isCreateBucketModalOpen}
+        onClose={() => setIsCreateBucketModalOpen(false)}
+      />
       {selectedStore && selectedStore.storeId ? (
         <div className="flex gap-2">
           {!bucketMode ? (
@@ -72,14 +80,9 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
           ) : (
             <>
               <Button
-                onClick={handleToggleFavorites}
+                onClick={() => setIsCreateBucketModalOpen(true)}
                 disabled={!buckets || buckets.length === 0}
                 variant={"secondary"}
-                className={
-                  toggleFavorites
-                    ? "bg-yellow-100 border-yellow-700 text-yellow-700"
-                    : ""
-                }
               >
                 <div className="flex items-center">
                   <IoIosAddCircle className="mr-1 h-4 w-4" />
