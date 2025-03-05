@@ -89,10 +89,24 @@ export const BucketDataTableColumns: ColumnDef<
     accessorKey: "row_actions",
     header: "Actions",
     cell: ({ row }) => {
+      const isCompleted = row.original.status === "COMPLETED";
+
       return (
         <div className="flex flex-row gap-2 items-center">
-          <ImSwitch className="h-4 w-4 hover:text-blue-500 cursor-pointer transition-all" />
-          <LiaEdit className="h-5 w-5 hover:text-blue-500 cursor-pointer transition-all" />
+          <ImSwitch
+            className={`h-4 w-4 transition-all ${
+              isCompleted
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:text-blue-500 cursor-pointer "
+            }`}
+          />
+          <LiaEdit
+            className={`h-5 w-5 transition-all ${
+              isCompleted
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:text-blue-500 cursor-pointer"
+            }`}
+          />
           <MdDeleteOutline className="h-5 w-5 hover:text-red-500 cursor-pointer transition-all" />
         </div>
       );

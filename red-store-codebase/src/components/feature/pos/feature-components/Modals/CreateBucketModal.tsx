@@ -6,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { format } from "date-fns";
 import {
   Command,
   CommandInput,
@@ -15,6 +14,8 @@ import {
   CommandGroup,
   CommandEmpty,
 } from "@/components/ui/command";
+import { format } from "date-fns";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 import { usePos } from "@/app/contexts/pos/PosContext";
 import { useState } from "react";
 import { BucketSize, Inventory } from "@prisma/client";
@@ -37,19 +38,30 @@ const TimePicker = ({
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentDate = new Date();
     const formattedDate = format(currentDate, "yyyy-MM-dd");
-    // Append seconds, milliseconds and timezone to form a complete timestamp string
-    const formattedTime = e.target.value + ":00.000+00";
-    const newTime = `${formattedDate} ${formattedTime}`;
-    onTimeSelect(newTime);
+
+    // Get selected time
+    const selectedTime = e.target.value;
+    const dateTimeString = `${formattedDate}T${selectedTime}:00`;
+
+    // Convert to UTC first
+    const utcTime = fromZonedTime(
+      dateTimeString,
+      Intl.DateTimeFormat().resolvedOptions().timeZone
+    );
+
+    // Convert UTC to user's local time dynamically
+    const localTime = toZonedTime(
+      utcTime,
+      Intl.DateTimeFormat().resolvedOptions().timeZone
+    );
+
+    // Format properly
+    const finalFormattedTime = format(localTime, "yyyy-MM-dd HH:mm:ssXXX");
+
+    onTimeSelect(finalFormattedTime);
   };
 
-  return (
-    <input
-      type="time"
-      onChange={handleTimeChange}
-      className="w-full border border-gray-500 px-3 py-1 rounded-lg"
-    />
-  );
+  return <input type="time" onChange={handleTimeChange} />;
 };
 
 const CreateBucketModal: React.FC<CreateBucketModalProps> = ({

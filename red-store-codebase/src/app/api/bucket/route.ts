@@ -102,10 +102,13 @@ export async function POST(req: Request) {
       inventory_item.invItemStock - net_bucket_allocation;
 
     if (net_bucket_allocation > remaining_available_to_allocate) {
-      return NextResponse.json({
-        error:
-          "Can't further create any more buckets, as allocation exceeds remaining allocation amount",
-      });
+      return NextResponse.json(
+        {
+          error:
+            "Can't further create any more buckets, as allocation exceeds remaining allocation amount",
+        },
+        { status: 400 }
+      );
     }
     // bucket creation
     const bucket = await db.bucket.create({
