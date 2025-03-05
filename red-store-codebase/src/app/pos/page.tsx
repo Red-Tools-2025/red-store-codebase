@@ -7,12 +7,31 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import BucketDisplay from "@/components/feature/pos/feature-components/Displays/BucketDisplay";
 
 const POSPage = () => {
-  const { inventoryItems, isLoading, bucketMode } = usePos();
+  const {
+    selectedStore,
+    originalProducts,
+    favoriteProducts,
+    inventoryItems,
+    isLoading,
+    bucketMode,
+    setBucketMode,
+    setClientSideItems,
+    buckets,
+    fetchError,
+    isFetchingBuckets,
+  } = usePos();
   return (
     <div className="flex flex-col h-screen">
       {/* Header Section */}
       <div className="py-3">
-        <ProductDisplayControl />
+        <ProductDisplayControl
+          selectedStore={selectedStore}
+          bucketMode={bucketMode}
+          favoriteProducts={favoriteProducts}
+          originalProducts={originalProducts}
+          setBucketMode={setBucketMode}
+          setClientSideItems={setClientSideItems}
+        />
       </div>
 
       {/* Main Content Area */}
@@ -21,7 +40,11 @@ const POSPage = () => {
         <ScrollArea className="flex-1">
           <div className="py-2 pr-4">
             {bucketMode ? (
-              <BucketDisplay />
+              <BucketDisplay
+                buckets={buckets}
+                isFetching={isFetchingBuckets}
+                fetchError={fetchError}
+              />
             ) : (
               <ItemSelectionDisplay
                 inventoryItems={inventoryItems}

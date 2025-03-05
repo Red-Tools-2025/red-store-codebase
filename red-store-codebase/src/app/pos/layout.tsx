@@ -8,6 +8,7 @@ import { PosProvider } from "../contexts/pos/PosContext";
 import { Cart } from "../types/pos/cart";
 import useItems from "../hooks/pos/ServerHooks/useItems";
 import { usePosAuth } from "../providers/PosAuthProvider"; // Import the Auth Context
+import useBucketsFromServer from "../hooks/pos/ServerHooks/useBucketsFromServer";
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -50,6 +51,10 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
     20
   );
 
+  const { buckets, fetchError, isFetching } = useBucketsFromServer(
+    selectedStore?.storeId?.toString() || ""
+  );
+
   // **Show loading while checking authentication**
   if (isGettingToken) {
     return <div>Loading authentication...</div>;
@@ -65,8 +70,11 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       selectedStore={selectedStore}
       favoriteProducts={favoriteProducts}
       originalProducts={originalProducts}
+      buckets={buckets}
       cartItems={cartItems}
       isLoading={isLoadingProducts}
+      isFetchingBuckets={isFetching}
+      fetchError={fetchError}
       inventoryItems={clientSideItems}
       bucketMode={bucketMode}
       setCartItems={setCartItems}

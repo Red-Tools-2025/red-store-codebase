@@ -1,20 +1,30 @@
-import { usePos } from "@/app/contexts/pos/PosContext";
-import useBucketsFromServer from "@/app/hooks/pos/ServerHooks/useBucketsFromServer";
-import { useEffect } from "react";
 import BucketTable from "../Tables/BucketsTable";
+import { Bucket, Inventory } from "@prisma/client";
 
-const BucketDisplay = () => {
-  const { selectedStore } = usePos();
-  const { buckets, fetchError, isFetching } = useBucketsFromServer(
-    selectedStore?.storeId?.toString() || ""
-  );
-  useEffect(() => {
-    console.log(buckets);
-  }, [isFetching]);
+interface BucketDisplayProps {
+  buckets: (Bucket & { inventory: Inventory | null })[];
+  isFetching: boolean;
+  fetchError: string;
+}
 
+const BucketDisplay: React.FC<BucketDisplayProps> = ({
+  buckets,
+  fetchError,
+  isFetching,
+}) => {
   return (
     <div className="flex flex-col gap-1">
-      <BucketTable buckets={buckets} />
+      {isFetching ? (
+        <p>Loading Buckets...</p>
+      ) : (
+        <>
+          {fetchError === "" ? (
+            <BucketTable buckets={buckets} />
+          ) : (
+            <p>Something went wrong while fetching buckets</p>
+          )}
+        </>
+      )}
     </div>
   );
 };

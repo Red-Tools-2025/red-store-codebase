@@ -5,15 +5,18 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { Inventory, Store } from "@prisma/client";
+import { Bucket, Inventory, Store } from "@prisma/client";
 import { Cart } from "@/app/types/pos/cart";
 
 interface PosContextType {
   inventoryItems: Inventory[] | null;
   favoriteProducts: Inventory[] | null;
   originalProducts: Inventory[] | null;
+  buckets: (Bucket & { inventory: Inventory | null })[];
   cartItems: Cart[];
   isLoading: boolean;
+  isFetchingBuckets: boolean;
+  fetchError: string;
   selectedStore: Store | null;
   bucketMode: boolean;
   handleResync: () => void;
@@ -29,10 +32,13 @@ export const PosProvider = ({
   inventoryItems,
   cartItems,
   isLoading,
+  isFetchingBuckets,
+  fetchError,
   selectedStore,
   bucketMode,
   favoriteProducts,
   originalProducts,
+  buckets,
   handleResync,
   setCartItems,
   setBucketMode,
@@ -42,8 +48,11 @@ export const PosProvider = ({
   inventoryItems: Inventory[] | null;
   favoriteProducts: Inventory[] | null;
   originalProducts: Inventory[] | null;
+  buckets: (Bucket & { inventory: Inventory | null })[];
   cartItems: Cart[];
   isLoading: boolean;
+  isFetchingBuckets: boolean;
+  fetchError: string;
   bucketMode: boolean;
   selectedStore: Store | null;
   handleResync: () => void;
@@ -57,9 +66,12 @@ export const PosProvider = ({
         inventoryItems,
         cartItems,
         isLoading,
+        isFetchingBuckets,
+        fetchError,
         selectedStore,
         favoriteProducts,
         originalProducts,
+        buckets,
         bucketMode,
         handleResync,
         setCartItems,

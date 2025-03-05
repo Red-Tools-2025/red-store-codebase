@@ -2,21 +2,30 @@ import { usePos } from "@/app/contexts/pos/PosContext";
 import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { IoIosStar } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 import { BsFillBucketFill } from "react-icons/bs";
+import { Inventory, Store } from "@prisma/client";
 
-const ProductDisplayControl = () => {
+interface ProductDisplayControlProps {
+  selectedStore: Store | null;
+  favoriteProducts: Inventory[] | null;
+  originalProducts: Inventory[] | null;
+  bucketMode: boolean;
+  setBucketMode: Dispatch<SetStateAction<boolean>>;
+  setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
+}
+
+const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
+  bucketMode,
+  favoriteProducts,
+  originalProducts,
+  selectedStore,
+  setBucketMode,
+  setClientSideItems,
+}) => {
   const { syncToServer } = useBrowserCacheStorage();
-  const {
-    selectedStore,
-    originalProducts,
-    favoriteProducts,
-    bucketMode,
-    setBucketMode,
-    setClientSideItems,
-  } = usePos();
   const [toggleFavorites, setToggleFavorites] = useState<boolean>(false);
 
   const handleToggleFavorites = () => {
