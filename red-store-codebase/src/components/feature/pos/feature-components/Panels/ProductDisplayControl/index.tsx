@@ -1,4 +1,3 @@
-import { usePos } from "@/app/contexts/pos/PosContext";
 import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
