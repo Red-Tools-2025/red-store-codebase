@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/command";
 import { usePos } from "@/app/contexts/pos/PosContext";
 import { useState } from "react";
+import { Inventory } from "@prisma/client";
+import { Button } from "@/components/ui/button";
 
 interface CreateBucketModalProps {
   isOpen: boolean;
@@ -25,8 +27,11 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { originalProducts } = usePos();
+  const { originalProducts, favoriteProducts } = usePos();
   const [search, setSearch] = useState<string>("");
+  const [products, setProducts] = useState<Inventory[] | null>(
+    originalProducts
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -42,6 +47,32 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
         {/* Search Input and Suggestions */}
         <div className="flex flex-col gap-2">
           <p className="text-sm text-gray-600">Find your product</p>
+          <div className="flex flex-row gap-2">
+            <Button
+              onClick={() => setProducts(originalProducts)}
+              className={`${
+                products === originalProducts
+                  ? "bg-blue-100 text-blue-600 border-blue-600"
+                  : ""
+              }`}
+              size="sm"
+              variant={"secondary"}
+            >
+              Originals
+            </Button>
+            <Button
+              onClick={() => setProducts(favoriteProducts)}
+              className={`${
+                products === favoriteProducts
+                  ? "bg-yellow-100 text-yellow-600 border-yellow-600"
+                  : ""
+              }`}
+              size="sm"
+              variant={"secondary"}
+            >
+              Favorites
+            </Button>
+          </div>
           <Command className="relative w-full border rounded-md">
             <CommandInput
               placeholder="Enter product name..."
@@ -54,7 +85,7 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
                 {`No matching products found :(`}
               </CommandEmpty>
               <CommandGroup heading="Suggestions">
-                {originalProducts?.map((product) => (
+                {products?.map((product) => (
                   <CommandItem
                     key={product.invId}
                     value={`${product.invId}-${product.invItem}`}
