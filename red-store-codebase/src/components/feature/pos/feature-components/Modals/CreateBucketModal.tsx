@@ -157,7 +157,7 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
           ) : (
             <div className="flex flex-col gap-2 items-start">
               <div className="flex flex-row gap-2 items-center">
-                <div className="text-sm flex flex-row items-center gap-2 p-2 rounded-md border border-blue-600 text-blue-600 bg-blue-100">
+                <div className="text-sm flex flex-row items-center gap-2 px-3 py-2 rounded-md border border-blue-600 text-blue-600 bg-blue-100">
                   <p>{selectedProduct.invItem}</p>
                   <span className="text-xs py-1 text-black px-2 border border-gray-300 rounded-sm bg-gray-100">
                     {selectedProduct.invId}
@@ -213,8 +213,29 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
         </div>
         {selectedProduct ? (
           <DialogFooter className="mt-2">
-            <Button>Create Bucket</Button>
-            <Button variant="secondary">Cancel</Button>
+            <Button
+              disabled={
+                selectedProduct === null ||
+                scheduledTime === "" ||
+                bucketSize === null
+              }
+              onClick={() =>
+                console.log({
+                  storeId: selectedStore?.storeId,
+                  storeManagerId: selectedStore?.storeManagerId,
+                  scheduledTime: scheduledTime,
+                  bucket_item_details: {
+                    bucketQty: bucketSize,
+                    invId: selectedProduct.invId,
+                  },
+                })
+              }
+            >
+              Create Bucket
+            </Button>
+            <Button variant="secondary" onClick={onClose}>
+              Cancel
+            </Button>
           </DialogFooter>
         ) : (
           <></>
