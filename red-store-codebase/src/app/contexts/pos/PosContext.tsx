@@ -20,6 +20,7 @@ interface PosContextType {
   selectedStore: Store | null;
   bucketMode: boolean;
   handleResync: () => void;
+  handleRefreshBuckets: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
@@ -40,6 +41,7 @@ export const PosProvider = ({
   originalProducts,
   buckets,
   handleResync,
+  handleRefreshBuckets,
   setCartItems,
   setBucketMode,
   setClientSideItems,
@@ -56,6 +58,7 @@ export const PosProvider = ({
   bucketMode: boolean;
   selectedStore: Store | null;
   handleResync: () => void;
+  handleRefreshBuckets: () => void;
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
@@ -74,6 +77,7 @@ export const PosProvider = ({
         buckets,
         bucketMode,
         handleResync,
+        handleRefreshBuckets,
         setCartItems,
         setClientSideItems,
         setBucketMode,

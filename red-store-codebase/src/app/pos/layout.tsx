@@ -51,9 +51,8 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
     20
   );
 
-  const { buckets, fetchError, isFetching } = useBucketsFromServer(
-    selectedStore?.storeId?.toString() || ""
-  );
+  const { buckets, fetchError, isFetching, handleRefreshBuckets } =
+    useBucketsFromServer(selectedStore?.storeId?.toString() || "");
 
   // **Show loading while checking authentication**
   if (isGettingToken) {
@@ -79,6 +78,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       bucketMode={bucketMode}
       setCartItems={setCartItems}
       handleResync={handleResync}
+      handleRefreshBuckets={handleRefreshBuckets}
       setClientSideItems={setClientSideItems}
       setBucketMode={setBucketMode}
     >

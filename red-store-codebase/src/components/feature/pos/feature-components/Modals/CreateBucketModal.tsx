@@ -19,32 +19,27 @@ import { usePos } from "@/app/contexts/pos/PosContext";
 import { useState } from "react";
 import { BucketSize, Inventory } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
+import { CreateBucketResponseBody } from "@/app/types/buckets/api";
+import { useToast } from "@/hooks/use-toast";
 
 interface CreateBucketModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-/* Popover UI for picking bucket time */
-
+/* TimePicker Component */
 const TimePicker = ({
   onTimeSelect,
 }: {
   onTimeSelect: (time: string) => void;
 }) => {
-  const [time, setTime] = useState("");
-
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentDate = new Date();
     const formattedDate = format(currentDate, "yyyy-MM-dd");
+    // Append seconds, milliseconds and timezone to form a complete timestamp string
     const formattedTime = e.target.value + ":00.000+00";
     const newTime = `${formattedDate} ${formattedTime}`;
-    setTime(newTime);
     onTimeSelect(newTime);
   };
 
@@ -61,7 +56,13 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { originalProducts, favoriteProducts, selectedStore } = usePos();
+  const { toast } = useToast();
+  const {
+    originalProducts,
+    favoriteProducts,
+    selectedStore,
+    handleRefreshBuckets,
+  } = usePos();
   const [search, setSearch] = useState<string>("");
   const [products, setProducts] = useState<Inventory[] | null>(
     originalProducts
@@ -72,11 +73,38 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
   const [scheduledTime, setScheduledTime] = useState<string>("");
   const [bucketSize, setBucketSize] = useState<BucketSize>("FIFTY");
 
+  const { handleCreateBucket, isCreating, createBucketError } =
+    useBucketServerActions();
+
+  const createBucket = async () => {
+    const response: CreateBucketResponseBody = await handleCreateBucket({
+      storeId: selectedStore?.storeId as number,
+      storeManagerId: selectedStore?.storeManagerId as string,
+      scheduledTime: new Date(scheduledTime),
+      bucket_item_details: {
+        invId: selectedProduct?.invId as number,
+        bucketQty: bucketSize,
+      },
+    });
+    if (response && response.message) {
+      toast({
+        title: "Bucket Created",
+        duration: 3000,
+        description: response.message,
+      });
+      onClose();
+      handleRefreshBuckets();
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
           <DialogTitle>Create Bucket</DialogTitle>
+          {createBucketError && (
+            <p className="text-sm text-red-500 mt-1">{createBucketError}</p>
+          )}
           <DialogDescription>
             Select a product and a scheduled time for the day to create your
             bucket. You can also activate a bucket at your convenience.
@@ -87,8 +115,6 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
           <p className={!selectedProduct ? "text-sm text-gray-600" : "text-sm"}>
             {!selectedProduct ? "Find your product" : "Selected Product"}
           </p>
-          {/* Hide Search Upon Product Selection */}
-
           {!selectedProduct ? (
             <div className="flex flex-col gap-2">
               <div className="flex flex-row gap-2">
@@ -117,7 +143,6 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
                   Favorites
                 </Button>
               </div>
-              {/* Search Input and Suggestions */}
               <Command className="relative w-full border rounded-md">
                 <CommandInput
                   placeholder="Enter product name..."
@@ -130,26 +155,32 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
                     {`No matching products found :(`}
                   </CommandEmpty>
                   <CommandGroup heading="Suggestions">
-                    {products?.map((product) => (
-                      <CommandItem
-                        key={product.invId}
-                        value={`${product.invId}-${product.invItem}`}
-                        onSelect={() => setSelectedProduct(product)}
-                        className={`cursor-pointer px-3 py-2 text-sm flex items-center gap-3 rounded-md `}
-                      >
-                        <p>
-                          {product.invItem.length > 30
-                            ? product.invItem.slice(0, 30) + "..."
-                            : product.invItem}
-                        </p>
-                        <span className="text-xs py-1 px-2 border border-gray-300 rounded-sm bg-gray-100">
-                          {product.invItemBrand}
-                        </span>
-                        <span className="text-xs py-1 px-2 border text-blue-600 border-blue-600 rounded-sm bg-blue-100">
-                          {product.invId}
-                        </span>
-                      </CommandItem>
-                    ))}
+                    {products
+                      ?.filter((product) =>
+                        product.invItem
+                          .toLowerCase()
+                          .includes(search.toLowerCase())
+                      )
+                      .map((product) => (
+                        <CommandItem
+                          key={product.invId}
+                          value={`${product.invId}-${product.invItem}`}
+                          onSelect={() => setSelectedProduct(product)}
+                          className="cursor-pointer px-3 py-2 text-sm flex items-center gap-3 rounded-md"
+                        >
+                          <p>
+                            {product.invItem.length > 30
+                              ? product.invItem.slice(0, 30) + "..."
+                              : product.invItem}
+                          </p>
+                          <span className="text-xs py-1 px-2 border border-gray-300 rounded-sm bg-gray-100">
+                            {product.invItemBrand}
+                          </span>
+                          <span className="text-xs py-1 px-2 border text-blue-600 border-blue-600 rounded-sm bg-blue-100">
+                            {product.invId}
+                          </span>
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </CommandList>
               </Command>
@@ -211,34 +242,23 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
             </div>
           )}
         </div>
-        {selectedProduct ? (
-          <DialogFooter className="mt-2">
+        {selectedProduct && (
+          <DialogFooter className="mt-2 flex gap-2">
             <Button
               disabled={
-                selectedProduct === null ||
+                isCreating ||
+                !selectedProduct ||
                 scheduledTime === "" ||
                 bucketSize === null
               }
-              onClick={() =>
-                console.log({
-                  storeId: selectedStore?.storeId,
-                  storeManagerId: selectedStore?.storeManagerId,
-                  scheduledTime: scheduledTime,
-                  bucket_item_details: {
-                    bucketQty: bucketSize,
-                    invId: selectedProduct.invId,
-                  },
-                })
-              }
+              onClick={() => void createBucket()}
             >
-              Create Bucket
+              {isCreating ? "Creating..." : "Create Bucket"}
             </Button>
             <Button variant="secondary" onClick={onClose}>
               Cancel
             </Button>
           </DialogFooter>
-        ) : (
-          <></>
         )}
       </DialogContent>
     </Dialog>
