@@ -2,6 +2,7 @@ import BucketTable from "../Tables/BucketsTable";
 import { Bucket, Inventory } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Toaster } from "@/components/ui/toaster";
 
 interface BucketDisplayProps {
   buckets: (Bucket & { inventory: Inventory | null })[];
@@ -35,6 +36,7 @@ const BucketDisplay: React.FC<BucketDisplayProps> = ({
 
   return (
     <div className="flex flex-col gap-1">
+      <Toaster />
       {isFetching ? (
         <AnimatePresence mode="wait">
           <motion.p
