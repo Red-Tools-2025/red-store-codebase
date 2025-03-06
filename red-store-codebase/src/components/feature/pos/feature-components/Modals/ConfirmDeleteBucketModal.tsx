@@ -1,13 +1,16 @@
 import { usePos } from "@/app/contexts/pos/PosContext";
 import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 import React from "react";
 
 interface ConfirmDeleteBucketModalProps {
@@ -21,15 +24,33 @@ const ConfirmDeleteBucketModal: React.FC<ConfirmDeleteBucketModalProps> = ({
   onClose,
   deleteIds,
 }) => {
-  const {
-    deleteError,
-    isDeleting,
-    dialogMessage,
-    handleBucketDelete,
-    setDialogType,
-    setIsDialogOpen,
-  } = useBucketServerActions();
-  const { buckets } = usePos();
+  const { toast } = useToast();
+  const { buckets, handleRefreshBuckets } = usePos();
+  const { deleteError, isDeleting, handleBucketDelete } =
+    useBucketServerActions();
+
+  const processDelete = async (
+    deleteIds: { bucket_id: number; store_id: number }[]
+  ) => {
+    const response = await handleBucketDelete({
+      buckets: deleteIds.map(({ bucket_id, store_id }) => ({
+        bucketId: bucket_id,
+        storeId: store_id,
+      })),
+    });
+    if (response) {
+      onClose();
+      handleRefreshBuckets();
+      toast({
+        title: "Bucket Deleted",
+        duration: 3000,
+        description: response.message,
+      });
+    } else {
+      console.error("Failed to delete bucket");
+    }
+    handleRefreshBuckets();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -99,6 +120,14 @@ const ConfirmDeleteBucketModal: React.FC<ConfirmDeleteBucketModalProps> = ({
             </p>
           </div>
         </DialogHeader>
+        <DialogFooter>
+          <Button onClick={() => void processDelete(deleteIds)}>
+            {isDeleting ? "Deleting..." : "Delete Bucket"}
+          </Button>
+          <Button variant={"secondary"} onClick={onClose}>
+            Cancel
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
