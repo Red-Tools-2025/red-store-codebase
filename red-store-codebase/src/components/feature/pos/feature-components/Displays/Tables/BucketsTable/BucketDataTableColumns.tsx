@@ -1,10 +1,17 @@
 import { Bucket, Inventory } from "@prisma/client";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, RowData } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { LiaEdit } from "react-icons/lia";
 import { MdDeleteOutline } from "react-icons/md";
 import { ImSwitch } from "react-icons/im";
 import { format } from "date-fns";
+
+/* Module for passing actions through column tables */
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    deleteBucket: (bucket_id: number) => void;
+  }
+}
 
 /* Column defination for Buckets table */
 export const BucketDataTableColumns: ColumnDef<
@@ -88,8 +95,12 @@ export const BucketDataTableColumns: ColumnDef<
   {
     accessorKey: "row_actions",
     header: "Actions",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const isCompleted = row.original.status === "COMPLETED";
+      const bucket_id = row.original.bucketId;
+
+      /* Extract row actions from table meta */
+      const { deleteBucket } = table.options.meta || {};
 
       return (
         <div className="flex flex-row gap-2 items-center">
@@ -107,7 +118,10 @@ export const BucketDataTableColumns: ColumnDef<
                 : "hover:text-blue-500 cursor-pointer"
             }`}
           />
-          <MdDeleteOutline className="h-5 w-5 hover:text-red-500 cursor-pointer transition-all" />
+          <MdDeleteOutline
+            onClick={() => deleteBucket && deleteBucket(bucket_id)}
+            className="h-5 w-5 hover:text-red-500 cursor-pointer transition-all"
+          />
         </div>
       );
     },
