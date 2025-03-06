@@ -13,6 +13,8 @@ import { flexRender } from "@tanstack/react-table";
 import useBucketTableHook from "@/app/hooks/pos/StaticHooks/useBucketsTableHook";
 import BucketSearch from "./BucketSearch";
 import BucketDisplayControl from "../../../Panels/BucketDisplayControl";
+import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
+import ConfirmDeleteBucketModal from "../../../Modals/ConfirmDeleteBucketModal";
 
 /* Table props to resemble fetched UI on response */
 interface BucketTableProps {
@@ -20,9 +22,24 @@ interface BucketTableProps {
 }
 
 const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
+  const [deleteIds, setDeleteIds] = useState<
+    { bucket_id: number; store_id: number }[]
+  >([]);
+
+  const {
+    handleAwaitDelete,
+    setIsDialogOpen,
+    dialogType,
+    dialogMessage,
+    isDialogOpen,
+  } = useBucketServerActions();
   const { table, setColumnFilters } = useBucketTableHook({
     columns: BucketDataTableColumns,
     data: buckets,
+    tableActions: {
+      deleteBucket: handleAwaitDelete,
+      setDeleteIds: setDeleteIds,
+    },
   });
 
   const setSearchFilter = (value: string) => {
@@ -32,6 +49,12 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
   /* Dynamic Table render, via created tanstack table */
   return (
     <div className="flex flex-col gap-2">
+      {/* VerificationModals */}
+      <ConfirmDeleteBucketModal
+        isOpen={dialogType === "DELETE" && isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        deleteIds={deleteIds}
+      />
       <div className="flex flex-row gap-2">
         <BucketSearch setSearchFilter={setSearchFilter} />
         <BucketDisplayControl setColumnFilters={setColumnFilters} />

@@ -2,19 +2,32 @@ import {
   CreateBucketRequestBody,
   CreateBucketResponseBody,
   BucketStatusRequestBody,
+  DeleteBucketRequestBody,
 } from "@/app/types/buckets/api";
 import axios, { AxiosResponse } from "axios";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 const useBucketServerActions = () => {
+  /* States for creation */
   const [isCreating, setIsCreating] = useState(false);
   const [createBucketError, setCreateBucketError] = useState("");
+
+  /* States for activation */
   const [isActivating, setIsActivating] = useState(false);
   const [activateError, setActivateError] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingActivation, setPendingActivation] =
     useState<BucketStatusRequestBody | null>(null);
-  const [dialogMessage, setDialogMessage] = useState("");
+
+  /* States for deletion */
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [deleteError, setDeleteError] = useState<string>("");
+
+  /* All dialog states */
+  const [dialogType, setDialogType] = useState<
+    "ACTIVATE" | "DELETE" | "COMPLETE" | "FINISHED" | null
+  >(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [dialogMessage, setDialogMessage] = useState<string>("");
 
   /* Hook call for creating a bucket */
   const handleCreateBucket = async (body: CreateBucketRequestBody) => {
@@ -25,7 +38,7 @@ const useBucketServerActions = () => {
         await axios.post("/api/bucket", body);
       setIsCreating(false);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setCreateBucketError(
           error.response.data.error || "Error creating bucket"
@@ -34,7 +47,6 @@ const useBucketServerActions = () => {
         setCreateBucketError("Error creating bucket");
       }
       setIsCreating(false);
-      throw error;
     }
   };
 
@@ -70,7 +82,7 @@ const useBucketServerActions = () => {
       );
       setIsActivating(false);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setActivateError(
           error.response.data.error || "Error updating bucket status"
@@ -79,9 +91,39 @@ const useBucketServerActions = () => {
         setActivateError("Error updating bucket status");
       }
       setIsActivating(false);
-      throw error;
     }
   };
+
+  /* Handle Bucket delete actions */
+
+  /* Action to trigger modal to verify delete */
+  const handleAwaitDelete = async (
+    buckets: { bucket_id: number; store_id: number }[]
+  ) => {
+    console.log({ buckets });
+    setDialogType("DELETE");
+    setIsDialogOpen(true);
+  };
+
+  const handleBucketDelete = async (body: DeleteBucketRequestBody) => {
+    try {
+      setIsDeleting(true);
+      const response: AxiosResponse<{ message: string }> = await axios.delete(
+        "/api/bucket",
+        { data: body }
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setDeleteError(error.response.data.error || "Error deleting bucket");
+      } else {
+        setDeleteError("Error deleting bucket");
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  /* Verification and confirmation actions */
 
   // Close dialog without confirming
   const closeDialog = () => {
@@ -99,14 +141,31 @@ const useBucketServerActions = () => {
   };
 
   return {
+    /* Creation exports */
     handleCreateBucket,
-    handleActivate,
-    closeDialog,
-    confirmActivation,
     isCreating,
     createBucketError,
+
+    /* Activation exports */
+    handleActivate,
+    confirmActivation,
     isActivating,
     activateError,
+
+    // closeDialog,
+
+    /* Deletion exports */
+    handleAwaitDelete,
+    handleBucketDelete,
+    isDeleting,
+    deleteError,
+
+    /* Dialog exports */
+    setDialogType,
+    setIsDialogOpen,
+    dialogType,
+    dialogMessage,
+    isDialogOpen,
   };
 };
 

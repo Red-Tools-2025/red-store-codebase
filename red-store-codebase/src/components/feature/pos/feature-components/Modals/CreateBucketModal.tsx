@@ -89,7 +89,7 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
     useBucketServerActions();
 
   const createBucket = async () => {
-    const response: CreateBucketResponseBody = await handleCreateBucket({
+    const response = await handleCreateBucket({
       storeId: selectedStore?.storeId as number,
       storeManagerId: selectedStore?.storeManagerId as string,
       scheduledTime: new Date(scheduledTime),

@@ -9,7 +9,7 @@ import { format } from "date-fns";
 /* Module for passing actions through column tables */
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
-    deleteBucket: (bucket_id: number) => void;
+    deleteBucket: (buckets: { bucket_id: number; store_id: number }[]) => void;
   }
 }
 
@@ -119,7 +119,15 @@ export const BucketDataTableColumns: ColumnDef<
             }`}
           />
           <MdDeleteOutline
-            onClick={() => deleteBucket && deleteBucket(bucket_id)}
+            onClick={() =>
+              deleteBucket &&
+              deleteBucket([
+                {
+                  bucket_id: row.original.bucketId,
+                  store_id: row.original.storeId,
+                },
+              ])
+            }
             className="h-5 w-5 hover:text-red-500 cursor-pointer transition-all"
           />
         </div>
