@@ -81,7 +81,12 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
             <>
               <Button
                 onClick={() => setIsCreateBucketModalOpen(true)}
-                disabled={!buckets || buckets.length === 0}
+                disabled={
+                  !favoriteProducts ||
+                  favoriteProducts.length === 0 ||
+                  !originalProducts ||
+                  originalProducts.length === 0
+                }
                 variant={"secondary"}
               >
                 <div className="flex items-center">
@@ -93,7 +98,12 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
           )}
           <Button
             onClick={handleToggleBucketMode}
-            disabled={!buckets || buckets.length === 0}
+            disabled={
+              !favoriteProducts ||
+              favoriteProducts.length === 0 ||
+              !originalProducts ||
+              originalProducts.length === 0
+            }
             variant={"secondary"}
             className={
               bucketMode ? "bg-blue-100 border-blue-700 text-blue-700" : ""

@@ -3,6 +3,7 @@ import { Bucket, Inventory } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster } from "@/components/ui/toaster";
+import BucketsEmptyState from "./EmptyState";
 
 interface BucketDisplayProps {
   buckets: (Bucket & { inventory: Inventory | null })[];
@@ -37,24 +38,30 @@ const BucketDisplay: React.FC<BucketDisplayProps> = ({
   return (
     <div className="flex flex-col gap-1">
       <Toaster />
-      {isFetching ? (
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={index}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.5 }}
-          >
-            {loadingMessages[index]}
-          </motion.p>
-        </AnimatePresence>
-      ) : fetchError ? (
-        <p className="text-red-500">
-          Something went wrong while fetching buckets 😞
-        </p>
+      {!buckets || buckets.length === 0 ? (
+        <BucketsEmptyState />
       ) : (
-        <BucketTable buckets={buckets} />
+        <>
+          {isFetching ? (
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.5 }}
+              >
+                {loadingMessages[index]}
+              </motion.p>
+            </AnimatePresence>
+          ) : fetchError ? (
+            <p className="text-red-500">
+              Something went wrong while fetching buckets 😞
+            </p>
+          ) : (
+            <BucketTable buckets={buckets} />
+          )}
+        </>
       )}
     </div>
   );
