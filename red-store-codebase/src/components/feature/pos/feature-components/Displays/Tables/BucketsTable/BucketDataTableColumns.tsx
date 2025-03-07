@@ -117,6 +117,7 @@ export const BucketDataTableColumns: ColumnDef<
     header: "Actions",
     cell: ({ row, table }) => {
       const isCompleted = row.original.status === "COMPLETED";
+      const isActive = row.original.status === "ACTIVE";
       const { bucketId, storeId, scheduledTime } = row.original;
 
       /* Extract row actions from table meta */
@@ -125,21 +126,36 @@ export const BucketDataTableColumns: ColumnDef<
 
       return (
         <div className="flex flex-row gap-2 items-center">
-          <ImSwitch
-            onClick={() =>
-              activateBucket &&
-              activateBucket(
-                bucketId,
-                storeId,
-                scheduledTime ? scheduledTime.toString() : ""
-              )
-            }
-            className={`h-4 w-4 transition-all ${
-              isCompleted
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:text-blue-500 cursor-pointer "
-            }`}
-          />
+          {isCompleted ? (
+            <MdDeleteOutline
+              onClick={() =>
+                deleteBucket &&
+                deleteBucket([
+                  {
+                    bucket_id: bucketId,
+                    store_id: storeId,
+                  },
+                ])
+              }
+              className="h-5 w-5 hover:text-red-500 cursor-pointer transition-all"
+            />
+          ) : (
+            <ImSwitch
+              onClick={() =>
+                activateBucket &&
+                activateBucket(
+                  bucketId,
+                  storeId,
+                  scheduledTime ? scheduledTime.toString() : ""
+                )
+              }
+              className={`h-4 w-4 transition-all ${
+                isCompleted
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:text-blue-500 cursor-pointer "
+              }`}
+            />
+          )}
           <LiaEdit
             className={`h-5 w-5 transition-all ${
               isCompleted
@@ -147,7 +163,7 @@ export const BucketDataTableColumns: ColumnDef<
                 : "hover:text-blue-500 cursor-pointer"
             }`}
           />
-          {isCompleted ? (
+          {isCompleted || isActive ? (
             <SlOptionsVertical
               onClick={() =>
                 deleteBucket &&
@@ -158,7 +174,9 @@ export const BucketDataTableColumns: ColumnDef<
                   },
                 ])
               }
-              className="h-4 w-4 pl-1 hover:text-blue-500 cursor-pointer transition-all"
+              className={`${
+                isActive ? "h-5 w-5 pl-2" : "h-4 w-4 pl-1"
+              } hover:text-blue-500 cursor-pointer transition-all`}
             />
           ) : (
             <MdDeleteOutline
