@@ -1,10 +1,12 @@
 import { Bucket, Inventory } from "@prisma/client";
 import { ColumnDef, RowData } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+
 import { LiaEdit } from "react-icons/lia";
 import { MdDeleteOutline } from "react-icons/md";
+import { SlOptionsVertical } from "react-icons/sl";
 import { ImSwitch } from "react-icons/im";
-import { format } from "date-fns";
 
 /* Module for passing actions through column tables */
 declare module "@tanstack/react-table" {
@@ -82,9 +84,15 @@ export const BucketDataTableColumns: ColumnDef<
     header: "Scheduled For",
     cell: ({ row }) => {
       const scheduledTime = row.original.scheduledTime;
-      return scheduledTime
-        ? format(new Date(scheduledTime), "PPp")
-        : "Not Scheduled";
+      return (
+        <p
+          className={row.original.status === "COMPLETED" ? "line-through" : ""}
+        >
+          {scheduledTime
+            ? format(new Date(scheduledTime), "PPp")
+            : "Not Scheduled"}
+        </p>
+      );
     },
   },
   //   {
@@ -97,7 +105,7 @@ export const BucketDataTableColumns: ColumnDef<
     header: "Actions",
     cell: ({ row, table }) => {
       const isCompleted = row.original.status === "COMPLETED";
-      const bucket_id = row.original.bucketId;
+      const { bucketId, storeId } = row.original;
 
       /* Extract row actions from table meta */
       const { deleteBucket } = table.options.meta || {};
@@ -123,8 +131,8 @@ export const BucketDataTableColumns: ColumnDef<
               deleteBucket &&
               deleteBucket([
                 {
-                  bucket_id: row.original.bucketId,
-                  store_id: row.original.storeId,
+                  bucket_id: bucketId,
+                  store_id: storeId,
                 },
               ])
             }
