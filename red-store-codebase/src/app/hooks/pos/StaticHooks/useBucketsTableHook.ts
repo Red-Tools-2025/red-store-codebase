@@ -13,6 +13,17 @@ interface BucketTableProps {
   columns: ColumnDef<Bucket & { inventory: Inventory | null }>[];
   tableActions: {
     deleteBucket: (buckets: { bucket_id: number; store_id: number }[]) => void;
+    activateBucket: (
+      bucket_id: number,
+      store_id: number,
+      scheduled_time: string
+    ) => void;
+    setActivationId: Dispatch<
+      SetStateAction<{
+        bucket_id: number;
+        store_id: number;
+      } | null>
+    >;
     setDeleteIds: Dispatch<
       SetStateAction<
         {
@@ -22,11 +33,20 @@ interface BucketTableProps {
       >
     >;
   };
+
+  tableMeta: {
+    activeBucket: {
+      bucket_id: number;
+      store_id: number;
+    } | null;
+    isActivating: boolean;
+  };
 }
 const useBucketTableHook = ({
   columns,
   data,
-  tableActions: { deleteBucket, setDeleteIds },
+  tableMeta: { activeBucket, isActivating },
+  tableActions: { activateBucket, deleteBucket, setDeleteIds, setActivationId },
 }: BucketTableProps) => {
   /* Table UI Interactions */
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -44,6 +64,14 @@ const useBucketTableHook = ({
         deleteBucket(buckets);
         setDeleteIds(buckets);
       },
+      activateBucket(bucket_id, store_id, scheduled_time) {
+        activateBucket(bucket_id, store_id, scheduled_time);
+        setActivationId({ bucket_id, store_id });
+      },
+
+      /* Boolean Holds */
+      isActivating: isActivating,
+      isActivatingBucketId: activeBucket?.bucket_id,
     },
   });
 

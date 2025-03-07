@@ -1,3 +1,6 @@
+import { usePos } from "@/app/contexts/pos/PosContext";
+import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,45 +10,68 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-interface VerificationDialogProps {
+interface ConfirmActivateBucketModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
-  message: string;
+  activateId: {
+    bucket_id: number;
+    store_id: number;
+  } | null;
 }
 
-const VerificationDialog: React.FC<VerificationDialogProps> = ({
+const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
   isOpen,
+  activateId,
   onClose,
-  onConfirm,
-  message,
 }) => {
+  const { handleRefreshBuckets } = usePos();
+  const { isActivating, handleActivate, activateError } =
+    useBucketServerActions();
+
+  console.log(activateId);
+
+  const processActivation = async () => {
+    if (activateId) {
+      await handleActivate(activateId?.bucket_id, activateId?.store_id);
+      handleRefreshBuckets();
+      onClose;
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold mb-4">
-            Confirmation
-          </DialogTitle>
+          <DialogTitle>Bucket Activation</DialogTitle>
+          {activateError && (
+            <p className="text-sm text-red-500 mt-1">{activateError}</p>
+          )}
+          <DialogDescription>
+            Please Verify and confirm activation
+          </DialogDescription>
         </DialogHeader>
-        <DialogDescription>{message}</DialogDescription>
-        <DialogFooter className="mt-4 flex justify-between">
-          <button
-            className="bg-gray-300 text-black px-4 py-2 rounded-md"
-            onClick={onClose}
+        {activateId ? (
+          <p className="text-sm">
+            Are you sure you want to activate this bucket ?, It's before of it's
+            scheduled time
+          </p>
+        ) : (
+          <></>
+        )}
+        <DialogFooter>
+          <Button
+            onClick={() => void processActivation()}
+            disabled={isActivating || !activateId}
           >
+            {isActivating ? "Activating..." : "Activate Bucket"}
+          </Button>
+          <Button variant={"secondary"} onClick={onClose}>
             Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Confirm
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default VerificationDialog;
+export default ConfirmActivateBucketModal;

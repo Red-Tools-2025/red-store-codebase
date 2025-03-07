@@ -15,6 +15,7 @@ import BucketSearch from "./BucketSearch";
 import BucketDisplayControl from "../../../Panels/BucketDisplayControl";
 import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
 import ConfirmDeleteBucketModal from "../../../Modals/ConfirmDeleteBucketModal";
+import ConfirmActivateBucketModal from "../../../Modals/ConfirmActivationModal";
 
 /* Table props to resemble fetched UI on response */
 interface BucketTableProps {
@@ -25,20 +26,32 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
   const [deleteIds, setDeleteIds] = useState<
     { bucket_id: number; store_id: number }[]
   >([]);
+  const [activationId, setActivationId] = useState<{
+    bucket_id: number;
+    store_id: number;
+  } | null>(null);
 
   const {
     handleAwaitDelete,
+    handleAwaitActivate,
     setIsDialogOpen,
     dialogType,
-    dialogMessage,
     isDialogOpen,
+    isActivating,
   } = useBucketServerActions();
+
   const { table, setColumnFilters } = useBucketTableHook({
     columns: BucketDataTableColumns,
     data: buckets,
     tableActions: {
       deleteBucket: handleAwaitDelete,
+      activateBucket: handleAwaitActivate,
+      setActivationId: setActivationId,
       setDeleteIds: setDeleteIds,
+    },
+    tableMeta: {
+      isActivating: isActivating,
+      activeBucket: activationId,
     },
   });
 
@@ -54,6 +67,11 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
         isOpen={dialogType === "DELETE" && isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         deleteIds={deleteIds}
+      />
+      <ConfirmActivateBucketModal
+        isOpen={dialogType === "ACTIVATE" && isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        activateId={activationId}
       />
       <div className="flex flex-row gap-2">
         <BucketSearch setSearchFilter={setSearchFilter} />

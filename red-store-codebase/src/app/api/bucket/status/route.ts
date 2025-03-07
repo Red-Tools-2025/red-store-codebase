@@ -9,6 +9,8 @@ export async function POST(req: Request) {
     const body: BucketStatusRequestBody = await req.json();
     const { bucketId, storeId, status, soldQty = 0 } = body;
 
+    console.log({ body });
+
     // gaurd clause for all required params
     if (!bucketId || !storeId || !status) {
       return NextResponse.json(

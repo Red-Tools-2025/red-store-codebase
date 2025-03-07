@@ -1,13 +1,14 @@
 import {
   CreateBucketRequestBody,
   CreateBucketResponseBody,
-  BucketStatusRequestBody,
   DeleteBucketRequestBody,
 } from "@/app/types/buckets/api";
+import { useToast } from "@/hooks/use-toast";
 import axios, { AxiosResponse } from "axios";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 
 const useBucketServerActions = () => {
+  const { toast } = useToast();
   /* States for creation */
   const [isCreating, setIsCreating] = useState(false);
   const [createBucketError, setCreateBucketError] = useState("");
@@ -15,8 +16,6 @@ const useBucketServerActions = () => {
   /* States for activation */
   const [isActivating, setIsActivating] = useState(false);
   const [activateError, setActivateError] = useState("");
-  const [pendingActivation, setPendingActivation] =
-    useState<BucketStatusRequestBody | null>(null);
 
   /* States for deletion */
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -27,7 +26,6 @@ const useBucketServerActions = () => {
     "ACTIVATE" | "DELETE" | "COMPLETE" | "FINISHED" | null
   >(null);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [dialogMessage, setDialogMessage] = useState<string>("");
 
   /* Hook call for creating a bucket */
   const handleCreateBucket = async (body: CreateBucketRequestBody) => {
@@ -50,46 +48,52 @@ const useBucketServerActions = () => {
     }
   };
 
-  /* Hook call for activating (or pausing) a bucket */
-  const handleActivate = async (
-    body: BucketStatusRequestBody & { scheduledTime: string }
+  const handleAwaitActivate = async (
+    bucket_id: number,
+    store_id: number,
+    scheduled_time: string
   ) => {
     // Check if the activation time is before the scheduled time
-    const scheduledTime = new Date(body.scheduledTime);
+    const scheduledTime = new Date(scheduled_time);
     const currentTime = new Date();
 
+    // Prompt the confirmation modal, only if activation preceeds scheduled time
     if (scheduledTime > currentTime) {
-      // Time is before the scheduled time, show the confirmation dialog
-      setDialogMessage(
-        `The scheduled activation time is ${scheduledTime.toLocaleString()}. Are you sure you want to activate it now?`
-      );
-      setPendingActivation(body);
+      setDialogType("ACTIVATE");
       setIsDialogOpen(true);
-      return;
     }
 
-    // If no dialog is needed, proceed with activation directly
-    proceedWithActivation(body);
+    await handleActivate(bucket_id, store_id);
   };
 
-  const proceedWithActivation = async (body: BucketStatusRequestBody) => {
-    setActivateError("");
-    setIsActivating(true);
+  /* Hook call for activating (or pausing) a bucket */
+  const handleActivate = async (bucket_id: number, store_id: number) => {
     try {
+      setIsActivating(true);
       const response: AxiosResponse<{ message: string }> = await axios.post(
         "/api/bucket/status",
-        body
+        {
+          bucketId: bucket_id,
+          storeId: store_id,
+          status: "ACTIVE",
+        }
       );
-      setIsActivating(false);
-      return response.data;
+      setDialogType(null);
+      setIsDialogOpen(false);
+      toast({
+        title: "Bucket Now Active",
+        duration: 3000,
+        description: response.data.message,
+      });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setActivateError(
-          error.response.data.error || "Error updating bucket status"
+          error.response.data.error || "Error Activating bucket, try again"
         );
       } else {
-        setActivateError("Error updating bucket status");
+        setActivateError("Error Activating bucket, try again");
       }
+    } finally {
       setIsActivating(false);
     }
   };
@@ -125,20 +129,7 @@ const useBucketServerActions = () => {
   };
   /* Verification and confirmation actions */
 
-  // Close dialog without confirming
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setPendingActivation(null);
-  };
-
   // Confirm the action after verifying
-  const confirmActivation = () => {
-    if (pendingActivation) {
-      proceedWithActivation(pendingActivation);
-      setIsDialogOpen(false);
-      setPendingActivation(null);
-    }
-  };
 
   return {
     /* Creation exports */
@@ -148,7 +139,7 @@ const useBucketServerActions = () => {
 
     /* Activation exports */
     handleActivate,
-    confirmActivation,
+    handleAwaitActivate,
     isActivating,
     activateError,
 
@@ -164,7 +155,6 @@ const useBucketServerActions = () => {
     setDialogType,
     setIsDialogOpen,
     dialogType,
-    dialogMessage,
     isDialogOpen,
   };
 };

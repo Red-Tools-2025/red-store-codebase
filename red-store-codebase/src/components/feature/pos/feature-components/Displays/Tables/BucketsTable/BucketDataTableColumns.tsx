@@ -12,6 +12,15 @@ import { ImSwitch } from "react-icons/im";
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     deleteBucket: (buckets: { bucket_id: number; store_id: number }[]) => void;
+    activateBucket: (
+      bucket_id: number,
+      store_id: number,
+      scheduled_time: string
+    ) => void;
+
+    /* These states will be used to convey buckets being activated on scheduled time */
+    isActivating: boolean;
+    isActivatingBucketId: number | undefined;
   }
 }
 
@@ -61,19 +70,27 @@ export const BucketDataTableColumns: ColumnDef<
     accessorKey: "status",
     id: "status",
     header: "Bucket Status",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const status = row.original.status;
+      const { isActivating, isActivatingBucketId } = table.options.meta || {};
+      const activationInProgress =
+        isActivating &&
+        isActivatingBucketId &&
+        row.original.bucketId === isActivatingBucketId;
+
       return (
         <Badge
           variant={
-            status === "ACTIVE"
+            activationInProgress
+              ? "progress"
+              : status === "ACTIVE"
               ? "default"
               : status === "COMPLETED"
               ? "outline"
               : "destructive"
           }
         >
-          {status}
+          {activationInProgress ? "ACTIVATING..." : status}
         </Badge>
       );
     },
@@ -95,24 +112,28 @@ export const BucketDataTableColumns: ColumnDef<
       );
     },
   },
-  //   {
-  //     accessorKey: "soldQty",
-  //     header: "Sold Quantity",
-  //     cell: ({ row }) => `${row.getValue("soldOty")}`,
-  //   },
   {
     accessorKey: "row_actions",
     header: "Actions",
     cell: ({ row, table }) => {
       const isCompleted = row.original.status === "COMPLETED";
-      const { bucketId, storeId } = row.original;
+      const { bucketId, storeId, scheduledTime } = row.original;
 
       /* Extract row actions from table meta */
-      const { deleteBucket } = table.options.meta || {};
+      const { deleteBucket, activateBucket, isActivating } =
+        table.options.meta || {};
 
       return (
         <div className="flex flex-row gap-2 items-center">
           <ImSwitch
+            onClick={() =>
+              activateBucket &&
+              activateBucket(
+                bucketId,
+                storeId,
+                scheduledTime ? scheduledTime.toString() : ""
+              )
+            }
             className={`h-4 w-4 transition-all ${
               isCompleted
                 ? "opacity-50 cursor-not-allowed"
@@ -126,18 +147,33 @@ export const BucketDataTableColumns: ColumnDef<
                 : "hover:text-blue-500 cursor-pointer"
             }`}
           />
-          <MdDeleteOutline
-            onClick={() =>
-              deleteBucket &&
-              deleteBucket([
-                {
-                  bucket_id: bucketId,
-                  store_id: storeId,
-                },
-              ])
-            }
-            className="h-5 w-5 hover:text-red-500 cursor-pointer transition-all"
-          />
+          {isCompleted ? (
+            <SlOptionsVertical
+              onClick={() =>
+                deleteBucket &&
+                deleteBucket([
+                  {
+                    bucket_id: bucketId,
+                    store_id: storeId,
+                  },
+                ])
+              }
+              className="h-4 w-4 pl-1 hover:text-blue-500 cursor-pointer transition-all"
+            />
+          ) : (
+            <MdDeleteOutline
+              onClick={() =>
+                deleteBucket &&
+                deleteBucket([
+                  {
+                    bucket_id: bucketId,
+                    store_id: storeId,
+                  },
+                ])
+              }
+              className="h-5 w-5 hover:text-red-500 cursor-pointer transition-all"
+            />
+          )}
         </div>
       );
     },
