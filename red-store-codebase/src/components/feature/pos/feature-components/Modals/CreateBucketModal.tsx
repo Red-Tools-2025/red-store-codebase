@@ -21,7 +21,6 @@ import { useState } from "react";
 import { BucketSize, Inventory } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
-import { CreateBucketResponseBody } from "@/app/types/buckets/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface CreateBucketModalProps {
