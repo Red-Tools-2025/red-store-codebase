@@ -161,7 +161,9 @@ export const BucketDataTableColumns: ColumnDef<
               isCompleted
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:text-blue-500 cursor-pointer"
-            }`}
+            }   ${
+              isActive ? "ml-1 mr-[-4px]" : ""
+            } hover:text-blue-500 cursor-pointer transition-all`}
           />
           {isCompleted || isActive ? (
             <SlOptionsVertical
