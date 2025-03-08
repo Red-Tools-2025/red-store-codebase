@@ -11,7 +11,9 @@ interface StoreBucketsFetchResponse {
   buckets: (Bucket & { inventory: Inventory | null })[];
 }
 const useBucketsFromServer = (store_id: string) => {
-  const [bucketMap, setBucketMap] = useState<Map<number, Bucket>>(new Map());
+  const [bucketMap, setBucketMap] = useState<
+    Map<number, Bucket & { inventory: Inventory | null }>
+  >(new Map());
   const [buckets, setBuckets] = useState<
     (Bucket & { inventory: Inventory | null })[]
   >([]);

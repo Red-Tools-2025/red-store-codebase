@@ -13,6 +13,7 @@ interface PosContextType {
   favoriteProducts: Inventory[] | null;
   originalProducts: Inventory[] | null;
   buckets: (Bucket & { inventory: Inventory | null })[];
+  bucketMap: Map<number, Bucket & { inventory: Inventory | null }>;
   cartItems: Cart[];
   isLoading: boolean;
   isFetchingBuckets: boolean;
@@ -40,6 +41,7 @@ export const PosProvider = ({
   favoriteProducts,
   originalProducts,
   buckets,
+  bucketMap,
   handleResync,
   handleRefreshBuckets,
   setCartItems,
@@ -51,6 +53,7 @@ export const PosProvider = ({
   favoriteProducts: Inventory[] | null;
   originalProducts: Inventory[] | null;
   buckets: (Bucket & { inventory: Inventory | null })[];
+  bucketMap: Map<number, Bucket & { inventory: Inventory | null }>;
   cartItems: Cart[];
   isLoading: boolean;
   isFetchingBuckets: boolean;
@@ -75,6 +78,7 @@ export const PosProvider = ({
         favoriteProducts,
         originalProducts,
         buckets,
+        bucketMap,
         bucketMode,
         handleResync,
         handleRefreshBuckets,

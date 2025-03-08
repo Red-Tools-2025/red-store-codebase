@@ -1,3 +1,4 @@
+import { usePos } from "@/app/contexts/pos/PosContext";
 import {
   Dialog,
   DialogContent,
@@ -20,13 +21,18 @@ const ActiveBucketModal: React.FC<ActiveBucketModalProps> = ({
   isOpen,
   activateId,
 }) => {
+  const { bucketMap } = usePos();
+
+  const details = activateId ? bucketMap.get(activateId.bucket_id) : undefined;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
           <DialogTitle>Bucket Activation</DialogTitle>
           <DialogDescription>
-            Details on your active bucket modal, for {activateId?.store_id}
+            Details on your active bucket modal, for{" "}
+            {details?.inventory?.invItem}
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
