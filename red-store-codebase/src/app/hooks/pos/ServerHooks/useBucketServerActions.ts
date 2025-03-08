@@ -21,6 +21,8 @@ const useBucketServerActions = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [deleteError, setDeleteError] = useState<string>("");
 
+  /* States for completion */
+
   /* All dialog states */
   const [dialogType, setDialogType] = useState<
     "ACTIVATE" | "DELETE" | "COMPLETE" | "FINISHED" | null
