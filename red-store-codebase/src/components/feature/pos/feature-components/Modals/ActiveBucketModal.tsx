@@ -1,11 +1,16 @@
 import { usePos } from "@/app/contexts/pos/PosContext";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
+import { useEffect, useState } from "react";
+import { CiClock2 } from "react-icons/ci";
 
 interface ActiveBucketModalProps {
   isOpen: boolean;
@@ -22,8 +27,35 @@ const ActiveBucketModal: React.FC<ActiveBucketModalProps> = ({
   activateId,
 }) => {
   const { bucketMap } = usePos();
-
   const details = activateId ? bucketMap.get(activateId.bucket_id) : undefined;
+  const durationInSeconds = details ? details.duration : 0;
+
+  // State to store the remaining time
+  const [timeLeft, setTimeLeft] = useState(durationInSeconds);
+
+  useEffect(() => {
+    if (!details) return;
+
+    const triggerTime = Date.now() + durationInSeconds * 1000; // Target trigger time
+
+    const updateClock = () => {
+      const currentTime = Date.now();
+      const newTimeLeft = Math.max(
+        0,
+        Math.floor((triggerTime - currentTime) / 1000)
+      );
+
+      setTimeLeft(newTimeLeft);
+
+      if (newTimeLeft > 0) {
+        setTimeout(updateClock, Math.min(newTimeLeft * 1000, 1000)); // Dynamic update
+      }
+    };
+
+    updateClock(); // Start the clock
+
+    return () => clearTimeout(updateClock as unknown as number); // Cleanup on unmount
+  }, [details, durationInSeconds]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -34,7 +66,54 @@ const ActiveBucketModal: React.FC<ActiveBucketModalProps> = ({
             Details on your active bucket modal, for{" "}
             {details?.inventory?.invItem}
           </DialogDescription>
+          <div className="flex flex-col gap-1 pt-2">
+            {details ? (
+              <ScrollArea className="w-[450px] border-none whitespace-nowrap rounded-md border">
+                <div className="flex w-max space-x-4">
+                  <div key={details.bucketId} className="w-full pb-2">
+                    <div className="text-sm flex flex-row items-center gap-8 py-2 border border-gray-300 border-t-1 border-b-1 border-r-0 border-l-0 whitespace-nowrap">
+                      <p>{`#${details.inventory?.invId}`}</p>
+                      <p>{details.inventory?.invItem}</p>
+                      <p className="text-xs py-1 text-black px-2 border border-gray-300 rounded-sm bg-gray-100">
+                        {details.inventory?.invItemBrand}
+                      </p>
+                      <p
+                        className={`text-xs px-2 py-1 rounded-md bg-blue-100 border border-blue-600 text-blue-600`}
+                      >
+                        {`In stock : ${details.inventory?.invItemStock}`}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            ) : null}
+            <div className="text-sm flex flex-row justify-between pb-1">
+              <div className="flex flex-row gap-2">
+                <p className="px-2 py-1 border border-gray-300 rounded-sm bg-gray-100">
+                  {`${Math.floor((details?.duration ?? 0) / 3600)} hr`}
+                </p>
+                <p className="px-2 py-1 border border-gray-300 rounded-sm bg-gray-100">{`${
+                  details?.bucketSize === "FIFTY" ? "Mini" : "Large"
+                } Bucket`}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <CiClock2 className="h-5 w-5 text-purple-700" />
+                <p className="text-purple-700">
+                  {`${Math.floor(timeLeft / 3600)} hr ${Math.floor(
+                    (timeLeft % 3600) / 60
+                  )} min ${timeLeft % 60} sec`}
+                </p>
+              </div>
+            </div>
+          </div>
         </DialogHeader>
+        <DialogFooter>
+          <Button>Mark as Finished</Button>
+          <Button onClick={onClose} variant="secondary">
+            Exit
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
