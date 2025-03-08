@@ -12,6 +12,10 @@ interface BucketTableProps {
   data: (Bucket & { inventory: Inventory | null })[];
   columns: ColumnDef<Bucket & { inventory: Inventory | null }>[];
   tableActions: {
+    /* Modal actions */
+    setIsActiveBucketModalOpen: Dispatch<SetStateAction<boolean>>;
+
+    /* Server actions */
     deleteBucket: (buckets: { bucket_id: number; store_id: number }[]) => void;
     activateBucket: (
       bucket_id: number,
@@ -46,7 +50,13 @@ const useBucketTableHook = ({
   columns,
   data,
   tableMeta: { activeBucket, isActivating },
-  tableActions: { activateBucket, deleteBucket, setDeleteIds, setActivationId },
+  tableActions: {
+    activateBucket,
+    deleteBucket,
+    setIsActiveBucketModalOpen,
+    setDeleteIds,
+    setActivationId,
+  },
 }: BucketTableProps) => {
   /* Table UI Interactions */
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -66,6 +76,11 @@ const useBucketTableHook = ({
       },
       activateBucket(bucket_id, store_id, scheduled_time) {
         activateBucket(bucket_id, store_id, scheduled_time);
+        setActivationId({ bucket_id, store_id });
+      },
+      setIsActiveBucketModalOpen(bucket_id, store_id) {
+        setIsActiveBucketModalOpen(true);
+        /* Re-using active bucket selection state */
         setActivationId({ bucket_id, store_id });
       },
 

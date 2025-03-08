@@ -16,6 +16,7 @@ import BucketDisplayControl from "../../../Panels/BucketDisplayControl";
 import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
 import ConfirmDeleteBucketModal from "../../../Modals/ConfirmDeleteBucketModal";
 import ConfirmActivateBucketModal from "../../../Modals/ConfirmActivationModal";
+import ActiveBucketModal from "../../../Modals/ActiveBucketModal";
 
 /* Table props to resemble fetched UI on response */
 interface BucketTableProps {
@@ -23,6 +24,11 @@ interface BucketTableProps {
 }
 
 const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
+  /* States for interaction modals*/
+  const [isActiveBucketModalOpen, setIsActiveBucketModalOpen] =
+    useState<boolean>(false);
+
+  /* States for passing information about selected row items*/
   const [deleteIds, setDeleteIds] = useState<
     { bucket_id: number; store_id: number }[]
   >([]);
@@ -46,6 +52,7 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
     tableActions: {
       deleteBucket: handleAwaitDelete,
       activateBucket: handleAwaitActivate,
+      setIsActiveBucketModalOpen: setIsActiveBucketModalOpen,
       setActivationId: setActivationId,
       setDeleteIds: setDeleteIds,
     },
@@ -62,7 +69,13 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
   /* Dynamic Table render, via created tanstack table */
   return (
     <div className="flex flex-col gap-2">
-      {/* VerificationModals */}
+      {/* Interaction Modals */}
+      <ActiveBucketModal
+        activateId={activationId}
+        isOpen={isActiveBucketModalOpen}
+        onClose={() => setIsActiveBucketModalOpen(false)}
+      />
+      {/* Verification Modals */}
       <ConfirmDeleteBucketModal
         isOpen={dialogType === "DELETE" && isDialogOpen}
         onClose={() => setIsDialogOpen(false)}

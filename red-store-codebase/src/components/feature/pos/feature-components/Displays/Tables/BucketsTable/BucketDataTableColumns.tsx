@@ -7,6 +7,7 @@ import { LiaEdit } from "react-icons/lia";
 import { MdDeleteOutline } from "react-icons/md";
 import { SlOptionsVertical } from "react-icons/sl";
 import { ImSwitch } from "react-icons/im";
+import { Dispatch, SetStateAction } from "react";
 
 /* Module for passing actions through column tables */
 declare module "@tanstack/react-table" {
@@ -17,6 +18,7 @@ declare module "@tanstack/react-table" {
       store_id: number,
       scheduled_time: string
     ) => void;
+    setIsActiveBucketModalOpen: (bucket_id: number, store_id: number) => void;
 
     /* These states will be used to convey buckets being activated on scheduled time */
     isActivating: boolean;
@@ -121,7 +123,7 @@ export const BucketDataTableColumns: ColumnDef<
       const { bucketId, storeId, scheduledTime } = row.original;
 
       /* Extract row actions from table meta */
-      const { deleteBucket, activateBucket, isActivating } =
+      const { deleteBucket, activateBucket, setIsActiveBucketModalOpen } =
         table.options.meta || {};
 
       return (
@@ -167,14 +169,12 @@ export const BucketDataTableColumns: ColumnDef<
           />
           {isCompleted || isActive ? (
             <SlOptionsVertical
-              onClick={() =>
-                deleteBucket &&
-                deleteBucket([
-                  {
-                    bucket_id: bucketId,
-                    store_id: storeId,
-                  },
-                ])
+              onClick={
+                isActive
+                  ? () =>
+                      setIsActiveBucketModalOpen &&
+                      setIsActiveBucketModalOpen(bucketId, storeId)
+                  : () => {}
               }
               className={`${
                 isActive ? "h-5 w-5 pl-2" : "h-4 w-4 pl-1"
