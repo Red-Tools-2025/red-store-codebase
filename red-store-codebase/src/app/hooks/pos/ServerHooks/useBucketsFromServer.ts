@@ -11,6 +11,7 @@ interface StoreBucketsFetchResponse {
   buckets: (Bucket & { inventory: Inventory | null })[];
 }
 const useBucketsFromServer = (store_id: string) => {
+  const [bucketMap, setBucketMap] = useState<Map<number, Bucket>>(new Map());
   const [buckets, setBuckets] = useState<
     (Bucket & { inventory: Inventory | null })[]
   >([]);
@@ -34,6 +35,11 @@ const useBucketsFromServer = (store_id: string) => {
           });
         if (response.status === 200) {
           setBuckets(response.data.buckets);
+          /* Create the bucket map */
+          const bMap = new Map(
+            response.data.buckets.map((b) => [b.bucketId, b])
+          );
+          setBucketMap(bMap);
         } else {
           setBuckets([]);
         }
@@ -55,6 +61,7 @@ const useBucketsFromServer = (store_id: string) => {
     buckets,
     isFetching,
     fetchError,
+    bucketMap,
     handleRefreshBuckets,
   };
 };
