@@ -72,15 +72,15 @@ const ActiveBucketModal: React.FC<ActiveBucketModalProps> = ({
                 <div className="flex w-max space-x-4">
                   <div key={details.bucketId} className="w-full pb-2">
                     <div className="text-sm flex flex-row items-center gap-8 py-2 border border-gray-300 border-t-1 border-b-1 border-r-0 border-l-0 whitespace-nowrap">
-                      <p>{`#${details.inventory?.invId}`}</p>
+                      <p>{`B-#${details.bucketId}`}</p>
                       <p>{details.inventory?.invItem}</p>
                       <p className="text-xs py-1 text-black px-2 border border-gray-300 rounded-sm bg-gray-100">
                         {details.inventory?.invItemBrand}
                       </p>
                       <p
-                        className={`text-xs px-2 py-1 rounded-md bg-blue-100 border border-blue-600 text-blue-600`}
+                        className={`text-xs py-1 text-black px-2 border border-gray-300 rounded-sm bg-gray-100`}
                       >
-                        {`In stock : ${details.inventory?.invItemStock}`}
+                        {`In stock → ${details.inventory?.invItemStock}`}
                       </p>
                     </div>
                   </div>
@@ -97,9 +97,9 @@ const ActiveBucketModal: React.FC<ActiveBucketModalProps> = ({
                   details?.bucketSize === "FIFTY" ? "Mini" : "Large"
                 } Bucket`}</p>
               </div>
-              <div className="flex items-center gap-2">
-                <CiClock2 className="h-5 w-5 text-purple-700" />
-                <p className="text-purple-700">
+              <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-blue-100 border border-blue-600 text-blue-600">
+                <CiClock2 />
+                <p>
                   {`${Math.floor(timeLeft / 3600)} hr ${Math.floor(
                     (timeLeft % 3600) / 60
                   )} min ${timeLeft % 60} sec`}
