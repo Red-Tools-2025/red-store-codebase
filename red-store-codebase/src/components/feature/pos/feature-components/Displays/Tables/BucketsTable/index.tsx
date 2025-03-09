@@ -17,6 +17,7 @@ import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerA
 import ConfirmDeleteBucketModal from "../../../Modals/ConfirmDeleteBucketModal";
 import ConfirmActivateBucketModal from "../../../Modals/ConfirmActivationModal";
 import ActiveBucketModal from "../../../Modals/ActiveBucketModal";
+import ConfirmCompletionBucketModal from "../../../Modals/ConfirmCompletionModal";
 
 /* Table props to resemble fetched UI on response */
 interface BucketTableProps {
@@ -26,6 +27,8 @@ interface BucketTableProps {
 const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
   /* States for interaction modals*/
   const [isActiveBucketModalOpen, setIsActiveBucketModalOpen] =
+    useState<boolean>(false);
+  const [isCompleteBucketModalOpen, setIsCompleteBucketModalOpen] =
     useState<boolean>(false);
   const [finishedBucketId, setFinishedBucketId] = useState<number>(0);
 
@@ -41,6 +44,7 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
   const {
     handleAwaitDelete,
     handleAwaitActivate,
+    handleAwaitComplete,
     setIsDialogOpen,
     dialogType,
     isDialogOpen,
@@ -54,9 +58,11 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
     tableActions: {
       deleteBucket: handleAwaitDelete,
       activateBucket: handleAwaitActivate,
-      setIsActiveBucketModalOpen: setIsActiveBucketModalOpen,
-      setActivationId: setActivationId,
-      setDeleteIds: setDeleteIds,
+      completeBucket: handleAwaitComplete,
+      setActivationId,
+      setDeleteIds,
+      setIsActiveBucketModalOpen,
+      setIsCompleteBucketModalOpen,
     },
     tableMeta: {
       activeBucket: activationId,
@@ -88,6 +94,11 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
       <ConfirmActivateBucketModal
         setIsFinishedBucketId={setFinishedBucketId}
         isOpen={dialogType === "ACTIVATE" && isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        activateId={activationId}
+      />
+      <ConfirmCompletionBucketModal
+        isOpen={dialogType === "COMPLETE" && isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         activateId={activationId}
       />

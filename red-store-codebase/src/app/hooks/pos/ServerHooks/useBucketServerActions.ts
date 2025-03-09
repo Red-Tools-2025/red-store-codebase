@@ -132,6 +132,8 @@ const useBucketServerActions = () => {
     }
   };
 
+  /* Handle Bucket Finish Actions */
+
   /* Handler for marking bucket as finished */
   const handleFinish = async (bucket_id: number, store_id: number) => {
     try {
@@ -162,6 +164,14 @@ const useBucketServerActions = () => {
     }
   };
 
+  /* Handle Bucket completion actions */
+
+  /* Bucket Completion Await Action */
+  const handleAwaitComplete = async (bucket_id: number, store_id: number) => {
+    setDialogType("COMPLETE");
+    setIsDialogOpen(true);
+  };
+
   return {
     /* Creation exports */
     handleCreateBucket,
@@ -174,24 +184,25 @@ const useBucketServerActions = () => {
     isActivating,
     activateError,
 
-    // closeDialog,
-
     /* Deletion exports */
     handleAwaitDelete,
     handleBucketDelete,
     isDeleting,
     deleteError,
 
+    /* Finishing exports */
+    handleFinish,
+    isFinishing,
+    finishError,
+
+    /* Completion Exports */
+    handleAwaitComplete,
+
     /* Dialog exports */
     setDialogType,
     setIsDialogOpen,
     dialogType,
     isDialogOpen,
-
-    /* Finishing exports */
-    handleFinish,
-    isFinishing,
-    finishError,
   };
 };
 

@@ -17,13 +17,13 @@ declare module "@tanstack/react-table" {
       store_id: number,
       scheduled_time: string
     ) => void;
+    completeBucket: (bucket_id: number, store_id: number) => void;
     setIsActiveBucketModalOpen: (bucket_id: number, store_id: number) => void;
 
     /* These states will be used to convey buckets being activated on scheduled time */
     isActivating: boolean;
     isFinishing: boolean;
     isActivatingBucketId: number | undefined;
-    isFinishingBucketId: number | undefined;
   }
 }
 
@@ -75,21 +75,16 @@ export const BucketDataTableColumns: ColumnDef<
     header: "Bucket Status",
     cell: ({ row, table }) => {
       const status = row.original.status;
-      const {
-        isActivating,
-        isFinishing,
-        isActivatingBucketId,
-        isFinishingBucketId,
-      } = table.options.meta || {};
+      const { isActivating, isActivatingBucketId } = table.options.meta || {};
       const activationInProgress =
         isActivating &&
         isActivatingBucketId &&
         row.original.bucketId === isActivatingBucketId;
 
-      const finishingInProgress =
-        isFinishing &&
-        isFinishingBucketId &&
-        row.original.bucketId === isActivatingBucketId;
+      // const finishingInProgress =
+      //   isFinishing &&
+      //   isFinishingBucketId &&
+      //   row.original.bucketId === isActivatingBucketId;
 
       return (
         <Badge
@@ -107,9 +102,9 @@ export const BucketDataTableColumns: ColumnDef<
         >
           {activationInProgress
             ? "ACTIVATING..."
-            : finishingInProgress
-            ? "FINISHING..."
-            : status}
+            : // : finishingInProgress
+              // ? "FINISHING..."
+              status}
         </Badge>
       );
     },
@@ -141,8 +136,12 @@ export const BucketDataTableColumns: ColumnDef<
       const { bucketId, storeId, scheduledTime } = row.original;
 
       /* Extract row actions from table meta */
-      const { deleteBucket, activateBucket, setIsActiveBucketModalOpen } =
-        table.options.meta || {};
+      const {
+        deleteBucket,
+        activateBucket,
+        completeBucket,
+        setIsActiveBucketModalOpen,
+      } = table.options.meta || {};
 
       return (
         <div className="flex flex-row gap-2 items-center">
@@ -192,6 +191,8 @@ export const BucketDataTableColumns: ColumnDef<
                   ? () =>
                       setIsActiveBucketModalOpen &&
                       setIsActiveBucketModalOpen(bucketId, storeId)
+                  : isFinished
+                  ? () => completeBucket && completeBucket(bucketId, storeId)
                   : () => {}
               }
               className={`${

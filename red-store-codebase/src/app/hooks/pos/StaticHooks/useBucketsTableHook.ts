@@ -14,6 +14,7 @@ interface BucketTableProps {
   tableActions: {
     /* Modal actions */
     setIsActiveBucketModalOpen: Dispatch<SetStateAction<boolean>>;
+    setIsCompleteBucketModalOpen: Dispatch<SetStateAction<boolean>>;
 
     /* Server actions */
     deleteBucket: (buckets: { bucket_id: number; store_id: number }[]) => void;
@@ -22,6 +23,7 @@ interface BucketTableProps {
       store_id: number,
       scheduled_time: string
     ) => void;
+    completeBucket: (bucket_id: number, store_id: number) => void;
     setActivationId: Dispatch<
       SetStateAction<{
         bucket_id: number;
@@ -55,9 +57,11 @@ const useBucketTableHook = ({
   tableActions: {
     activateBucket,
     deleteBucket,
-    setIsActiveBucketModalOpen,
+    completeBucket,
     setDeleteIds,
     setActivationId,
+    setIsActiveBucketModalOpen,
+    setIsCompleteBucketModalOpen,
   },
 }: BucketTableProps) => {
   /* Table UI Interactions */
@@ -86,11 +90,15 @@ const useBucketTableHook = ({
         setActivationId({ bucket_id, store_id });
       },
 
+      completeBucket(bucket_id, store_id) {
+        completeBucket(bucket_id, store_id);
+        setIsCompleteBucketModalOpen(true);
+      },
+
       /* Boolean Holds */
       isActivatingBucketId: activeBucket?.bucket_id,
-      isFinishingBucketId: finishedBucketId,
-      isFinishing,
       isActivating,
+      isFinishing,
     },
   });
 

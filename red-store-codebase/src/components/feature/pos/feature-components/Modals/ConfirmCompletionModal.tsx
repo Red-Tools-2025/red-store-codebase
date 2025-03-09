@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-interface ConfirmActivateBucketModalProps {
+interface ConfirmCompletionBucketModalProps {
   isOpen: boolean;
   onClose: () => void;
   activateId: {
@@ -19,11 +19,9 @@ interface ConfirmActivateBucketModalProps {
   } | null;
 }
 
-const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
-  isOpen,
-  activateId,
-  onClose,
-}) => {
+const ConfirmCompletionBucketModal: React.FC<
+  ConfirmCompletionBucketModalProps
+> = ({ isOpen, activateId, onClose }) => {
   // const { handleRefreshBuckets } = usePos();
   // const { isActivating, handleActivate, activateError } =
   //   useBucketServerActions();
@@ -42,7 +40,7 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
-          <DialogTitle>Bucket Activation</DialogTitle>
+          <DialogTitle>Bucket Completion</DialogTitle>
           {/* {activateError && (
             <p className="text-sm text-red-500 mt-1">{activateError}</p>
           )} */}
@@ -74,4 +72,4 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
   );
 };
 
-export default ConfirmActivateBucketModal;
+export default ConfirmCompletionBucketModal;
