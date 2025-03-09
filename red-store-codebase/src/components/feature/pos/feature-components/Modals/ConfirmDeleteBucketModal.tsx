@@ -66,9 +66,8 @@ const ConfirmDeleteBucketModal: React.FC<ConfirmDeleteBucketModalProps> = ({
           <DialogDescription>
             Are you sure you want to delete this bucket ?
           </DialogDescription>
-          <div className="py-1 flex flex-col gap-2">
+          <div className=" flex flex-col gap-2">
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">Bucket Details</p>
               {details ? (
                 <ScrollArea className="w-[450px] border-none whitespace-nowrap rounded-md border">
                   <div className="flex w-max space-x-4 pt-2">
