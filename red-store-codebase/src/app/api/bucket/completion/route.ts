@@ -78,7 +78,11 @@ export async function POST(req: Request) {
 
     await db.bucket.update({
       where: { storeId_bucketId: { storeId, bucketId } },
-      data: { status: "COMPLETED", soldQty },
+      data: {
+        status: "COMPLETED",
+        soldQty,
+        completedTime: new Date(Date.now()),
+      },
     });
 
     return NextResponse.json(

@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!["ACTIVE", "INACTIVE"].includes(status)) {
+    if (!["ACTIVE", "INACTIVE", "FINISHED"].includes(status)) {
       // Validate status
       return NextResponse.json(
         {
@@ -74,7 +74,14 @@ export async function POST(req: Request) {
     // Update bucket status directly and check if any rows were affected
     const statusChange = await db.bucket.update({
       where: { storeId_bucketId: { storeId, bucketId } },
-      data: { status: status, soldQty },
+      data: {
+        status: status,
+        soldQty,
+        /* We only need to mark time for activation */
+        ...(status === "ACTIVE"
+          ? { activationTime: new Date(Date.now()) }
+          : {}),
+      },
     });
 
     if (!statusChange) {
