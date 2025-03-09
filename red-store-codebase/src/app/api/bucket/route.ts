@@ -117,8 +117,6 @@ export async function POST(req: Request) {
         soldQty: 0,
         createdAt: new Date(),
         scheduledTime,
-        activationTime: "",
-        completedTime: "",
         storeId: storeId,
         bucketSize: bucketQty,
         invId: invId,

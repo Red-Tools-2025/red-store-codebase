@@ -36,8 +36,9 @@ const ActiveBucketModal: React.FC<ActiveBucketModalProps> = ({
   useEffect(() => {
     if (!details) return;
 
-    const triggerTime = Date.now() + durationInSeconds * 1000; // Target trigger time
-
+    const triggerTime = details.activationTime
+      ? new Date(details.activationTime).getTime() + durationInSeconds * 1000
+      : 0; // Target trigger time
     const updateClock = () => {
       const currentTime = Date.now();
       const newTimeLeft = Math.max(

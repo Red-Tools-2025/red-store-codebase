@@ -148,8 +148,8 @@ model Bucket {
   soldQty        Int
   status         BucketStatus
   scheduledTime  DateTime
-  activationTime DateTime
-  completedTime  DateTime
+  activationTime DateTime?
+  completedTime  DateTime?
   storeManagerId String
   duration       Int
   store          Store         @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: NoAction, onUpdate: NoAction, map: "fk_store_bucket")
