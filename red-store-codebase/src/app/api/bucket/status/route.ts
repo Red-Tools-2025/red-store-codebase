@@ -97,7 +97,7 @@ export async function POST(req: Request) {
     // verfiy if stock is available for deduction, on client side not here
 
     const bucket_amt = statusChange.bucketSize === "FIFTY" ? 50 : 100;
-    let message = "";
+    let message = `Bucket status updated, is now ${statusChange.status}`;
 
     // Update inventory based on state of activity
     if (status === "ACTIVE") {

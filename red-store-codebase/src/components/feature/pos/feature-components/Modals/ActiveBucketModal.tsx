@@ -1,4 +1,5 @@
 import { usePos } from "@/app/contexts/pos/PosContext";
+import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,7 +27,8 @@ const ActiveBucketModal: React.FC<ActiveBucketModalProps> = ({
   isOpen,
   activateId,
 }) => {
-  const { bucketMap } = usePos();
+  const { bucketMap, handleRefreshBuckets } = usePos();
+  const { finishError, isFinishing, handleFinish } = useBucketServerActions();
   const details = activateId ? bucketMap.get(activateId.bucket_id) : undefined;
   const durationInSeconds = details ? details.duration : 0;
 
@@ -58,11 +60,20 @@ const ActiveBucketModal: React.FC<ActiveBucketModalProps> = ({
     return () => clearTimeout(updateClock as unknown as number); // Cleanup on unmount
   }, [details, durationInSeconds]);
 
+  const processFinish = async (bucket_id: number, store_id: number) => {
+    await handleFinish(bucket_id, store_id);
+    onClose();
+    handleRefreshBuckets();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
           <DialogTitle>Bucket Activation</DialogTitle>
+          {finishError && (
+            <p className="text-sm text-red-500 mt-1">{finishError}</p>
+          )}
           <DialogDescription>
             Details on your active bucket modal, for{" "}
             {details?.inventory?.invItem}
@@ -110,7 +121,17 @@ const ActiveBucketModal: React.FC<ActiveBucketModalProps> = ({
           </div>
         </DialogHeader>
         <DialogFooter>
-          <Button>Mark as Finished</Button>
+          <Button
+            disabled={!details || isFinishing}
+            onClick={() =>
+              void processFinish(
+                details?.bucketId as number,
+                details?.storeId as number
+              )
+            }
+          >
+            {isFinishing ? "Updating status...." : "Mark as Finished"}
+          </Button>
           <Button onClick={onClose} variant="secondary">
             Exit
           </Button>
