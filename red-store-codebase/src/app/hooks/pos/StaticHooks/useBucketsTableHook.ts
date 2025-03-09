@@ -93,6 +93,8 @@ const useBucketTableHook = ({
       completeBucket(bucket_id, store_id) {
         completeBucket(bucket_id, store_id);
         setIsCompleteBucketModalOpen(true);
+        /* Re-using active bucket selection state */
+        setActivationId({ bucket_id, store_id });
       },
 
       /* Boolean Holds */

@@ -31,10 +31,10 @@ export async function POST(req: Request) {
       );
     }
 
-    if (bucket.status !== "ACTIVE") {
+    if (bucket.status !== "FINISHED") {
       return NextResponse.json(
         {
-          error: "Bucket is not active and cannot be completed",
+          error: "Bucket is not finished and cannot be completed",
         },
         { status: 400 }
       );

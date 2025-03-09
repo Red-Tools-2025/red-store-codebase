@@ -25,6 +25,10 @@ const useBucketServerActions = () => {
   const [isFinishing, setIsFinishing] = useState<boolean>(false);
   const [finishError, setFinishError] = useState<string>("");
 
+  /* States for completion */
+  const [isCompleting, setIsCompleting] = useState<boolean>(false);
+  const [completionError, setCompletionError] = useState<string>("");
+
   /* All dialog states */
   const [dialogType, setDialogType] = useState<
     "ACTIVATE" | "DELETE" | "COMPLETE" | "FINISHED" | null
@@ -172,6 +176,42 @@ const useBucketServerActions = () => {
     setIsDialogOpen(true);
   };
 
+  /* Handler for marking bucket as completed */
+  const handleComplete = async (
+    bucket_id: number,
+    store_id: number,
+    remainingQty: number
+  ) => {
+    try {
+      setIsCompleting(true);
+      const response: AxiosResponse<{ message: string }> = await axios.post(
+        "/api/bucket/completion",
+        {
+          bucketId: bucket_id,
+          storeId: store_id,
+          remainingQty: remainingQty,
+        }
+      );
+      toast({
+        title: "Bucket Status Updated",
+        duration: 3000,
+        description: response.data.message,
+      });
+    } catch (error) {
+      console.log(error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.log(error.response.data);
+        setCompletionError(
+          error.response.data.error || "Error Activating bucket, try again"
+        );
+      } else {
+        setCompletionError("Error Activating bucket, try again");
+      }
+    } finally {
+      setIsCompleting(false);
+    }
+  };
+
   return {
     /* Creation exports */
     handleCreateBucket,
@@ -197,6 +237,9 @@ const useBucketServerActions = () => {
 
     /* Completion Exports */
     handleAwaitComplete,
+    handleComplete,
+    isCompleting,
+    completionError,
 
     /* Dialog exports */
     setDialogType,

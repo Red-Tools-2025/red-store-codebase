@@ -38,7 +38,7 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
       setIsFinishedBucketId(activateId.bucket_id);
       await handleActivate(activateId?.bucket_id, activateId?.store_id);
       handleRefreshBuckets();
-      onClose;
+      onClose();
     }
   };
 

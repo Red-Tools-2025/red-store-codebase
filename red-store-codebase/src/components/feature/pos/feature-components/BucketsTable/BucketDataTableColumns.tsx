@@ -75,16 +75,17 @@ export const BucketDataTableColumns: ColumnDef<
     header: "Bucket Status",
     cell: ({ row, table }) => {
       const status = row.original.status;
-      const { isActivating, isActivatingBucketId } = table.options.meta || {};
+      const { isActivating, isActivatingBucketId, isFinishing } =
+        table.options.meta || {};
       const activationInProgress =
         isActivating &&
         isActivatingBucketId &&
         row.original.bucketId === isActivatingBucketId;
 
-      // const finishingInProgress =
-      //   isFinishing &&
-      //   isFinishingBucketId &&
-      //   row.original.bucketId === isActivatingBucketId;
+      const finishingInProgress =
+        isFinishing &&
+        isActivatingBucketId &&
+        row.original.bucketId === isActivatingBucketId;
 
       return (
         <Badge
@@ -102,9 +103,9 @@ export const BucketDataTableColumns: ColumnDef<
         >
           {activationInProgress
             ? "ACTIVATING..."
-            : // : finishingInProgress
-              // ? "FINISHING..."
-              status}
+            : finishingInProgress
+            ? "FINISHING..."
+            : status}
         </Badge>
       );
     },
@@ -181,8 +182,8 @@ export const BucketDataTableColumns: ColumnDef<
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:text-blue-500 cursor-pointer"
             }   ${
-              isActive ? "ml-1 mr-[-4px]" : "ml-1"
-            } hover:text-blue-500 cursor-pointer transition-all`}
+              isActive ? "ml-1 mr-[-4px]" : isCompleted ? "" : "ml-1"
+            } transition-all`}
           />
           {isCompleted || isActive || isFinished ? (
             <SlOptionsVertical
@@ -197,7 +198,11 @@ export const BucketDataTableColumns: ColumnDef<
               }
               className={`${
                 isActive ? "h-5 w-5 pl-2" : "h-4 w-4 pl-1"
-              } hover:text-blue-500 cursor-pointer transition-all`}
+              } transition-all ${
+                isCompleted
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:text-blue-500 cursor-pointer"
+              } `}
             />
           ) : (
             <MdDeleteOutline
