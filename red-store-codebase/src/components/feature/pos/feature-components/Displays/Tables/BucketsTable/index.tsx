@@ -27,6 +27,7 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
   /* States for interaction modals*/
   const [isActiveBucketModalOpen, setIsActiveBucketModalOpen] =
     useState<boolean>(false);
+  const [finishedBucketId, setFinishedBucketId] = useState<number>(0);
 
   /* States for passing information about selected row items*/
   const [deleteIds, setDeleteIds] = useState<
@@ -44,6 +45,7 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
     dialogType,
     isDialogOpen,
     isActivating,
+    isFinishing,
   } = useBucketServerActions();
 
   const { table, setColumnFilters } = useBucketTableHook({
@@ -57,8 +59,10 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
       setDeleteIds: setDeleteIds,
     },
     tableMeta: {
-      isActivating: isActivating,
       activeBucket: activationId,
+      finishedBucketId: finishedBucketId,
+      isActivating: isActivating,
+      isFinishing: isFinishing,
     },
   });
 
@@ -82,6 +86,7 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
         deleteIds={deleteIds}
       />
       <ConfirmActivateBucketModal
+        setIsFinishedBucketId={setFinishedBucketId}
         isOpen={dialogType === "ACTIVATE" && isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         activateId={activationId}

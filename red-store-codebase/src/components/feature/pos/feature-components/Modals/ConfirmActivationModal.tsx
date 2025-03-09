@@ -9,20 +9,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Dispatch, SetStateAction } from "react";
 
 interface ConfirmActivateBucketModalProps {
   isOpen: boolean;
-  onClose: () => void;
   activateId: {
     bucket_id: number;
     store_id: number;
   } | null;
+  onClose: () => void;
+  setIsFinishedBucketId: Dispatch<SetStateAction<number>>;
 }
 
 const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
   isOpen,
   activateId,
   onClose,
+  setIsFinishedBucketId,
 }) => {
   const { handleRefreshBuckets } = usePos();
   const { isActivating, handleActivate, activateError } =
@@ -32,6 +35,7 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
 
   const processActivation = async () => {
     if (activateId) {
+      setIsFinishedBucketId(activateId.bucket_id);
       await handleActivate(activateId?.bucket_id, activateId?.store_id);
       handleRefreshBuckets();
       onClose;

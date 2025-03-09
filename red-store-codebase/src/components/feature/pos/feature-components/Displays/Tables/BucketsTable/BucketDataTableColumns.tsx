@@ -7,7 +7,6 @@ import { LiaEdit } from "react-icons/lia";
 import { MdDeleteOutline } from "react-icons/md";
 import { SlOptionsVertical } from "react-icons/sl";
 import { ImSwitch } from "react-icons/im";
-import { Dispatch, SetStateAction } from "react";
 
 /* Module for passing actions through column tables */
 declare module "@tanstack/react-table" {
@@ -22,7 +21,9 @@ declare module "@tanstack/react-table" {
 
     /* These states will be used to convey buckets being activated on scheduled time */
     isActivating: boolean;
+    isFinishing: boolean;
     isActivatingBucketId: number | undefined;
+    isFinishingBucketId: number | undefined;
   }
 }
 
@@ -74,10 +75,20 @@ export const BucketDataTableColumns: ColumnDef<
     header: "Bucket Status",
     cell: ({ row, table }) => {
       const status = row.original.status;
-      const { isActivating, isActivatingBucketId } = table.options.meta || {};
+      const {
+        isActivating,
+        isFinishing,
+        isActivatingBucketId,
+        isFinishingBucketId,
+      } = table.options.meta || {};
       const activationInProgress =
         isActivating &&
         isActivatingBucketId &&
+        row.original.bucketId === isActivatingBucketId;
+
+      const finishingInProgress =
+        isFinishing &&
+        isFinishingBucketId &&
         row.original.bucketId === isActivatingBucketId;
 
       return (
@@ -89,10 +100,16 @@ export const BucketDataTableColumns: ColumnDef<
               ? "default"
               : status === "COMPLETED"
               ? "outline"
+              : status === "FINISHED"
+              ? "finished"
               : "destructive"
           }
         >
-          {activationInProgress ? "ACTIVATING..." : status}
+          {activationInProgress
+            ? "ACTIVATING..."
+            : finishingInProgress
+            ? "FINISHING..."
+            : status}
         </Badge>
       );
     },
@@ -120,6 +137,7 @@ export const BucketDataTableColumns: ColumnDef<
     cell: ({ row, table }) => {
       const isCompleted = row.original.status === "COMPLETED";
       const isActive = row.original.status === "ACTIVE";
+      const isFinished = row.original.status === "FINISHED";
       const { bucketId, storeId, scheduledTime } = row.original;
 
       /* Extract row actions from table meta */
@@ -152,7 +170,7 @@ export const BucketDataTableColumns: ColumnDef<
                 )
               }
               className={`h-4 w-4 transition-all ${
-                isCompleted
+                isCompleted || isFinished || isActive
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:text-blue-500 cursor-pointer "
               }`}
@@ -160,14 +178,14 @@ export const BucketDataTableColumns: ColumnDef<
           )}
           <LiaEdit
             className={`h-5 w-5 transition-all ${
-              isCompleted
+              isCompleted || isFinished
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:text-blue-500 cursor-pointer"
             }   ${
               isActive ? "ml-1 mr-[-4px]" : "ml-1"
             } hover:text-blue-500 cursor-pointer transition-all`}
           />
-          {isCompleted || isActive ? (
+          {isCompleted || isActive || isFinished ? (
             <SlOptionsVertical
               onClick={
                 isActive

@@ -24,28 +24,28 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
   activateId,
   onClose,
 }) => {
-  const { handleRefreshBuckets } = usePos();
-  const { isActivating, handleActivate, activateError } =
-    useBucketServerActions();
+  // const { handleRefreshBuckets } = usePos();
+  // const { isActivating, handleActivate, activateError } =
+  //   useBucketServerActions();
 
-  console.log(activateId);
+  // console.log(activateId);
 
-  const processActivation = async () => {
-    if (activateId) {
-      await handleActivate(activateId?.bucket_id, activateId?.store_id);
-      handleRefreshBuckets();
-      onClose;
-    }
-  };
+  // const processActivation = async () => {
+  //   if (activateId) {
+  //     await handleActivate(activateId?.bucket_id, activateId?.store_id);
+  //     handleRefreshBuckets();
+  //     onClose;
+  //   }
+  // };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
           <DialogTitle>Bucket Activation</DialogTitle>
-          {activateError && (
+          {/* {activateError && (
             <p className="text-sm text-red-500 mt-1">{activateError}</p>
-          )}
+          )} */}
           <DialogDescription>
             Please Verify and confirm activation
           </DialogDescription>
@@ -60,10 +60,10 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
         )}
         <DialogFooter>
           <Button
-            onClick={() => void processActivation()}
-            disabled={isActivating || !activateId}
+          // onClick={() => void processActivation()}
+          // disabled={isActivating || !activateId}
           >
-            {isActivating ? "Activating..." : "Activate Bucket"}
+            {/* {isActivating ? "Activating..." : "Activate Bucket"} */}
           </Button>
           <Button variant={"secondary"} onClick={onClose}>
             Cancel

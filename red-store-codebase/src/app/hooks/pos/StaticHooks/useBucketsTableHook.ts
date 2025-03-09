@@ -43,13 +43,15 @@ interface BucketTableProps {
       bucket_id: number;
       store_id: number;
     } | null;
+    finishedBucketId: number;
     isActivating: boolean;
+    isFinishing: boolean;
   };
 }
 const useBucketTableHook = ({
   columns,
   data,
-  tableMeta: { activeBucket, isActivating },
+  tableMeta: { activeBucket, finishedBucketId, isActivating, isFinishing },
   tableActions: {
     activateBucket,
     deleteBucket,
@@ -85,8 +87,10 @@ const useBucketTableHook = ({
       },
 
       /* Boolean Holds */
-      isActivating: isActivating,
       isActivatingBucketId: activeBucket?.bucket_id,
+      isFinishingBucketId: finishedBucketId,
+      isFinishing,
+      isActivating,
     },
   });
 
