@@ -12,12 +12,12 @@ import {
 import { flexRender } from "@tanstack/react-table";
 import useBucketTableHook from "@/app/hooks/pos/StaticHooks/useBucketsTableHook";
 import BucketSearch from "./BucketSearch";
-import BucketDisplayControl from "../../../Panels/BucketDisplayControl";
+import BucketDisplayControl from "../Panels/BucketDisplayControl";
 import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
-import ConfirmDeleteBucketModal from "../../../Modals/ConfirmDeleteBucketModal";
-import ConfirmActivateBucketModal from "../../../Modals/ConfirmActivationModal";
-import ActiveBucketModal from "../../../Modals/ActiveBucketModal";
-import ConfirmCompletionBucketModal from "../../../Modals/ConfirmCompletionModal";
+import ConfirmDeleteBucketModal from "../Modals/ConfirmDeleteBucketModal";
+import ConfirmActivateBucketModal from "../Modals/ConfirmActivationModal";
+import ActiveBucketModal from "../Modals/ActiveBucketModal";
+import ConfirmCompletionBucketModal from "../Modals/ConfirmCompletionModal";
 
 /* Table props to resemble fetched UI on response */
 interface BucketTableProps {

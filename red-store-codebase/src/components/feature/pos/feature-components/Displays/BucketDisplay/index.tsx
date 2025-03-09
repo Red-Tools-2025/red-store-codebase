@@ -1,4 +1,4 @@
-import BucketTable from "../Tables/BucketsTable";
+import BucketTable from "../../BucketsTable";
 import { Bucket, Inventory } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";

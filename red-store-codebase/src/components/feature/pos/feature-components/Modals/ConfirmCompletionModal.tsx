@@ -47,6 +47,7 @@ const ConfirmCompletionBucketModal: React.FC<
           <DialogDescription>
             Please Verify and confirm activation
           </DialogDescription>
+          HI {activateId?.bucket_id}
         </DialogHeader>
         {activateId ? (
           <p className="text-sm">
