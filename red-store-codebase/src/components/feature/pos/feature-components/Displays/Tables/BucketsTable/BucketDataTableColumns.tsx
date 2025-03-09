@@ -164,7 +164,7 @@ export const BucketDataTableColumns: ColumnDef<
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:text-blue-500 cursor-pointer"
             }   ${
-              isActive ? "ml-1 mr-[-4px]" : ""
+              isActive ? "ml-1 mr-[-4px]" : "ml-1"
             } hover:text-blue-500 cursor-pointer transition-all`}
           />
           {isCompleted || isActive ? (
