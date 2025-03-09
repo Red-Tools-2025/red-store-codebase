@@ -7,6 +7,7 @@ import { LiaEdit } from "react-icons/lia";
 import { MdDeleteOutline } from "react-icons/md";
 import { SlOptionsVertical } from "react-icons/sl";
 import { ImSwitch } from "react-icons/im";
+import { ScheduleEntry } from "@/app/types/buckets/components";
 
 /* Module for passing actions through column tables */
 declare module "@tanstack/react-table" {
@@ -24,6 +25,8 @@ declare module "@tanstack/react-table" {
     isActivating: boolean;
     isFinishing: boolean;
     isActivatingBucketId: number | undefined;
+
+    scheduleMap: Map<string, ScheduleEntry>;
   }
 }
 
@@ -75,22 +78,28 @@ export const BucketDataTableColumns: ColumnDef<
     header: "Bucket Status",
     cell: ({ row, table }) => {
       const status = row.original.status;
-      const { isActivating, isActivatingBucketId, isFinishing } =
+      const { isActivating, isActivatingBucketId, isFinishing, scheduleMap } =
         table.options.meta || {};
-      const activationInProgress =
-        isActivating &&
-        isActivatingBucketId &&
-        row.original.bucketId === isActivatingBucketId;
 
+      const bucketId = row.original.bucketId;
+      const storeId = row.original.storeId;
+
+      // Get the scheduled entry for this bucket from scheduleMap
+      const scheduleEntry = scheduleMap?.get(`bucket-${bucketId}-${storeId}`);
+
+      // Check if the bucket is currently loading (activating or finishing)
+      const isLoading = scheduleEntry?.isLoading;
+
+      // Check if activation or finishing is in progress for this specific bucket
+      const activationInProgress =
+        isActivating && isActivatingBucketId === bucketId;
       const finishingInProgress =
-        isFinishing &&
-        isActivatingBucketId &&
-        row.original.bucketId === isActivatingBucketId;
+        isFinishing && isActivatingBucketId === bucketId;
 
       return (
         <Badge
           variant={
-            activationInProgress
+            activationInProgress || isLoading
               ? "progress"
               : status === "ACTIVE"
               ? "default"
@@ -101,7 +110,7 @@ export const BucketDataTableColumns: ColumnDef<
               : "destructive"
           }
         >
-          {activationInProgress
+          {activationInProgress || isLoading
             ? "ACTIVATING..."
             : finishingInProgress
             ? "FINISHING..."

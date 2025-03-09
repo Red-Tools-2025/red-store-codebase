@@ -1,3 +1,4 @@
+import { ScheduleEntry } from "@/app/types/buckets/components";
 import { Bucket, Inventory } from "@prisma/client";
 import {
   ColumnDef,
@@ -48,12 +49,19 @@ interface BucketTableProps {
     finishedBucketId: number;
     isActivating: boolean;
     isFinishing: boolean;
+    scheduleMap: Map<string, ScheduleEntry>;
   };
 }
 const useBucketTableHook = ({
   columns,
   data,
-  tableMeta: { activeBucket, finishedBucketId, isActivating, isFinishing },
+  tableMeta: {
+    activeBucket,
+    finishedBucketId,
+    isActivating,
+    isFinishing,
+    scheduleMap,
+  },
   tableActions: {
     activateBucket,
     deleteBucket,
@@ -101,6 +109,7 @@ const useBucketTableHook = ({
       isActivatingBucketId: activeBucket?.bucket_id,
       isActivating,
       isFinishing,
+      scheduleMap,
     },
   });
 

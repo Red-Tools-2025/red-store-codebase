@@ -18,6 +18,7 @@ import ConfirmDeleteBucketModal from "../Modals/ConfirmDeleteBucketModal";
 import ConfirmActivateBucketModal from "../Modals/ConfirmActivationModal";
 import ActiveBucketModal from "../Modals/ActiveBucketModal";
 import ConfirmCompletionBucketModal from "../Modals/ConfirmCompletionModal";
+import { usePos } from "@/app/contexts/pos/PosContext";
 
 /* Table props to resemble fetched UI on response */
 interface BucketTableProps {
@@ -51,6 +52,7 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
     isActivating,
     isFinishing,
   } = useBucketServerActions();
+  const { scheduleMap } = usePos();
 
   const { table, setColumnFilters } = useBucketTableHook({
     columns: BucketDataTableColumns,
@@ -65,6 +67,7 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
       setIsCompleteBucketModalOpen,
     },
     tableMeta: {
+      scheduleMap: scheduleMap,
       activeBucket: activationId,
       finishedBucketId: finishedBucketId,
       isActivating: isActivating,

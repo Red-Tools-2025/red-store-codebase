@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { CiClock2 } from "react-icons/ci";
+import { Bucket, Inventory } from "@prisma/client";
 
 interface ScheduleEntry {
   countdownTime: number;
@@ -18,14 +19,16 @@ interface ScheduleEntry {
 
 interface ScheduleModalProps {
   isOpen: boolean;
-  onClose: () => void;
   scheduleMap: Map<string, ScheduleEntry>;
+  bucketMap: Map<number, Bucket & { inventory: Inventory | null }>;
+  onClose: () => void;
 }
 
 const ScheduleModal: React.FC<ScheduleModalProps> = ({
   isOpen,
-  onClose,
   scheduleMap,
+  bucketMap,
+  onClose,
 }) => {
   // Local state to store a copy of scheduleMap
   const [localSchedule, setLocalSchedule] = useState<
@@ -41,7 +44,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[650px] font-inter">
+      <DialogContent className="max-w-[850px] font-inter">
         <DialogHeader>
           <DialogTitle>Scheduled Bucket Actions</DialogTitle>
           <DialogDescription>
@@ -51,12 +54,13 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
 
         <div className="flex flex-col gap-2 pt-2">
           {localSchedule.length > 0 ? (
-            <ScrollArea className="w-full max-h-[300px] border rounded-md">
+            <ScrollArea className="w-full max-h-[400px] border rounded-md">
               <table className="w-full border-collapse text-sm">
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="border p-2 text-left">Bucket ID</th>
                     <th className="border p-2 text-left">Action</th>
+                    <th className="border p-2 text-left">Product</th>
                     <th className="border p-2 text-left">Countdown</th>
                   </tr>
                 </thead>
@@ -64,11 +68,28 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
                   {localSchedule.map(
                     ([key, { countdownTime, loadingType }]) => {
                       const bucketId = key.split("-")[1]; // Extract bucket ID
+                      const bucketData = bucketMap.get(parseInt(bucketId));
+
                       return (
                         <tr key={key} className="border">
                           <td className="border p-2">{`B-#${bucketId}`}</td>
-                          <td className="border p-2 capitalize">
+                          <td
+                            className={`border p-2 capitalize ${
+                              loadingType === "activate"
+                                ? "bg-green-500 text-white font-md"
+                                : "bg-blue-500 text-white font-md"
+                            }`}
+                          >
                             {loadingType}
+                          </td>
+
+                          <td className="border p-2">
+                            <div className="flex flex-row items-center gap-3">
+                              <p>
+                                {bucketData?.inventory?.invItem || "No Name"}
+                              </p>
+                              <p className="text-xs py-0 text-black px-2 border border-gray-300 rounded-sm bg-gray-100">{`#${bucketData?.inventory?.invId}`}</p>
+                            </div>
                           </td>
                           <td className="border p-2 flex items-center gap-2 text-blue-600 bg-blue-100 px-2 rounded-md">
                             <CiClock2 />
