@@ -4,10 +4,13 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { IoIosStar } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 import { BsFillBucketFill } from "react-icons/bs";
+import { FaCalendarDays } from "react-icons/fa6";
+import { usePos } from "@/app/contexts/pos/PosContext";
 import { Bucket, Inventory, Store } from "@prisma/client";
 
 import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 import CreateBucketModal from "../../Modals/CreateBucketModal";
+import BucketsScheduleModal from "../../Modals/BucketsScheduleModal";
 
 interface ProductDisplayControlProps {
   selectedStore: Store | null;
@@ -29,7 +32,10 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   setClientSideItems,
 }) => {
   const { syncToServer } = useBrowserCacheStorage();
+  const { scheduleMap } = usePos();
   const [toggleFavorites, setToggleFavorites] = useState<boolean>(false);
+  const [isBucketScheduleModalOpen, setIsBucketScheduleModalOpen] =
+    useState<boolean>(false);
   const [isCreateBucketModalOpen, setIsCreateBucketModalOpen] =
     useState<boolean>(false);
 
@@ -47,6 +53,11 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
       <CreateBucketModal
         isOpen={isCreateBucketModalOpen}
         onClose={() => setIsCreateBucketModalOpen(false)}
+      />
+      <BucketsScheduleModal
+        isOpen={isBucketScheduleModalOpen}
+        onClose={() => setIsBucketScheduleModalOpen(false)}
+        scheduleMap={scheduleMap}
       />
       {selectedStore && selectedStore.storeId ? (
         <div className="flex gap-2">
@@ -92,6 +103,15 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
                 <div className="flex items-center">
                   <IoIosAddCircle className="mr-1 h-4 w-4" />
                   <p>Create Bucket</p>
+                </div>
+              </Button>
+              <Button
+                onClick={() => setIsBucketScheduleModalOpen(true)}
+                disabled={!scheduleMap}
+              >
+                <div className="flex items-center">
+                  <IoIosAddCircle className="mr-1 h-4 w-4" />
+                  <p>Bucket Schedule</p>
                 </div>
               </Button>
             </>

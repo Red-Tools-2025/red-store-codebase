@@ -7,6 +7,7 @@ import {
 } from "react";
 import { Bucket, Inventory, Store } from "@prisma/client";
 import { Cart } from "@/app/types/pos/cart";
+import { ScheduleEntry } from "@/app/types/buckets/components";
 
 interface PosContextType {
   inventoryItems: Inventory[] | null;
@@ -14,6 +15,7 @@ interface PosContextType {
   originalProducts: Inventory[] | null;
   buckets: (Bucket & { inventory: Inventory | null })[];
   bucketMap: Map<number, Bucket & { inventory: Inventory | null }>;
+  scheduleMap: Map<string, ScheduleEntry>;
   cartItems: Cart[];
   isLoading: boolean;
   isFetchingBuckets: boolean;
@@ -42,6 +44,7 @@ export const PosProvider = ({
   originalProducts,
   buckets,
   bucketMap,
+  scheduleMap,
   handleResync,
   handleRefreshBuckets,
   setCartItems,
@@ -54,6 +57,7 @@ export const PosProvider = ({
   originalProducts: Inventory[] | null;
   buckets: (Bucket & { inventory: Inventory | null })[];
   bucketMap: Map<number, Bucket & { inventory: Inventory | null }>;
+  scheduleMap: Map<string, ScheduleEntry>;
   cartItems: Cart[];
   isLoading: boolean;
   isFetchingBuckets: boolean;
@@ -80,6 +84,7 @@ export const PosProvider = ({
         buckets,
         bucketMap,
         bucketMode,
+        scheduleMap,
         handleResync,
         handleRefreshBuckets,
         setCartItems,

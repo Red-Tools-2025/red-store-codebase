@@ -9,6 +9,8 @@ import { Cart } from "../types/pos/cart";
 import useItems from "../hooks/pos/ServerHooks/useItems";
 import { usePosAuth } from "../providers/PosAuthProvider"; // Import the Auth Context
 import useBucketsFromServer from "../hooks/pos/ServerHooks/useBucketsFromServer";
+import useBucketAutoTrigger from "../hooks/pos/StaticHooks/useBucketAutoTriggers";
+import useBucketServerActions from "../hooks/pos/ServerHooks/useBucketServerActions";
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -16,6 +18,7 @@ interface POSLayoutProps {
 
 const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const { isAuthenticated, isGettingToken, userData } = usePosAuth();
+  const { handleActivate, handleFinish } = useBucketServerActions();
 
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
   const [cartItems, setCartItems] = useState<Cart[]>([]);
@@ -54,6 +57,13 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const { buckets, bucketMap, fetchError, isFetching, handleRefreshBuckets } =
     useBucketsFromServer(selectedStore?.storeId?.toString() || "");
 
+  const scheduleMap = useBucketAutoTrigger(
+    buckets,
+    handleActivate,
+    handleFinish,
+    handleRefreshBuckets
+  );
+
   // **Show loading while checking authentication**
   if (isGettingToken) {
     return <div>Loading authentication...</div>;
@@ -66,6 +76,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
 
   return (
     <PosProvider
+      scheduleMap={scheduleMap}
       selectedStore={selectedStore}
       favoriteProducts={favoriteProducts}
       originalProducts={originalProducts}
