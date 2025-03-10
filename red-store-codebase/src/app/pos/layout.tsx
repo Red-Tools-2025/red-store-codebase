@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
-import { Bucket, Inventory, Store } from "@prisma/client";
+import { Inventory, Store } from "@prisma/client";
 import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
 import { PosProvider } from "../contexts/pos/PosContext";
 import { Cart } from "../types/pos/cart";
@@ -26,7 +26,6 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
     []
   );
 
-  const [storeBuckets, setStoreBuckets] = useState<Bucket[]>([]);
   const [bucketMode, setBucketMode] = useState<boolean>(false);
 
   // Fetching store data and inventory data

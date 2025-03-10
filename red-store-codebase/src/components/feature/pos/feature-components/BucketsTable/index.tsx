@@ -29,8 +29,7 @@ const BucketTable: React.FC<BucketTableProps> = ({ buckets }) => {
   /* States for interaction modals*/
   const [isActiveBucketModalOpen, setIsActiveBucketModalOpen] =
     useState<boolean>(false);
-  const [isCompleteBucketModalOpen, setIsCompleteBucketModalOpen] =
-    useState<boolean>(false);
+  const [, setIsCompleteBucketModalOpen] = useState<boolean>(false);
   const [finishedBucketId, setFinishedBucketId] = useState<number>(0);
 
   /* States for passing information about selected row items*/

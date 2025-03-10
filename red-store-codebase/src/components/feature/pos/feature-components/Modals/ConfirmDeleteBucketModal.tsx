@@ -25,7 +25,7 @@ const ConfirmDeleteBucketModal: React.FC<ConfirmDeleteBucketModalProps> = ({
   deleteIds,
 }) => {
   const { toast } = useToast();
-  const { buckets, bucketMap, handleRefreshBuckets } = usePos();
+  const { bucketMap, handleRefreshBuckets } = usePos();
   const { deleteError, isDeleting, handleBucketDelete } =
     useBucketServerActions();
 

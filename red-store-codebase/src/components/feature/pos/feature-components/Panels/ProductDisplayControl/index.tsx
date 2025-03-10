@@ -27,7 +27,6 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   favoriteProducts,
   originalProducts,
   selectedStore,
-  buckets,
   setBucketMode,
   setClientSideItems,
 }) => {

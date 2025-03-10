@@ -145,6 +145,7 @@ const useBucketAutoTrigger = (
     storeId: number,
     loadingType: LoadingType
   ) => {
+    console.log({ loadingType });
     setScheduleMap((prev) => {
       const newMap = new Map(prev);
       if (newMap.has(key)) {

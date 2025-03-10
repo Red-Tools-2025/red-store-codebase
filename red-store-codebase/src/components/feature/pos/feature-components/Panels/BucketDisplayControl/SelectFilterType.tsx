@@ -29,7 +29,7 @@ const SelectFilterType: React.FC<SelectFilterTypeProps> = ({
   const [selectedOption, setSelectedOption] = useState<string | undefined>(
     undefined
   );
-  const [activeFilter, setActiveFilter] = useState<Boolean>(false);
+  const [activeFilter, setActiveFilter] = useState<boolean>(false);
 
   const handleSelectChange = (value: string) => {
     setSelectedOption(value);

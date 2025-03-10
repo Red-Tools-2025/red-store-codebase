@@ -11,6 +11,7 @@ import { ScheduleEntry } from "@/app/types/buckets/components";
 
 /* Module for passing actions through column tables */
 declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
     deleteBucket: (buckets: { bucket_id: number; store_id: number }[]) => void;
     activateBucket: (

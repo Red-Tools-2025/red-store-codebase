@@ -56,8 +56,8 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
         </DialogHeader>
         {activateId ? (
           <p className="text-sm">
-            Are you sure you want to activate this bucket ?, It's before of it's
-            scheduled time
+            Are you sure you want to activate this bucket ? It&apos;s before of
+            it&apos;s scheduled time
           </p>
         ) : (
           <></>

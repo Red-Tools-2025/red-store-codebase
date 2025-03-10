@@ -171,7 +171,7 @@ const useBucketServerActions = () => {
   /* Handle Bucket completion actions */
 
   /* Bucket Completion Await Action */
-  const handleAwaitComplete = async (bucket_id: number, store_id: number) => {
+  const handleAwaitComplete = async () => {
     setDialogType("COMPLETE");
     setIsDialogOpen(true);
   };

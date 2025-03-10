@@ -1,8 +1,6 @@
 import { GiFullMetalBucketHandle } from "react-icons/gi";
 
-interface BucketsEmptyStateProps {}
-
-const BucketsEmptyState: React.FC<BucketsEmptyStateProps> = ({}) => {
+const BucketsEmptyState = () => {
   return (
     <div className="py-10 flex items-center justify-center font-inter">
       <div className="flex flex-col items-center">
@@ -14,8 +12,8 @@ const BucketsEmptyState: React.FC<BucketsEmptyStateProps> = ({}) => {
             {"Buckets Not found"}
           </p>
           <p className="text-center font-[400] w-[450px] text-[16px] text-gray-600 mt-2">
-            Hey, your store doesn't seem to have any{" "}
-            <span className="underline decoration-gray-600">buckets</span>,
+            Hey, your store doesn&apos;t seem to have any{" "}
+            <span className="underline decoration-gray-600">buckets</span>
             {` Let's begin by adding some buckets to get you prepped for rush hours !!.`}
           </p>
         </div>

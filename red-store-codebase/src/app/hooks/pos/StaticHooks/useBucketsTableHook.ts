@@ -55,13 +55,7 @@ interface BucketTableProps {
 const useBucketTableHook = ({
   columns,
   data,
-  tableMeta: {
-    activeBucket,
-    finishedBucketId,
-    isActivating,
-    isFinishing,
-    scheduleMap,
-  },
+  tableMeta: { activeBucket, isActivating, isFinishing, scheduleMap },
   tableActions: {
     activateBucket,
     deleteBucket,
