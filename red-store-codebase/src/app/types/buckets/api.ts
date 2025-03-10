@@ -1,0 +1,55 @@
+import { Database } from "@/lib/supabase/database.types";
+import { Bucket, BucketSize, BucketStatus, Inventory } from "@prisma/client";
+
+/* Request Body types */
+export interface CreateBucketRequestBody {
+  storeId: number;
+  storeManagerId: string;
+  scheduledTime: Date;
+  bucket_item_details: {
+    invId: number;
+    bucketQty: BucketSize;
+  };
+}
+
+export interface UpdateBucketRequestBody {
+  bucketId: number;
+  storeId: number;
+  storeManagerId: string;
+  scheduledTime: Date;
+  bucketQty: BucketSize;
+}
+
+export interface DeleteBucketRequestBody {
+  buckets: {
+    bucketId: number;
+    storeId: number;
+  }[];
+}
+
+export interface BucketStatusRequestBody {
+  bucketId: number;
+  storeId: number;
+  status: BucketStatus;
+  soldQty: number;
+}
+
+export interface BucketCompletionRequestBody {
+  bucketId: number;
+  storeId: number;
+  remainingQty: number;
+}
+
+export type TimeSeries =
+  Database["public"]["Tables"]["inventory_timeseries"]["Row"];
+
+export interface FetchBucketListsRequestBody {
+  bucketId: number;
+  storeId: number;
+}
+
+/* Response Body Types */
+export interface CreateBucketResponseBody {
+  message: string;
+  bucket: Bucket & { inventory: Inventory };
+}
