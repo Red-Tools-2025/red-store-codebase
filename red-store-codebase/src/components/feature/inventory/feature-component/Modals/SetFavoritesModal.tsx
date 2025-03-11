@@ -18,6 +18,7 @@ import { InventoryKey } from "@/app/types/inventory/components";
 import { X } from "lucide-react";
 import useBrowserCache from "@/app/hooks/inventory/ServerHooks/useBrowserCache";
 import { Spinner } from "@/components/ui/spinner";
+import { MdOutlineRefresh } from "react-icons/md";
 
 interface SetFavoritesModalProps {
   isOpen: boolean;
@@ -34,7 +35,12 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
   searchKeys,
   storemanagerid,
 }) => {
-  const { getFavoritesForStore, storeFavoriteKeyToCache } = useBrowserCache();
+  const {
+    getFavoritesForStore,
+    storeFavoriteKeyToCache,
+    refreshFavoritesForStore,
+    fetchingFavorites,
+  } = useBrowserCache();
   const [search, setSearch] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<InventoryKey[]>([]);
   const [initialKeys, setInitialKeys] = useState<InventoryKey[]>([]);
@@ -103,14 +109,26 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
           <DialogTitle>Set Favorites</DialogTitle>
           <DialogDescription>
             Select the products you want to set as favorites. Be sure to choose
-            your fastest-moving products.
+            your fastest-moving products
           </DialogDescription>
         </DialogHeader>
 
         {/* Selected Products Display */}
         {selectedKeys.length > 0 && (
           <div className="text-[15px] flex flex-col">
-            <p className="font-medium">{`Current Favorites (${selectedKeys.length}/25)`}</p>
+            <div className="flex flex-row gap-2 items-center">
+              <p className="font-medium">{`Current Favorites (${selectedKeys.length}/25)`}</p>
+              <MdOutlineRefresh
+                onClick={() =>
+                  void refreshFavoritesForStore(
+                    store_id,
+                    storemanagerid,
+                    setSelectedKeys
+                  )
+                }
+                className="text-[23px] rounded-md bg-gray-100 border border-gray-400 hover:bg-gray-200 p-1 cursor-pointer"
+              />
+            </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {selectedKeys.map((key) => (
                 <span
@@ -131,10 +149,16 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
         )}
 
         {/* Search Input and Suggestions */}
-        {isUpdatingFavorites ? (
+        {isUpdatingFavorites || fetchingFavorites ? (
           <div className="flex flex-row gap-1 items-center">
             <Spinner className="h-5 text-gray-500" />
-            <p className="text-gray-500">Saving your favorites...</p>
+            <p className="text-gray-500">
+              {isUpdatingFavorites
+                ? "Saving your favorites..."
+                : fetchingFavorites
+                ? "Getting your favorites..."
+                : ""}
+            </p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
