@@ -13,33 +13,37 @@ interface ItemSelectionCardProps {
 }
 
 const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
-  const [cartCount, setCartCount] = useState<number>(0);
   const { cartItems, setCartItems } = usePos();
-  const { handleAddToCart, handleRemoveFromCart } = useCart();
+  const { handleAddToCart, handleCartItemQty } = useCart();
 
-  const handleCartCount = (sign: string) => {
-    if (sign === "negative") {
-      setCartCount((prev) => Math.max(prev - 1, 0));
-    } else {
-      setCartCount((prev) => Math.min(prev + 1, item.invItemStock));
-    }
-  };
+  const inCart = cartItems.some(
+    (cart_item) => cart_item.product_id === item.invId
+  );
 
   return (
     <div
+      onClick={() =>
+        handleAddToCart(
+          {
+            product_id: item.invId,
+            productQuantity: 1,
+            productBrand: item.invItemBrand ?? "",
+            productName: item.invItem,
+            productPrice: item.invItemPrice,
+            productCurrentStock: item.invItemStock,
+          },
+          cartItems,
+          setCartItems
+        )
+      }
       key={item.invId}
       className={`${
         cartItems.some((cart_item) => cart_item.product_id === item.invId)
           ? "bg-blue-500 text-white group"
           : "bg-white"
-      } border border-1 rounded-md p-3 flex flex-col h-40 justify-between`}
+      } border border-1 rounded-md py-5 px-3 flex flex-col h-40 justify-between`}
     >
-      <div className="flex justify-between items-center py-1">
-        <div className="flex text-xs gap-1">
-          <p>stock</p>
-          <IoIosArrowRoundForward />
-          <p>{item.invItemStock}</p>
-        </div>
+      {/* <div className="flex justify-between items-center py-1">
         {cartItems.some((cart_item) => cart_item.product_id === item.invId) ? (
           <MdDelete
             className="text-xl text-white transition-all cursor-pointer"
@@ -64,22 +68,18 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
             }
           />
         )}
-      </div>
+      </div> */}
       <div className={`flex flex-col gap-2`}>
         <p
           className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
-            cartItems.some((cart_item) => cart_item.product_id === item.invId)
-              ? "text-blue-500"
-              : ""
+            inCart ? "text-blue-500" : ""
           }`}
         >
           {item.invItemBrand}
         </p>
         <p
           className={`${
-            cartItems.some((cart_item) => cart_item.product_id === item.invId)
-              ? ""
-              : "group-hover:text-blue-600 transition-all"
+            inCart ? "" : "group-hover:text-blue-600 transition-all"
           }`}
         >
           {item.invItem}
@@ -87,19 +87,28 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
       </div>
       <div
         className={`flex text-sm items-end items-center justify-end gap-3 ${
-          cartItems.some((cart_item) => cart_item.product_id === item.invId)
-            ? "hidden"
-            : ""
+          inCart ? "text-white" : ""
         }`}
       >
-        <CiCirclePlus
-          onClick={() => handleCartCount("positive")}
-          className="text-2xl hover:cursor-pointer hover:text-blue-500 transition-all"
-        />
-        <p className="">{cartCount}</p>
         <CiCircleMinus
-          onClick={() => handleCartCount("negative")}
-          className="text-2xl hover:cursor-pointer hover:text-blue-500 transition-all"
+          onClick={() =>
+            handleCartItemQty(item.invId, "negative", setCartItems)
+          }
+          className={`text-2xl hover:cursor-pointer ${
+            inCart ? "" : " hover:text-blue-500"
+          }transition-all`}
+        />
+        <p className="">
+          {cartItems.find((i) => i.product_id === item.invId)
+            ?.productQuantity || 0}
+        </p>
+        <CiCirclePlus
+          onClick={() =>
+            handleCartItemQty(item.invId, "positive", setCartItems)
+          }
+          className={`text-2xl hover:cursor-pointer ${
+            inCart ? "" : "hover:text-blue-500"
+          }transition-all`}
         />
       </div>
     </div>
