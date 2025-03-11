@@ -1,10 +1,6 @@
 import { Inventory } from "@prisma/client";
-import { useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
-import { IoIosArrowRoundForward } from "react-icons/io";
-import { FaCartPlus } from "react-icons/fa";
 import { usePos } from "@/app/contexts/pos/PosContext";
-import { MdDelete } from "react-icons/md";
 
 import useCart from "@/app/hooks/pos/StaticHooks/useCart";
 
