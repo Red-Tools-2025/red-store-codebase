@@ -3,7 +3,6 @@ import { Inventory } from "@prisma/client";
 import {
   ColumnDef,
   ColumnFiltersState,
-  FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
