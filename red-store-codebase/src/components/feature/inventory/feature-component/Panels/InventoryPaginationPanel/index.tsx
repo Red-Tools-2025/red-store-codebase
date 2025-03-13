@@ -1,61 +1,71 @@
-import InventoryPageSizeSelector from "./InventoryPageSizeSelector";
+import { Inventory } from "@prisma/client";
+import { Table } from "@tanstack/react-table";
 
 interface InventoryPaginationPanelProps {
-  currentPage: number;
-  pageSize: number;
-  total_count: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  setPageSize: React.Dispatch<React.SetStateAction<number>>;
+  table: Table<Inventory>; // ✅ Accept `table` instance instead of currentPage, setCurrentPage
 }
 
 const InventoryPaginationPanel: React.FC<InventoryPaginationPanelProps> = ({
-  currentPage,
-  pageSize,
-  setCurrentPage,
-  setPageSize,
-  total_count,
+  table,
 }) => {
-  const totalPages = Math.ceil(total_count / pageSize); // Total pages rounded up
-
-  const handleNavigation = (direction: "next" | "previous") => {
-    if (direction === "next" && currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    } else if (direction === "previous" && currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+  const totalPages = table.getPageCount(); // ✅ Get total pages from TanStack Table
+  const currentPage = table.getState().pagination.pageIndex + 1; // ✅ Get 1-based index
 
   return (
     <div className="flex w-full justify-between items-center py-2 px-4 border border-t-0 rounded-b-md">
-      <InventoryPageSizeSelector
-        total_count={total_count}
-        pageSize={pageSize}
-        setCurrentPage={setCurrentPage}
-        setSelectedPageSize={setPageSize}
-      />
       <div className="mx-auto text-sm">{`${currentPage} of ${totalPages}`}</div>
+
       <div className="flex gap-2">
+        {/* First Page Button */}
         <button
-          onClick={() => handleNavigation("previous")}
-          disabled={currentPage === 1}
+          onClick={() => table.setPageIndex(0)}
+          disabled={!table.getCanPreviousPage()} // ✅ Disables if already on first page
           className={`border px-2 py-1 rounded-md text-sm transition-colors ${
-            currentPage === 1
+            !table.getCanPreviousPage()
               ? "border-gray-300 text-gray-400 cursor-not-allowed"
               : "border-gray-300 hover:text-blue-500 hover:border-blue-500"
           }`}
         >
-          Previous
+          {"<<"}
         </button>
+
+        {/* Previous Page Button */}
         <button
-          onClick={() => handleNavigation("next")}
-          disabled={currentPage === totalPages}
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()} // ✅ Disables if no previous page
           className={`border px-2 py-1 rounded-md text-sm transition-colors ${
-            currentPage === totalPages
+            !table.getCanPreviousPage()
               ? "border-gray-300 text-gray-400 cursor-not-allowed"
               : "border-gray-300 hover:text-blue-500 hover:border-blue-500"
           }`}
         >
-          Next
+          {"<"}
+        </button>
+
+        {/* Next Page Button */}
+        <button
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()} // ✅ Disables if no next page
+          className={`border px-2 py-1 rounded-md text-sm transition-colors ${
+            !table.getCanNextPage()
+              ? "border-gray-300 text-gray-400 cursor-not-allowed"
+              : "border-gray-300 hover:text-blue-500 hover:border-blue-500"
+          }`}
+        >
+          {">"}
+        </button>
+
+        {/* Last Page Button */}
+        <button
+          onClick={() => table.setPageIndex(totalPages - 1)}
+          disabled={!table.getCanNextPage()} // ✅ Disables if already on last page
+          className={`border px-2 py-1 rounded-md text-sm transition-colors ${
+            !table.getCanNextPage()
+              ? "border-gray-300 text-gray-400 cursor-not-allowed"
+              : "border-gray-300 hover:text-blue-500 hover:border-blue-500"
+          }`}
+        >
+          {">>"}
         </button>
       </div>
     </div>

@@ -26,6 +26,7 @@ export const InventoryDataTableColumns: ColumnDef<Inventory>[] = [
     header: "Quantity",
     cell: ({ row }) => row.getValue("invItemStock"),
   },
+  
   {
     accessorKey: "invItemPrice",
     header: ({ column }) => {
