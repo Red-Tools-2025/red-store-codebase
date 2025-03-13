@@ -65,19 +65,20 @@ model Role {
 }
 
 model Inventory {
-  invId          Int         @default(autoincrement()) @map("invid")
-  storeId        Int         @map("storeid")
-  storeManagerId String      @map("storemanagerid")
-  invItem        String      @map("invitem") @db.VarChar(255)
-  invItemBrand   String?     @map("invitembrand") @db.VarChar(255)
-  invItemStock   Int         @map("invitemstock")
-  invItemPrice   Int         @map("invitemprice")
-  invItemType    String?     @map("invitemtype") @db.VarChar(100)
-  invCreatedDate DateTime?   @default(now()) @map("invcreateddate") @db.Timestamp(6)
-  invItemBarcode String?     @map("invitembarcode") @db.VarChar(255)
-  invAdditional  Json?       @map("invadditional") @db.Json
+  invId          Int           @default(autoincrement()) @map("invid")
+  storeId        Int           @map("storeid")
+  storeManagerId String        @map("storemanagerid")
+  invItem        String        @map("invitem") @db.VarChar(255)
+  invItemBrand   String?       @map("invitembrand") @db.VarChar(255)
+  invItemStock   Int           @map("invitemstock")
+  invItemPrice   Int           @map("invitemprice")
+  invItemType    String?       @map("invitemtype") @db.VarChar(100)
+  invCreatedDate DateTime?     @default(now()) @map("invcreateddate") @db.Timestamp(6)
+  invItemBarcode String?       @map("invitembarcode") @db.VarChar(255)
+  invAdditional  Json?         @map("invadditional") @db.Json
   favorites      favorites[]
-  store          Store       @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: Cascade, onUpdate: NoAction, map: "fk_store_inventory")
+  buckets        Bucket[]      
+  store          Store         @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: Cascade, onUpdate: NoAction, map: "fk_store_inventory")
 
   @@id([storeId, invId])
   @@map("inventory")
@@ -91,6 +92,7 @@ model Store {
   storeStatus    Boolean     @map("storestatus")
   createdAt      DateTime?   @default(now()) @map("createdat") @db.Timestamptz(6)
   customfields   Json?
+  buckets        Bucket[]
   favorites      favorites[]
   inventory      Inventory[]
   User           User        @relation(fields: [storeManagerId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
@@ -123,7 +125,6 @@ model Employee {
   @@map("employee")
 }
 
-/// This table is a partition table and requires additional setup for migrations. Visit https://pris.ly/d/partition-tables for more info.
 model favorites {
   favid          Int       @default(autoincrement())
   storeid        Int
@@ -136,6 +137,39 @@ model favorites {
   store          Store     @relation(fields: [storeid, storemanagerid], references: [storeId, storeManagerId], onDelete: Cascade, onUpdate: NoAction, map: "fk_store_favorites")
 
   @@id([storeid, favid])
+}
+
+model Bucket {
+  bucketId       Int           @default(autoincrement())
+  storeId        Int
+  invId          Int
+  bucketSize     BucketSize
+  createdAt      DateTime      @default(now()) @db.Timestamp(6)
+  soldQty        Int
+  status         BucketStatus
+  scheduledTime  DateTime
+  activationTime DateTime?
+  completedTime  DateTime?
+  storeManagerId String
+  duration       Int
+  store          Store         @relation(fields: [storeId, storeManagerId], references: [storeId, storeManagerId], onDelete: NoAction, onUpdate: NoAction, map: "fk_store_bucket")
+  inventory      Inventory     @relation(fields: [storeId, invId], references: [storeId, invId], onDelete: Cascade, onUpdate: Cascade, map: "fk_bucket_item_id")
+
+  @@id([storeId, bucketId])
+  @@map("bucket")
+}
+
+enum BucketSize {
+  FIFTY
+  HUNDRED
+  ONE_FIFTY
+}
+
+enum BucketStatus {
+  ACTIVE
+  INACTIVE
+  FINISHED
+  COMPLETED
 }
 
 enum RoleType {

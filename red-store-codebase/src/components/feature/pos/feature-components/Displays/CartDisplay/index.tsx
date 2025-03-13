@@ -37,17 +37,7 @@ const CartDisplay = () => {
                 <p className="w-30">{item.productName}</p>
                 <div className="flex justify-between mt-2">
                   <p>{`x ${item.productQuantity}`}</p>
-                  <div className="flex gap-1 items-center">
-                    <CiCirclePlus
-                      onClick={() =>
-                        handleCartItemQty(
-                          item.product_id,
-                          "positive",
-                          setCartItems
-                        )
-                      }
-                      className="text-xl hover:cursor-pointer hover:text-blue-500 transition-all"
-                    />
+                  <div className="flex gap-2 items-center">
                     <CiCircleMinus
                       onClick={() =>
                         handleCartItemQty(
@@ -56,7 +46,17 @@ const CartDisplay = () => {
                           setCartItems
                         )
                       }
-                      className="text-xl hover:cursor-pointer hover:text-blue-500 transition-all"
+                      className="text-[21px] hover:cursor-pointer hover:text-blue-500 transition-all"
+                    />
+                    <CiCirclePlus
+                      onClick={() =>
+                        handleCartItemQty(
+                          item.product_id,
+                          "positive",
+                          setCartItems
+                        )
+                      }
+                      className="text-[21px] hover:cursor-pointer hover:text-blue-500 transition-all"
                     />
                     <MdOutlineDelete
                       className="text-xl text-red-300 hover:text-red-500 cursor-pointer transition-all"
