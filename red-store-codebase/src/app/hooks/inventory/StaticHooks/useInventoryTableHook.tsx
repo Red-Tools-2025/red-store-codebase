@@ -18,15 +18,15 @@ interface InventoryTableHookProps {
 }
 import { getPaginationRowModel } from "@tanstack/react-table"; // ✅ Add pagination model
 const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
-  const betweenFilter: FilterFn<any> = (row, columnId, filterValue) => {
-    const [min, max] = filterValue;
-    const value = row.getValue(columnId) as number;
-    return value >= min && value <= max;
-  };
+  // const betweenFilter: FilterFn<any> = (row, columnId, filterValue) => {
+  //   const [min, max] = filterValue;
+  //   const value = row.getValue(columnId) as number;
+  //   return value >= min && value <= max;
+  // };
 
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [isLoading, setIsLoading] = useState(false); // ✅ Add Loading State
+  // const [isLoading, setIsLoading] = useState(false); // ✅ Add Loading State
 
   const [pagination, setPagination] = useState({
     pageIndex: 0, // Default to first page (0-based index)
