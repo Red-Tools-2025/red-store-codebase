@@ -37,24 +37,19 @@ const TimePicker = ({
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentDate = new Date();
     const formattedDate = format(currentDate, "yyyy-MM-dd");
-
-    // Get selected time
     const selectedTime = e.target.value;
     const dateTimeString = `${formattedDate}T${selectedTime}:00`;
 
-    // Convert to UTC first
     const utcTime = fromZonedTime(
       dateTimeString,
       Intl.DateTimeFormat().resolvedOptions().timeZone
     );
 
-    // Convert UTC to user's local time dynamically
     const localTime = toZonedTime(
       utcTime,
       Intl.DateTimeFormat().resolvedOptions().timeZone
     );
 
-    // Format properly
     const finalFormattedTime = format(localTime, "yyyy-MM-dd HH:mm:ssXXX");
 
     onTimeSelect(finalFormattedTime);
@@ -172,26 +167,37 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
                           .toLowerCase()
                           .includes(search.toLowerCase())
                       )
-                      .map((product) => (
-                        <CommandItem
-                          key={product.invId}
-                          value={`${product.invId}-${product.invItem}`}
-                          onSelect={() => setSelectedProduct(product)}
-                          className="cursor-pointer px-3 py-2 text-sm flex items-center gap-3 rounded-md"
-                        >
-                          <p>
-                            {product.invItem.length > 30
-                              ? product.invItem.slice(0, 30) + "..."
-                              : product.invItem}
-                          </p>
-                          <span className="text-xs py-1 px-2 border border-gray-300 rounded-sm bg-gray-100">
-                            {product.invItemBrand}
-                          </span>
-                          <span className="text-xs py-1 px-2 border text-blue-600 border-blue-600 rounded-sm bg-blue-100">
-                            {product.invItemStock}
-                          </span>
-                        </CommandItem>
-                      ))}
+                      .map((product) => {
+                        const isOutOfStock = product.invItemStock === 0;
+                        return (
+                          <CommandItem
+                            key={product.invId}
+                            value={`${product.invId}-${product.invItem}`}
+                            onSelect={() => {
+                              if (!isOutOfStock) setSelectedProduct(product);
+                            }}
+                            className={`cursor-pointer px-3 py-2 text-sm flex items-center gap-3 rounded-md transition-all ${
+                              isOutOfStock
+                                ? "bg-red-100 text-red-600 opacity-50 cursor-not-allowed"
+                                : "hover:bg-gray-100"
+                            }`}
+                          >
+                            <p>
+                              {product.invItem.length > 30
+                                ? product.invItem.slice(0, 30) + "..."
+                                : product.invItem}
+                            </p>
+                            <span className="text-xs py-1 px-2 border border-gray-300 rounded-sm bg-gray-100">
+                              {product.invItemBrand}
+                            </span>
+                            <span className="text-xs py-1 px-2 border text-blue-600 border-blue-600 rounded-sm bg-blue-100">
+                              {isOutOfStock
+                                ? "Out of Stock"
+                                : product.invItemStock}
+                            </span>
+                          </CommandItem>
+                        );
+                      })}
                   </CommandGroup>
                 </CommandList>
               </Command>

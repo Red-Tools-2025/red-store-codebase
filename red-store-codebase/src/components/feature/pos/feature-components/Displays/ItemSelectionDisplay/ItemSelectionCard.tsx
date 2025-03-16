@@ -16,69 +16,44 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
     (cart_item) => cart_item.product_id === item.invId
   );
 
+  const isOutOfStock = item.invItemStock === 0;
+
   return (
     <div
-      onClick={() =>
-        handleAddToCart(
-          {
-            product_id: item.invId,
-            productQuantity: 1,
-            productBrand: item.invItemBrand ?? "",
-            productName: item.invItem,
-            productPrice: item.invItemPrice,
-            productCurrentStock: item.invItemStock,
-          },
-          cartItems,
-          setCartItems
-        )
-      }
+      onClick={() => {
+        if (!isOutOfStock) {
+          handleAddToCart(
+            {
+              product_id: item.invId,
+              productQuantity: 1,
+              productBrand: item.invItemBrand ?? "",
+              productName: item.invItem,
+              productPrice: item.invItemPrice,
+              productCurrentStock: item.invItemStock,
+            },
+            cartItems,
+            setCartItems
+          );
+        }
+      }}
       key={item.invId}
-      className={`${
-        cartItems.some((cart_item) => cart_item.product_id === item.invId)
-          ? "bg-blue-500 text-white group"
-          : "bg-white"
-      } border border-1 rounded-md py-5 px-3 flex flex-col h-40 justify-between`}
+      className={`
+        border border-1 rounded-md py-5 px-3 flex flex-col h-40 justify-between 
+        transition-all ${
+          isOutOfStock
+            ? "bg-red-100 text-red-500 cursor-not-allowed opacity-50"
+            : inCart
+            ? "bg-blue-500 text-white group cursor-pointer"
+            : "bg-white cursor-pointer"
+        }
+      `}
     >
-      {/* <div className="flex justify-between items-center py-1">
-        {cartItems.some((cart_item) => cart_item.product_id === item.invId) ? (
-          <MdDelete
-            className="text-xl text-white transition-all cursor-pointer"
-            onClick={() => handleRemoveFromCart(item.invId, setCartItems)}
-          />
-        ) : (
-          <FaCartPlus
-            className="text-xl hover:text-blue-500 transition-all cursor-pointer"
-            onClick={() =>
-              handleAddToCart(
-                {
-                  product_id: item.invId,
-                  productQuantity: cartCount,
-                  productBrand: item.invItemBrand ?? "",
-                  productName: item.invItem,
-                  productPrice: item.invItemPrice,
-                  productCurrentStock: item.invItemStock,
-                },
-                cartItems,
-                setCartItems
-              )
-            }
-          />
-        )}
-      </div> */}
-      <div className={`flex flex-col gap-2`}>
+      <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2 items-center">
-          <p
-            className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
-              inCart ? "text-blue-500" : ""
-            }`}
-          >
+          <p className="text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all">
             #{item.invId}
           </p>
-          <p
-            className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
-              inCart ? "text-blue-500" : ""
-            }`}
-          >
+          <p className="text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all">
             {item.invItemBrand}
           </p>
         </div>
@@ -89,31 +64,37 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
         >
           {item.invItem}
         </p>
+        {isOutOfStock && (
+          <p className="text-xs text-red-500 font-semibold">Out of Stock</p>
+        )}
       </div>
-      <div
-        className={`flex text-sm items-end items-center justify-end gap-3 ${
-          inCart ? "text-white" : ""
-        }`}
-      >
+
+      <div className="flex text-sm items-center justify-end gap-3">
         <CiCircleMinus
-          onClick={() =>
-            handleCartItemQty(item.invId, "negative", setCartItems)
-          }
-          className={`text-2xl hover:cursor-pointer ${
-            inCart ? "" : " hover:text-blue-500"
-          }transition-all`}
+          onClick={() => {
+            if (!isOutOfStock)
+              handleCartItemQty(item.invId, "negative", setCartItems);
+          }}
+          className={`text-2xl hover:cursor-pointer transition-all ${
+            isOutOfStock
+              ? "opacity-30 cursor-not-allowed"
+              : "hover:text-blue-500"
+          }`}
         />
-        <p className="">
+        <p>
           {cartItems.find((i) => i.product_id === item.invId)
             ?.productQuantity || 0}
         </p>
         <CiCirclePlus
-          onClick={() =>
-            handleCartItemQty(item.invId, "positive", setCartItems)
-          }
-          className={`text-2xl hover:cursor-pointer ${
-            inCart ? "" : "hover:text-blue-500"
-          }transition-all`}
+          onClick={() => {
+            if (!isOutOfStock)
+              handleCartItemQty(item.invId, "positive", setCartItems);
+          }}
+          className={`text-2xl hover:cursor-pointer transition-all ${
+            isOutOfStock
+              ? "opacity-30 cursor-not-allowed"
+              : "hover:text-blue-500"
+          }`}
         />
       </div>
     </div>
