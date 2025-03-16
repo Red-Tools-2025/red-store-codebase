@@ -188,7 +188,7 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
                             {product.invItemBrand}
                           </span>
                           <span className="text-xs py-1 px-2 border text-blue-600 border-blue-600 rounded-sm bg-blue-100">
-                            {product.invId}
+                            {product.invItemStock}
                           </span>
                         </CommandItem>
                       ))}
