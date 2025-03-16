@@ -66,7 +66,7 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
         )}
       </div> */}
       <div className={`flex flex-col gap-2`}>
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 items-center">
           <p
             className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
               inCart ? "text-blue-500" : ""
