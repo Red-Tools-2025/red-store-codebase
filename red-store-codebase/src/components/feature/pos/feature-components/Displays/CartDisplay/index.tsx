@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
+import ReturnsModal from "../../Modals/ReturnsModal";
 
 const CartDisplay = () => {
   const { setCartItems, cartItems, selectedStore } = usePos();
@@ -13,10 +14,15 @@ const CartDisplay = () => {
   const { saveToCache } = useBrowserCacheStorage();
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isReturnsModalOpen, setIsReturnsModalOpen] = useState<boolean>(false);
 
   return (
     <div className="w-80 ml-3 p-3 pt-0 flex flex-col  ">
       <Toaster />
+      <ReturnsModal
+        isOpen={isReturnsModalOpen}
+        onClose={() => setIsReturnsModalOpen(false)}
+      />
       <div className="flex flex-col justify-between">
         <p className="text-xl pb-3 font-semibold">Order Summary</p>
         {/* Scrollable container */}
@@ -77,7 +83,7 @@ const CartDisplay = () => {
 
           {/* Total and Checkout Button */}
           <div className="flex flex-col gap-1">
-            <div className="flex justify-between p-2 bg-gray-100 rounded-md">
+            <div className="flex justify-between px-2 bg-gray-100 rounded-md">
               <p className="font-semibold">Total :</p>
               <p>
                 {`₹
@@ -112,6 +118,7 @@ const CartDisplay = () => {
             >
               {isSaving ? "Saving..." : "Checkout"}
             </Button>
+            <Button onClick={() => setIsReturnsModalOpen(true)}>Returns</Button>
           </div>
         </div>
       </div>
