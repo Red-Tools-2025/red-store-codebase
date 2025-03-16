@@ -18,8 +18,10 @@ interface PosContextType {
   scheduleMap: Map<string, ScheduleEntry>;
   cartItems: Cart[];
   isLoading: boolean;
+  isReturning: boolean;
   isFetchingBuckets: boolean;
   fetchError: string;
+  returnsError: string;
   searchTerm: string;
   selectedStore: Store | null;
   bucketMode: boolean;
@@ -29,6 +31,13 @@ interface PosContextType {
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  handleReturns: (
+    returns: {
+      item_details: Inventory;
+      return_amt: number;
+    }[],
+    store_id: number
+  ) => Promise<void>;
 }
 
 const PosContext = createContext<PosContextType | undefined>(undefined);
@@ -38,8 +47,10 @@ export const PosProvider = ({
   inventoryItems,
   cartItems,
   isLoading,
+  isReturning,
   isFetchingBuckets,
   fetchError,
+  returnsError,
   searchTerm,
   selectedStore,
   bucketMode,
@@ -49,6 +60,7 @@ export const PosProvider = ({
   bucketMap,
   scheduleMap,
   handleResync,
+  handleReturns,
   handleRefreshBuckets,
   setCartItems,
   setBucketMode,
@@ -64,8 +76,10 @@ export const PosProvider = ({
   scheduleMap: Map<string, ScheduleEntry>;
   cartItems: Cart[];
   isLoading: boolean;
+  isReturning: boolean;
   isFetchingBuckets: boolean;
   fetchError: string;
+  returnsError: string;
   searchTerm: string;
   bucketMode: boolean;
   selectedStore: Store | null;
@@ -75,6 +89,13 @@ export const PosProvider = ({
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  handleReturns: (
+    returns: {
+      item_details: Inventory;
+      return_amt: number;
+    }[],
+    store_id: number
+  ) => Promise<void>;
 }) => {
   return (
     <PosContext.Provider
@@ -82,8 +103,10 @@ export const PosProvider = ({
         inventoryItems,
         cartItems,
         isLoading,
+        isReturning,
         isFetchingBuckets,
         fetchError,
+        returnsError,
         searchTerm,
         selectedStore,
         favoriteProducts,
@@ -93,6 +116,7 @@ export const PosProvider = ({
         bucketMode,
         scheduleMap,
         handleResync,
+        handleReturns,
         handleRefreshBuckets,
         setCartItems,
         setClientSideItems,

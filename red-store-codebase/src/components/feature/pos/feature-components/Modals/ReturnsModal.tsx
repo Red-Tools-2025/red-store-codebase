@@ -27,7 +27,14 @@ interface ReturnsModalProps {
 }
 
 const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
-  const { originalProducts, favoriteProducts, selectedStore } = usePos();
+  const {
+    originalProducts,
+    favoriteProducts,
+    selectedStore,
+    handleReturns,
+    isReturning,
+    returnsError,
+  } = usePos();
   const [search, setSearch] = useState<string>("");
   const [products, setProducts] = useState<Inventory[] | null>(
     originalProducts
@@ -75,14 +82,20 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
     );
   };
 
+  const processReturns = async () => {
+    await handleReturns(selectedProducts, selectedStore?.storeId ?? 0);
+    setSelectedProducts([]);
+    onClose();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[600px] font-inter">
         <DialogHeader>
           <DialogTitle>Return Products</DialogTitle>
-          {/* {finishError && (
-          <p className="text-sm text-red-500 mt-1">{finishError}</p>
-        )} */}
+          {returnsError && (
+            <p className="text-sm text-red-500 mt-1">{returnsError}</p>
+          )}
           <DialogDescription>
             Select products, from the list to mark as returns
           </DialogDescription>
@@ -204,16 +217,10 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
         )}
         <DialogFooter>
           <Button
-          // disabled={!details || isFinishing}
-          // onClick={() =>
-          //   void processFinish(
-          //     details?.bucketId as number,
-          //     details?.storeId as number
-          //   )
-          // }
+            disabled={selectedProducts.length === 0 || isReturning}
+            onClick={() => void processReturns()}
           >
-            {/* {isFinishing ? "Updating status...." : "Mark as Finished"} */}
-            Confirm Returns
+            {isReturning ? "Returning items...." : "Confirm Returns"}
           </Button>
           <Button onClick={onClose} variant="secondary">
             Exit
