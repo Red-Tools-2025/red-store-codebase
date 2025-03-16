@@ -15,7 +15,7 @@ interface InventoryTableHookProps {
   data: Inventory[];
   columns: ColumnDef<Inventory>[];
 }
-import { getPaginationRowModel } from "@tanstack/react-table"; // ✅ Add pagination model
+import { getPaginationRowModel } from "@tanstack/react-table";
 const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
   // const betweenFilter: FilterFn<any> = (row, columnId, filterValue) => {
   //   const [min, max] = filterValue;
@@ -25,7 +25,7 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
 
   const [sorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  // const [isLoading, setIsLoading] = useState(false); // ✅ Add Loading State
+  // const [isLoading, setIsLoading] = useState(false); //
 
   const [pagination, setPagination] = useState({
     pageIndex: 0, // Default to first page (0-based index)
@@ -38,13 +38,13 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(), // ✅ Enable pagination
+    getPaginationRowModel: getPaginationRowModel(), //
     state: {
       sorting,
       columnFilters,
       pagination, // ✅ Attach pagination state
     },
-    onPaginationChange: setPagination, // ✅ Handle pagination state change
+    onPaginationChange: setPagination, //
   });
 
   // ✅ TanStack API to get total pages
