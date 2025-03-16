@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
+import ReturnsModal from "../../Modals/ReturnsModal";
 
 const CartDisplay = () => {
   const { setCartItems, cartItems, selectedStore } = usePos();
@@ -13,14 +14,19 @@ const CartDisplay = () => {
   const { saveToCache } = useBrowserCacheStorage();
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isReturnsModalOpen, setIsReturnsModalOpen] = useState<boolean>(false);
 
   return (
     <div className="w-80 ml-3 p-3 pt-0 flex flex-col  ">
       <Toaster />
+      <ReturnsModal
+        isOpen={isReturnsModalOpen}
+        onClose={() => setIsReturnsModalOpen(false)}
+      />
       <div className="flex flex-col justify-between">
         <p className="text-xl pb-3 font-semibold">Order Summary</p>
         {/* Scrollable container */}
-        <div className="relative h-[450px] overflow-y-auto scrollbar-hide">
+        <div className="relative h-[440px] overflow-y-auto scrollbar-hide">
           {/* Gradient at the top */}
           <div className="absolute top-0 left-0 w-full h-6 bg-gradient-to-b from-white via-white/50 to-transparent pointer-events-none"></div>
 
@@ -112,6 +118,7 @@ const CartDisplay = () => {
             >
               {isSaving ? "Saving..." : "Checkout"}
             </Button>
+            <Button onClick={() => setIsReturnsModalOpen(true)}>Returns</Button>
           </div>
         </div>
       </div>

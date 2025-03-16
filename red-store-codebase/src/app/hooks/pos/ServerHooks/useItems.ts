@@ -1,7 +1,8 @@
 import { Inventory } from "@prisma/client";
-import axios from "axios";
+import axios, { AxiosResponse, isAxiosError } from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import useBrowserCache from "../../inventory/ServerHooks/useBrowserCache";
+import { useToast } from "@/hooks/use-toast";
 
 interface FetchProductsFetchResponse {
   message: string | null;
@@ -19,6 +20,7 @@ const useItems = (
   storeManagerId: string,
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>
 ) => {
+  const { toast } = useToast();
   const { getFavoritesForStore } = useBrowserCache();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -36,9 +38,45 @@ const useItems = (
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [isReturning, setIsReturning] = useState<boolean>(false);
+  const [returnsError, setReturnsError] = useState<string>("");
+
   const handleResync = () => {
     setResyncInventory(!resyncInventory);
     setIsLoading(true);
+  };
+
+  const handleReturns = async (
+    returns: { item_details: Inventory; return_amt: number }[],
+    store_id: number
+  ) => {
+    try {
+      setIsReturning(true);
+
+      // Send the return request to the backend
+      const response: AxiosResponse<{ message: string }> = await axios.post(
+        "/api/cart/bulk/returns",
+        {
+          returns: returns,
+          store_id: store_id,
+        }
+      );
+
+      if (response?.data?.message) {
+        toast({
+          title: "Returns Processed",
+          description: "Returned items have been added back to inventory.",
+        });
+      }
+    } catch (err) {
+      if (isAxiosError(err) && err.response) {
+        setReturnsError(err.response.data.message);
+      } else {
+        setReturnsError("Something went wrong while processing returns.");
+      }
+    } finally {
+      setIsReturning(false);
+    }
   };
 
   useEffect(() => {
@@ -104,6 +142,9 @@ const useItems = (
 
   return {
     handleResync,
+    handleReturns,
+    isReturning,
+    returnsError,
     isLoading,
     favoriteProducts,
     originalProducts,
