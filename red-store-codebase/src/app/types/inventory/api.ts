@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonValue } from "@prisma/client/runtime/library";
 import { Database } from "../../../lib/supabase/database.types";
+import { Inventory } from "@prisma/client";
 
 //interface for the incoming request body for adding inventory
 export interface AddInventoryRequestBody {
@@ -86,6 +87,14 @@ export interface ProcessBulkCartRequest {
     }[];
     purchase_time: string;
   }[]; // Array of cart items for bulk processing
+  store_id: number;
+}
+
+export interface ProcessBulkReturnRequest {
+  returns: {
+    item_details: Inventory;
+    return_amt: number;
+  }[];
   store_id: number;
 }
 
