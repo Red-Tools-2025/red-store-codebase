@@ -20,6 +20,7 @@ interface PosContextType {
   isLoading: boolean;
   isFetchingBuckets: boolean;
   fetchError: string;
+  searchTerm: string;
   selectedStore: Store | null;
   bucketMode: boolean;
   handleResync: () => void;
@@ -27,6 +28,7 @@ interface PosContextType {
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const PosContext = createContext<PosContextType | undefined>(undefined);
@@ -38,6 +40,7 @@ export const PosProvider = ({
   isLoading,
   isFetchingBuckets,
   fetchError,
+  searchTerm,
   selectedStore,
   bucketMode,
   favoriteProducts,
@@ -50,6 +53,7 @@ export const PosProvider = ({
   setCartItems,
   setBucketMode,
   setClientSideItems,
+  setSearchTerm,
 }: {
   children: ReactNode;
   inventoryItems: Inventory[] | null;
@@ -62,6 +66,7 @@ export const PosProvider = ({
   isLoading: boolean;
   isFetchingBuckets: boolean;
   fetchError: string;
+  searchTerm: string;
   bucketMode: boolean;
   selectedStore: Store | null;
   handleResync: () => void;
@@ -69,6 +74,7 @@ export const PosProvider = ({
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   return (
     <PosContext.Provider
@@ -78,6 +84,7 @@ export const PosProvider = ({
         isLoading,
         isFetchingBuckets,
         fetchError,
+        searchTerm,
         selectedStore,
         favoriteProducts,
         originalProducts,
@@ -90,6 +97,7 @@ export const PosProvider = ({
         setCartItems,
         setClientSideItems,
         setBucketMode,
+        setSearchTerm,
       }}
     >
       {children}

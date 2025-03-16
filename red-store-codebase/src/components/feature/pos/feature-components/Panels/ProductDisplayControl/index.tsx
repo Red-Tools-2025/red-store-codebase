@@ -11,6 +11,7 @@ import { Bucket, Inventory, Store } from "@prisma/client";
 import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 import CreateBucketModal from "../../Modals/CreateBucketModal";
 import BucketsScheduleModal from "../../Modals/BucketsScheduleModal";
+import { Input } from "@/components/ui/input";
 
 interface ProductDisplayControlProps {
   selectedStore: Store | null;
@@ -31,7 +32,7 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   setClientSideItems,
 }) => {
   const { syncToServer } = useBrowserCacheStorage();
-  const { scheduleMap, bucketMap } = usePos();
+  const { scheduleMap, bucketMap, setSearchTerm } = usePos();
   const [toggleFavorites, setToggleFavorites] = useState<boolean>(false);
   const [isBucketScheduleModalOpen, setIsBucketScheduleModalOpen] =
     useState<boolean>(false);
@@ -60,7 +61,11 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
         onClose={() => setIsBucketScheduleModalOpen(false)}
       />
       {selectedStore && selectedStore.storeId ? (
-        <div className="flex justify-between items-center">
+        <div
+          className={`flex justify-between items-center ${
+            !bucketMode ? "w-[70%]" : ""
+          }`}
+        >
           {/* Left group */}
           <div className="flex gap-2">
             {!bucketMode ? (
@@ -141,6 +146,16 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
                   <p>View Schedule</p>
                 </div>
               </Button>
+            )}
+            {/* Search Bar */}
+            {!bucketMode && (
+              <Input
+                className="border-gray-300 w-[300px] text-sm transition-all placeholder:text-gray-400"
+                placeholder="Search product..."
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                }}
+              />
             )}
           </div>
         </div>
