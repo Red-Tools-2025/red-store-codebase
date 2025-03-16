@@ -20,13 +20,18 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const { isAuthenticated, isGettingToken, userData } = usePosAuth();
   const { handleActivate, handleFinish } = useBucketServerActions();
 
+  // States for stores, and items
   const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
   const [cartItems, setCartItems] = useState<Cart[]>([]);
   const [clientSideItems, setClientSideItems] = useState<Inventory[] | null>(
     []
   );
 
+  // States for buckets
   const [bucketMode, setBucketMode] = useState<boolean>(false);
+
+  // States for search
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   // Fetching store data and inventory data
   const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
@@ -83,6 +88,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       isLoading={isLoadingProducts}
       isFetchingBuckets={isFetching}
       fetchError={fetchError}
+      searchTerm={searchTerm}
       inventoryItems={clientSideItems}
       bucketMode={bucketMode}
       setCartItems={setCartItems}
@@ -90,6 +96,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       handleRefreshBuckets={handleRefreshBuckets}
       setClientSideItems={setClientSideItems}
       setBucketMode={setBucketMode}
+      setSearchTerm={setSearchTerm}
     >
       <div className="p-5 font-inter">
         {isLoadingStores ? (

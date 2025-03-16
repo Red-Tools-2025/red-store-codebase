@@ -66,13 +66,22 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
         )}
       </div> */}
       <div className={`flex flex-col gap-2`}>
-        <p
-          className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
-            inCart ? "text-blue-500" : ""
-          }`}
-        >
-          {item.invItemBrand}
-        </p>
+        <div className="flex flex-row gap-2">
+          <p
+            className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
+              inCart ? "text-blue-500" : ""
+            }`}
+          >
+            #{item.invId}
+          </p>
+          <p
+            className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
+              inCart ? "text-blue-500" : ""
+            }`}
+          >
+            {item.invItemBrand}
+          </p>
+        </div>
         <p
           className={`${
             inCart ? "" : "group-hover:text-blue-600 transition-all"
