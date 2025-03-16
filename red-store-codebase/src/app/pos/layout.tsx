@@ -48,9 +48,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   } = useItems(
     selectedStore ? String(selectedStore.storeId) : "",
     userData?.storeManagerId ?? "",
-    setClientSideItems,
-    1,
-    20
+    setClientSideItems
   );
 
   const { buckets, bucketMap, fetchError, isFetching, handleRefreshBuckets } =

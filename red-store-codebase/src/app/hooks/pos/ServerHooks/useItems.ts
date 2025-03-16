@@ -6,7 +6,6 @@ import useBrowserCache from "../../inventory/ServerHooks/useBrowserCache";
 interface FetchProductsFetchResponse {
   message: string | null;
   inventoryItems: Inventory[] | null;
-  total_count: number;
 }
 
 interface FavoriteProductsFetchResponse {
@@ -18,9 +17,7 @@ interface FavoriteProductsFetchResponse {
 const useItems = (
   storeId: string,
   storeManagerId: string,
-  setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>,
-  currentPage: number,
-  pageSize: number
+  setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>
 ) => {
   const { getFavoritesForStore } = useBrowserCache();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -49,13 +46,11 @@ const useItems = (
       try {
         setIsLoading(true);
         const { data } = await axios.get<FetchProductsFetchResponse>(
-          "/api/inventory/products",
+          "/api/inventory/products/getproducts",
           {
             params: {
               storeId,
               storeManagerId,
-              page: currentPage,
-              pageSize: pageSize,
             },
           }
         );
@@ -105,15 +100,7 @@ const useItems = (
 
     fetchData();
     fetchFavorites();
-  }, [
-    storeId,
-    storeManagerId,
-    currentPage,
-    pageSize,
-    resyncInventory,
-    message,
-    error,
-  ]);
+  }, [storeId, storeManagerId, resyncInventory, message, error]);
 
   return {
     handleResync,
