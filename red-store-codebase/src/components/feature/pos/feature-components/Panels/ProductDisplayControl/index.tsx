@@ -12,6 +12,7 @@ import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheS
 import CreateBucketModal from "../../Modals/CreateBucketModal";
 import BucketsScheduleModal from "../../Modals/BucketsScheduleModal";
 import { Input } from "@/components/ui/input";
+import SyncModal from "../../Modals/SyncModal";
 
 interface ProductDisplayControlProps {
   selectedStore: Store | null;
@@ -31,7 +32,7 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   setBucketMode,
   setClientSideItems,
 }) => {
-  const { syncToServer } = useBrowserCacheStorage();
+  const { syncToServer, isSyncingToInventory } = useBrowserCacheStorage();
   const { scheduleMap, bucketMap, setSearchTerm } = usePos();
   const [toggleFavorites, setToggleFavorites] = useState<boolean>(false);
   const [isBucketScheduleModalOpen, setIsBucketScheduleModalOpen] =
@@ -50,6 +51,7 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   return (
     <>
       {/* All action modals here */}
+      <SyncModal isOpen={true} />
       <CreateBucketModal
         isOpen={isCreateBucketModalOpen}
         onClose={() => setIsCreateBucketModalOpen(false)}

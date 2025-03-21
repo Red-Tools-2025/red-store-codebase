@@ -61,11 +61,7 @@ const SalesDataTable: React.FC<SalesDataTableProps> = ({
     "Sale Amount",
   ];
 
-  salesData.map((data) => {
-    if (data.product_id === 339) {
-      console.log(data);
-    }
-  });
+  console.log(salesData);
 
   const cleanedData = useMemo(() => {
     if (!salesData || salesData.length === 0) return [];

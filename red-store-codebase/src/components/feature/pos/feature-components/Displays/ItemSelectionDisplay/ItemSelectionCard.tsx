@@ -50,10 +50,18 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
     >
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2 items-center">
-          <p className="text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all">
+          <p
+            className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
+              inCart ? "text-gray-800" : ""
+            }`}
+          >
             #{item.invId}
           </p>
-          <p className="text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all">
+          <p
+            className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
+              inCart ? "text-gray-800" : ""
+            }`}
+          >
             {item.invItemBrand}
           </p>
         </div>
@@ -76,6 +84,9 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
               handleCartItemQty(item.invId, "negative", setCartItems);
           }}
           className={`text-2xl hover:cursor-pointer transition-all ${
+            inCart ? "hover:text-white" : ""
+          }
+          ${
             isOutOfStock
               ? "opacity-30 cursor-not-allowed"
               : "hover:text-blue-500"
@@ -91,6 +102,8 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
               handleCartItemQty(item.invId, "positive", setCartItems);
           }}
           className={`text-2xl hover:cursor-pointer transition-all ${
+            inCart ? "hover:text-white" : ""
+          } ${
             isOutOfStock
               ? "opacity-30 cursor-not-allowed"
               : "hover:text-blue-500"

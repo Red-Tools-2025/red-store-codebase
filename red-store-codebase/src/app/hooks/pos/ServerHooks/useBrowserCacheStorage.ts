@@ -2,7 +2,7 @@ import { usePos } from "@/app/contexts/pos/PosContext";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { openDB, DBSchema } from "idb";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 // Define the IndexedDB Schema
 interface POSDbBuffer extends DBSchema {
@@ -26,6 +26,10 @@ interface POSDbBuffer extends DBSchema {
 const useBrowserCacheStorage = () => {
   const { toast } = useToast();
   const { setCartItems, setClientSideItems, handleResync } = usePos();
+
+  const [isSyncingToInventory, setIsSyncingToInventory] =
+    useState<boolean>(false);
+
   // Initializing the browser DB for object storage
   const initDB = openDB<POSDbBuffer>("pos-buffer", 1, {
     upgrade(db) {
@@ -89,6 +93,7 @@ const useBrowserCacheStorage = () => {
       });
       return;
     }
+    setIsSyncingToInventory(true);
     const bulkPayload = sales_records.reduce((acc, record) => {
       const existingRecord = acc.find(
         (r) => r.purchase_time === record.purchase_time
@@ -125,10 +130,12 @@ const useBrowserCacheStorage = () => {
         title: "Sync Failed",
         description: "Failed to sync sales to server.",
       });
+    } finally {
+      setIsSyncingToInventory(false);
     }
   };
 
-  return { saveToCache, syncToServer };
+  return { saveToCache, syncToServer, isSyncingToInventory };
 };
 
 export default useBrowserCacheStorage;

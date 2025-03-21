@@ -16,13 +16,13 @@ import useSalesData from "@/app/hooks/sales/useSalesData";
 const SalesControlPanel = () => {
   const { selectedStore } = useSales();
   const currentDate = new Date();
-  const endDate = currentDate.toISOString().split("T")[0];
-  const startDate = new Date();
-  startDate.setMonth(currentDate.getMonth() - 1);
-  const defaultStartDate = startDate.toISOString().split("T")[0];
+  const startDate = currentDate.toISOString().split("T")[0];
+  const end = new Date();
+  end.setMonth(currentDate.getMonth() + 1);
+  const endDate = end.toISOString().split("T")[0];
 
   const { startDateState, endDateState, handleDateChange } = useDateRange(
-    defaultStartDate,
+    startDate,
     endDate
   );
 

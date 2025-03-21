@@ -45,6 +45,8 @@ const useSalesData = (
           }
         );
 
+        console.log(data);
+
         setSalesData(data.data || []);
         setTotalPages(data.total_pages || 1);
         setTotalCount(data.total_count || 0);
