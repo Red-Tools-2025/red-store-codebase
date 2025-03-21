@@ -52,9 +52,16 @@ const SalesDataTable: React.FC<SalesDataTableProps> = ({
 
     return inventoryData.filter((entry) => {
       const entryDate = new Date(entry.time);
-      const matchesStartDate =
-        startDate === "" || entryDate >= new Date(startDate);
-      const matchesEndDate = endDate === "" || entryDate <= new Date(endDate);
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+
+      // end date to include all times of that day by setting to 23:59:59
+      if (end) {
+        end.setHours(23, 59, 59, 999);
+      }
+
+      const matchesStartDate = !start || entryDate >= new Date(startDate);
+      const matchesEndDate = !end || entryDate <= new Date(endDate);
 
       return matchesStartDate && matchesEndDate;
     });

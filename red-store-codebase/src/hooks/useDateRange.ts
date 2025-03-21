@@ -6,10 +6,17 @@ const useDateRange = (defaultStartDate: string, defaultEndDate: string) => {
   const [startDateState, setStartDate] = useState(defaultStartDate);
   const [endDateState, setEndDate] = useState(defaultEndDate);
 
-  const handleDateChange = (dateRange: any) => {
-    if (dateRange && dateRange.from && dateRange.to) {
-      setStartDate(dateRange.from.toISOString().split("T")[0]);
-      setEndDate(dateRange.to.toISOString().split("T")[0]);
+  const formatDate = (date: Date | undefined) => {
+    if (!date) return "";
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+      .toISOString()
+      .split("T")[0];
+  };
+
+  const handleDateChange = (from: Date | undefined, to: Date | undefined) => {
+    if (from && to) {
+      setStartDate(formatDate(from)); // Converts properly
+      setEndDate(formatDate(to));
     }
   };
 
