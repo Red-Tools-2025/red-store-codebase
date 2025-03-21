@@ -1,7 +1,7 @@
 import { TableCell } from "@/components/ui/table";
 import TableLayout from "@/components/feature/management/layouts/TableLayout";
 import { useMemo } from "react";
-import { motion } from "framer-motion"; // Import motion for animation
+import { motion } from "framer-motion";
 
 // Helper function to format numbers with commas
 const formatNumberWithCommas = (
@@ -16,7 +16,7 @@ const formatNumberWithCommas = (
 };
 
 interface SalesDataTableProps {
-  inventoryData: {
+  salesData: {
     time: string;
     store_id: number;
     product_id: number;
@@ -24,21 +24,35 @@ interface SalesDataTableProps {
     received_stock: number;
     closing_stock: number;
     sales: number;
-    mrp_per_bottle: number;
-    sale_amount: number;
+    mrp_per_bottle: string;
+    sale_amount: string;
+    product_name?: string;
   }[];
   startDate: string;
   endDate: string;
 }
 
+interface SaleRecord {
+  time: string;
+  store_id: number;
+  product_id: number;
+  opening_stock: number;
+  received_stock: number;
+  closing_stock: number;
+  sales: number;
+  mrp_per_bottle: number;
+  sale_amount: number;
+  product_name?: string;
+}
+
 const SalesDataTable: React.FC<SalesDataTableProps> = ({
-  inventoryData,
+  salesData,
   startDate,
   endDate,
 }) => {
   const headers = [
-    "Date",
-    "Product ID",
+    "ID #",
+    "Product",
     "Opening Stock",
     "Received Stock",
     "Closing Stock",
@@ -47,39 +61,106 @@ const SalesDataTable: React.FC<SalesDataTableProps> = ({
     "Sale Amount",
   ];
 
-  const filteredData = useMemo(() => {
-    if (!inventoryData) return [];
+  salesData.map((data) => {
+    if (data.product_id === 339) {
+      console.log(data);
+    }
+  });
 
-    return inventoryData.filter((entry) => {
+  const cleanedData = useMemo(() => {
+    if (!salesData || salesData.length === 0) return [];
+
+    console.log("Raw sales data:", salesData);
+
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    if (end) end.setHours(23, 59, 59, 999);
+
+    // Filter data by date range
+    const filteredData = salesData.filter((entry) => {
       const entryDate = new Date(entry.time);
-      const start = startDate ? new Date(startDate) : null;
-      const end = endDate ? new Date(endDate) : null;
-
-      // end date to include all times of that day by setting to 23:59:59
-      if (end) {
-        end.setHours(23, 59, 59, 999);
-      }
-
-      const matchesStartDate = !start || entryDate >= new Date(startDate);
-      const matchesEndDate = !end || entryDate <= new Date(endDate);
-
-      return matchesStartDate && matchesEndDate;
+      return (!start || entryDate >= start) && (!end || entryDate <= end);
     });
-  }, [inventoryData, startDate, endDate]);
 
-  const tableRows = filteredData.map((entry, index) => (
+    if (filteredData.length === 0) return [];
+
+    console.log("Filtered data:", filteredData);
+
+    // Group data by product_id to get distinct products
+    const productMap: Map<number, SaleRecord> = new Map();
+
+    // First pass - identify distinct products and their first record within range
+    filteredData.forEach((entry) => {
+      const productId = entry.product_id;
+
+      if (!productMap.has(productId)) {
+        productMap.set(productId, {
+          time: entry.time,
+          store_id: entry.store_id,
+          product_id: productId,
+          product_name: entry.product_name,
+          opening_stock: 0, // We'll set this properly in the next step
+          received_stock: 0,
+          closing_stock: 0,
+          sales: 0,
+          sale_amount: 0,
+          mrp_per_bottle: parseFloat(entry.mrp_per_bottle),
+        });
+      }
+    });
+
+    // For each product, find the earliest and latest records
+    const productIds = Array.from(productMap.keys());
+
+    productIds.forEach((productId) => {
+      const productEntries = filteredData
+        .filter((entry) => entry.product_id === productId)
+        .sort(
+          (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
+        );
+
+      if (productEntries.length > 0) {
+        const firstEntry = productEntries[0];
+        const lastEntry = productEntries[productEntries.length - 1];
+
+        // Get the product record
+        const record = productMap.get(productId)!;
+
+        // Set the opening stock from the first record
+        record.opening_stock = firstEntry.opening_stock;
+
+        // Set the closing stock from the last record
+        record.closing_stock = lastEntry.closing_stock;
+
+        // Calculate total received stock and sales across all entries
+        let totalReceivedStock = 0;
+        let totalSales = 0;
+        let totalSaleAmount = 0;
+
+        productEntries.forEach((entry) => {
+          totalReceivedStock += entry.received_stock;
+          totalSales += entry.sales;
+          totalSaleAmount += parseFloat(entry.sale_amount);
+        });
+
+        record.received_stock = totalReceivedStock;
+        record.sales = totalSales;
+        record.sale_amount = totalSaleAmount;
+      }
+    });
+
+    return Array.from(productMap.values());
+  }, [salesData, startDate, endDate]);
+
+  const tableRows = cleanedData.map((entry, index) => (
     <motion.tr
       key={index}
-      className={`cursor-pointer ${
-        index % 2 === 0 ? "bg-white" : "bg-gray-100"
-      }`}
-      whileHover={{ backgroundColor: "#cdffcd" }} // Green hover effect
-      transition={{ duration: 0.3 }}
+      className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
     >
       <TableCell className="font-inter">
-        {new Date(entry.time).toLocaleDateString()}
+        {formatNumberWithCommas(entry.product_id)}
       </TableCell>
-      <TableCell className="pl-6 font-inter">{entry.product_id}</TableCell>
+      <TableCell className="pl-6 font-inter">{entry.product_name}</TableCell>
       <TableCell className="pl-6 font-inter">
         {formatNumberWithCommas(entry.opening_stock)}
       </TableCell>
@@ -103,7 +184,7 @@ const SalesDataTable: React.FC<SalesDataTableProps> = ({
 
   return (
     <div className="flex flex-col mt-3">
-      {filteredData.length > 0 ? (
+      {cleanedData.length > 0 ? (
         <TableLayout TableColumnValues={headers}>{tableRows}</TableLayout>
       ) : (
         <div className="text-center p-4 bg-red-100 text-red-700 rounded-md">

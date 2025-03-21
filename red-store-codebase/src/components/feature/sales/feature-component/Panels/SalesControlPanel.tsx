@@ -2,13 +2,16 @@
 import { useState } from "react";
 import SalesDataTable from "@/components/feature/sales/feature-component/Tables/SalesDataTable";
 import { DatePickerWithRange } from "@/components/feature/sales/feature-component/DatePicker/DatePickerWithRange";
-import useInventoryData from "@/app/hooks/sales/useInventoryData";
+// import useSalesData from "@/app/hooks/sales/useSalesData";
 import useDateRange from "@/hooks/useDateRange";
 import { useSales } from "@/app/contexts/sales/SalesContext";
 import { FileTypeDialog } from "@/components/feature/sales/feature-component/FileType/FileTypeDialog";
 import SalesPaginationPanel from "./SalesPaginationPanel";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
+import useSalesDataOriginal from "@/hooks/useSalesDataOriginal";
+import useSalesData from "@/app/hooks/sales/useSalesData";
+// import useSalesData from "@/app/hooks/sales/useSalesData";
 
 const SalesControlPanel = () => {
   const { selectedStore } = useSales();
@@ -28,13 +31,13 @@ const SalesControlPanel = () => {
 
   const selectedStoreId = selectedStore?.storeId as number;
   const {
-    inventoryData,
+    salesData,
     totalPages,
     loading,
     totalCount,
     setRefreshInventory,
     refreshInventory,
-  } = useInventoryData(
+  } = useSalesData(
     currentPage,
     startDateState,
     endDateState,
@@ -65,7 +68,7 @@ const SalesControlPanel = () => {
         </div>
       ) : (
         <SalesDataTable
-          inventoryData={inventoryData}
+          salesData={salesData}
           startDate={startDateState}
           endDate={endDateState}
         />
@@ -76,7 +79,7 @@ const SalesControlPanel = () => {
           <button
             onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
             disabled={
-              currentPage === 1 || !inventoryData || inventoryData.length === 0
+              currentPage === 1 || !salesData || salesData.length === 0
             }
             className="px-6 py-2 bg-white text-black border border-gray-300 rounded-xl disabled:opacity-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
           >
@@ -87,8 +90,8 @@ const SalesControlPanel = () => {
             onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
             disabled={
               currentPage === totalPages ||
-              !inventoryData ||
-              inventoryData.length === 0
+              !salesData ||
+              salesData.length === 0
             }
             className="px-6 py-2 bg-white text-black border border-gray-300 rounded-xl disabled:opacity-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
           >
