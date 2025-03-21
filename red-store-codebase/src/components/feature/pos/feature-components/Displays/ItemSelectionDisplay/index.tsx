@@ -22,7 +22,7 @@ const ItemSelectionDisplay: React.FC<ItemSelectionDisplayProps> = ({
             ?.filter(
               (item) =>
                 item.invItem.includes(searchTerm) ||
-                item.invId.toString().includes(searchTerm)
+                item.invItemBrand?.toString().includes(searchTerm)
             )
             .map((item) => (
               <ItemSelectionCard key={item.invId} item={item} />
