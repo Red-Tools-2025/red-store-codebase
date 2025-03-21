@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { IoIosStar } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 import { BsFillBucketFill } from "react-icons/bs";
@@ -32,26 +32,45 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   setBucketMode,
   setClientSideItems,
 }) => {
-  const { syncToServer, isSyncingToInventory } = useBrowserCacheStorage();
+  const { syncToServer, isSyncingToInventory, syncProgress } =
+    useBrowserCacheStorage();
   const { scheduleMap, bucketMap, setSearchTerm } = usePos();
+
+  // State for favorites
   const [toggleFavorites, setToggleFavorites] = useState<boolean>(false);
+
+  // States for bucket modals
   const [isBucketScheduleModalOpen, setIsBucketScheduleModalOpen] =
     useState<boolean>(false);
   const [isCreateBucketModalOpen, setIsCreateBucketModalOpen] =
     useState<boolean>(false);
 
+  // Toggler for favorites
   const handleToggleFavorites = () => {
     setToggleFavorites(!toggleFavorites);
     setClientSideItems(!toggleFavorites ? favoriteProducts : originalProducts);
   };
 
+  // Toggler for Buckets
   const handleToggleBucketMode = () => setBucketMode(!bucketMode);
+
+  // Auto Sync Logic
+  useEffect(() => {
+    if (!selectedStore?.storeId) return;
+
+    const syncInterval = setInterval(() => {
+      console.log("Syncing to server..."); // Debugging log
+      syncToServer(selectedStore.storeId);
+    }, 45 * 60 * 1000); // Sync every 30 seconds
+
+    return () => clearInterval(syncInterval); // Cleanup on unmount
+  }, [selectedStore?.storeId]);
 
   /* Dynamic Display control render based on bucket mode*/
   return (
     <>
       {/* All action modals here */}
-      <SyncModal isOpen={true} />
+      <SyncModal isOpen={isSyncingToInventory} syncProgress={syncProgress} />
       <CreateBucketModal
         isOpen={isCreateBucketModalOpen}
         onClose={() => setIsCreateBucketModalOpen(false)}

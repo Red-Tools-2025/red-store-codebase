@@ -27,8 +27,10 @@ const useBrowserCacheStorage = () => {
   const { toast } = useToast();
   const { setCartItems, setClientSideItems, handleResync } = usePos();
 
+  // States for sync logic
   const [isSyncingToInventory, setIsSyncingToInventory] =
     useState<boolean>(false);
+  const [syncProgress, setSyncProgress] = useState<number>(10);
 
   // Initializing the browser DB for object storage
   const initDB = openDB<POSDbBuffer>("pos-buffer", 1, {
@@ -94,11 +96,11 @@ const useBrowserCacheStorage = () => {
       return;
     }
     setIsSyncingToInventory(true);
+    setSyncProgress(10);
     const bulkPayload = sales_records.reduce((acc, record) => {
       const existingRecord = acc.find(
         (r) => r.purchase_time === record.purchase_time
       );
-
       if (existingRecord) {
         existingRecord.purchases.push(record.cartItem);
       } else {
@@ -107,16 +109,19 @@ const useBrowserCacheStorage = () => {
           purchase_time: record.purchase_time,
         });
       }
+      setSyncProgress(40);
       return acc;
     }, [] as { purchases: POSDbBuffer["sales"]["value"]["cartItem"][]; purchase_time: string }[]);
 
     try {
+      setSyncProgress(60);
       const update_response = await axios.post("/api/cart/bulk", {
         sales_records: bulkPayload,
         store_id,
       });
 
       if (update_response.status === 200) {
+        setSyncProgress(80);
         await db.clear("sales");
         handleResync();
         toast({
@@ -131,11 +136,12 @@ const useBrowserCacheStorage = () => {
         description: "Failed to sync sales to server.",
       });
     } finally {
+      setSyncProgress(100);
       setIsSyncingToInventory(false);
     }
   };
 
-  return { saveToCache, syncToServer, isSyncingToInventory };
+  return { saveToCache, syncToServer, isSyncingToInventory, syncProgress };
 };
 
 export default useBrowserCacheStorage;
