@@ -72,7 +72,7 @@ export async function POST(req: Request) {
             product_name: inventoryItem.invItem, // Added product_name
             opening_stock: cartItem.product_current_stock, // Fix here, due to nature of cache
             received_stock: 0,
-            closing_stock: inventoryItem.invItemStock - productQuantity,
+            closing_stock: cartItem.product_current_stock - productQuantity,
             store_id: store_id,
             time: record.purchase_time,
           };
