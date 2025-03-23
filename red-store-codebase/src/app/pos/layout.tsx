@@ -48,6 +48,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const {
     handleResync,
     handleReturns,
+    setFavoriteProducts,
     isReturning,
     returnsError,
     isLoading: isLoadingProducts,
@@ -99,6 +100,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       handleReturns={handleReturns}
       handleRefreshBuckets={handleRefreshBuckets}
       setClientSideItems={setClientSideItems}
+      setFavoriteProducts={setFavoriteProducts}
       setBucketMode={setBucketMode}
       setSearchTerm={setSearchTerm}
     >

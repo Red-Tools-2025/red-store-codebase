@@ -139,6 +139,7 @@ const useItems = (
   return {
     handleResync,
     handleReturns,
+    setFavoriteProducts,
     isReturning,
     returnsError,
     isLoading,

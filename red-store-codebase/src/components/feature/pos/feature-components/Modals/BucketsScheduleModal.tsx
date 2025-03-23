@@ -40,7 +40,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
       // Convert Map to an array and store it in state
       setLocalSchedule(Array.from(scheduleMap.entries()));
     }
-  }, [isOpen, scheduleMap]); // Update when modal opens or scheduleMap changes
+  }, [isOpen, scheduleMap, bucketMap]); // Update when modal opens, scheduleMap or bucketMap changes
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

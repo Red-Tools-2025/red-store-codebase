@@ -66,13 +66,8 @@ const useBucketServerActions = () => {
     const scheduledTime = new Date(scheduled_time);
     const currentTime = new Date();
 
-    // Prompt the confirmation modal, only if activation preceeds scheduled time
-    if (scheduledTime > currentTime) {
-      setDialogType("ACTIVATE");
-      setIsDialogOpen(true);
-    }
-
-    await handleActivate(bucket_id, store_id);
+    setDialogType("ACTIVATE");
+    setIsDialogOpen(true);
   };
 
   /* Hook call for activating (or pausing) a bucket */

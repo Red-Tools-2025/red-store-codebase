@@ -29,6 +29,7 @@ interface PosContextType {
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
+  setFavoriteProducts: Dispatch<SetStateAction<Inventory[] | null>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   handleReturns: (
     returns: {
@@ -63,6 +64,7 @@ export const PosProvider = ({
   setCartItems,
   setBucketMode,
   setClientSideItems,
+  setFavoriteProducts,
   setSearchTerm,
 }: {
   children: ReactNode;
@@ -85,6 +87,7 @@ export const PosProvider = ({
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
+  setFavoriteProducts: Dispatch<SetStateAction<Inventory[] | null>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   handleReturns: (
     returns: {
@@ -116,6 +119,7 @@ export const PosProvider = ({
         handleRefreshBuckets,
         setCartItems,
         setClientSideItems,
+        setFavoriteProducts,
         setBucketMode,
         setSearchTerm,
       }}

@@ -82,6 +82,7 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
 
   const handleCloseModal = () => {
     setSelectedProduct(null);
+    setProducts(null);
     onClose();
   };
 

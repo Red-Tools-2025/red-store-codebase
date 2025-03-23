@@ -1,4 +1,5 @@
 import { usePos } from "@/app/contexts/pos/PosContext";
+import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +26,8 @@ interface ConfirmCompletionBucketModalProps {
 const ConfirmCompletionBucketModal: React.FC<
   ConfirmCompletionBucketModalProps
 > = ({ isOpen, activateId, onClose }) => {
-  const { handleRefreshBuckets, bucketMap, handleResync, inventoryItems } =
+  const { updateCacheItemCount } = useBrowserCacheStorage();
+  const { handleRefreshBuckets, bucketMap, inventoryItems, favoriteProducts } =
     usePos();
   const { handleComplete, isCompleting, completionError } =
     useBucketServerActions();
@@ -45,9 +47,9 @@ const ConfirmCompletionBucketModal: React.FC<
     setRemainingQty(value);
   };
   const bucket = activateId ? bucketMap.get(activateId.bucket_id) : undefined;
-  const inventoryItem = inventoryItems?.find(
-    (item) => item.invId === bucket?.invId
-  );
+  const inventoryItem =
+    inventoryItems?.find((item) => item.invId === bucket?.invId) ??
+    favoriteProducts?.find((item) => item.invId === bucket?.invId);
 
   const processCompletion = async () => {
     if (activateId && remainingQty !== null && remainingQty >= 0) {
@@ -58,7 +60,8 @@ const ConfirmCompletionBucketModal: React.FC<
         inventoryItem ?? null
       );
       handleRefreshBuckets();
-      handleResync();
+      // remaining quantity to be incremented hence pass it on as -ve
+      updateCacheItemCount(inventoryItem?.invId as number, -remainingQty);
       onClose();
     }
   };

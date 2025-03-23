@@ -32,21 +32,18 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
     <div
       onClick={() => {
         if (!isDisabled) {
-          // handleAddToCart(
-          //   {
-          //     product_id: item.invId,
-          //     productQuantity: 1,
-          //     productBrand: item.invItemBrand ?? "",
-          //     productName: item.invItem,
-          //     productPrice: item.invItemPrice,
-          //     productCurrentStock: item.invItemStock,
-          //   },
-          //   cartItems,
-          //   setCartItems
-          // );
-          if (bucket?.bucketId !== undefined) {
-            console.log(bucketMap.get(bucket.bucketId));
-          }
+          handleAddToCart(
+            {
+              product_id: item.invId,
+              productQuantity: 1,
+              productBrand: item.invItemBrand ?? "",
+              productName: item.invItem,
+              productPrice: item.invItemPrice,
+              productCurrentStock: item.invItemStock,
+            },
+            cartItems,
+            setCartItems
+          );
         }
       }}
       key={item.invId}

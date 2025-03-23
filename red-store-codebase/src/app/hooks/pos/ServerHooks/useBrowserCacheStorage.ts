@@ -25,7 +25,12 @@ interface POSDbBuffer extends DBSchema {
 
 const useBrowserCacheStorage = () => {
   const { toast } = useToast();
-  const { setCartItems, setClientSideItems, handleResync } = usePos();
+  const {
+    setCartItems,
+    setClientSideItems,
+    handleResync,
+    setFavoriteProducts,
+  } = usePos();
 
   // States for sync logic
   const [isSyncingToInventory, setIsSyncingToInventory] =
@@ -54,8 +59,24 @@ const useBrowserCacheStorage = () => {
     try {
       for (const record of records) {
         await db.add("sales", record); // Ensure each record has a unique `cartItem.product_id`
+
         // ensures the client side inventory view is updated
         setClientSideItems((prev) =>
+          prev
+            ? prev.map((item) =>
+                item.invId === record.cartItem.product_id
+                  ? {
+                      ...item,
+                      invItemStock:
+                        item.invItemStock - record.cartItem.productQuantity,
+                    }
+                  : item
+              )
+            : prev
+        );
+
+        // ensures client side favorites is updated
+        setFavoriteProducts((prev) =>
           prev
             ? prev.map((item) =>
                 item.invId === record.cartItem.product_id
@@ -150,19 +171,37 @@ const useBrowserCacheStorage = () => {
   Returns marking --> Return mark should increment cached item count as in server
   */
 
-  const updateCacheItemCount = (product_id, update_count) => {
+  const updateCacheItemCount = (product_id: number, update_count: number) => {
+    // client side originals
     setClientSideItems((prev) =>
       prev
         ? prev.map((item) =>
             item.invId === product_id
               ? {
                   ...item,
-                  invItemStock:
-                    /* 
+                  /* 
                     Activation scenarios follow a decrement so pass in a positive count value
                     Return scenarios follow an increment so pass in a negative count value
                     */
-                    item.invItemStock - update_count,
+                  invItemStock: item.invItemStock - update_count,
+                }
+              : item
+          )
+        : prev
+    );
+
+    // client side favorites
+    setFavoriteProducts((prev) =>
+      prev
+        ? prev.map((item) =>
+            item.invId === product_id
+              ? {
+                  ...item,
+                  /* 
+                    Activation scenarios follow a decrement so pass in a positive count value
+                    Return scenarios follow an increment so pass in a negative count value
+                    */
+                  invItemStock: item.invItemStock - update_count,
                 }
               : item
           )
