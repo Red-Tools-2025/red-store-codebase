@@ -84,7 +84,7 @@ const useItems = (
       try {
         setIsLoading(true);
         const { data } = await axios.get<FetchProductsFetchResponse>(
-          "/api/inventory/products/getproducts",
+          "/api/inventory/products/getproducts/pos",
           {
             params: {
               storeId,

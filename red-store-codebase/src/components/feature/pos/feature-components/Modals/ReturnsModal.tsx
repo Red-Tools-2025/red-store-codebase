@@ -20,6 +20,7 @@ import { useState } from "react";
 import { Inventory } from "@prisma/client";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { IoIosCloseCircle } from "react-icons/io";
+import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 
 interface ReturnsModalProps {
   isOpen: boolean;
@@ -27,15 +28,11 @@ interface ReturnsModalProps {
 }
 
 const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
-  const {
-    originalProducts,
-    favoriteProducts,
-    selectedStore,
-    handleReturns,
-    isReturning,
-    returnsError,
-  } = usePos();
+  const { originalProducts, favoriteProducts, selectedStore, returnsError } =
+    usePos();
+  const { saveToCache } = useBrowserCacheStorage();
   const [search, setSearch] = useState<string>("");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [products, setProducts] = useState<Inventory[] | null>(
     originalProducts
   );
@@ -80,12 +77,26 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
     setSelectedProducts((prev) =>
       prev.filter((item) => item.item_details.invId !== product_id)
     );
+    setSelectedProducts([]);
+    onClose();
   };
 
   const processReturns = async () => {
-    await handleReturns(selectedProducts, selectedStore?.storeId ?? 0);
-    setSelectedProducts([]);
-    onClose();
+    console.log(selectedProducts);
+    saveToCache(
+      selectedProducts.map((p) => ({
+        cartItem: {
+          product_id: p.item_details.invId,
+          product_current_stock: p.item_details.invItemStock,
+          product_name: p.item_details.invItem,
+          product_price: p.item_details.invItemPrice,
+          productQuantity: -Math.abs(p.return_amt),
+        },
+        store_id: selectedStore ? selectedStore.storeId.toString() : "",
+        purchase_time: new Date().toISOString(),
+      })),
+      setIsSaving
+    );
   };
 
   return (
@@ -236,10 +247,10 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
         )}
         <DialogFooter>
           <Button
-            disabled={selectedProducts.length === 0 || isReturning}
+            disabled={selectedProducts.length === 0 || isSaving}
             onClick={() => void processReturns()}
           >
-            {isReturning ? "Returning items...." : "Confirm Returns"}
+            {isSaving ? "Returning items...." : "Confirm Returns"}
           </Button>
           <Button onClick={onClose} variant="secondary">
             Exit
