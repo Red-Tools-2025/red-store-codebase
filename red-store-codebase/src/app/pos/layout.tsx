@@ -52,7 +52,6 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
     returnsError,
     isLoading: isLoadingProducts,
     favoriteProducts,
-    originalProducts,
   } = useItems(
     selectedStore ? String(selectedStore.storeId) : "",
     userData?.storeManagerId ?? "",
@@ -84,7 +83,6 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       scheduleMap={scheduleMap}
       selectedStore={selectedStore}
       favoriteProducts={favoriteProducts}
-      originalProducts={originalProducts}
       buckets={buckets}
       bucketMap={bucketMap}
       cartItems={cartItems}

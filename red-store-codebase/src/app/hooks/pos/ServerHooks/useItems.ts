@@ -31,9 +31,6 @@ const useItems = (
   const [favoriteProducts, setFavoriteProducts] = useState<Inventory[] | null>(
     []
   );
-  const [originalProducts, setOriginalProducts] = useState<Inventory[] | null>(
-    []
-  );
 
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -94,7 +91,6 @@ const useItems = (
         );
         if (data.inventoryItems) {
           setClientSideItems(data.inventoryItems);
-          setOriginalProducts(data.inventoryItems);
           setMessage(data.message);
         }
         setIsLoading(false);
@@ -147,7 +143,6 @@ const useItems = (
     returnsError,
     isLoading,
     favoriteProducts,
-    originalProducts,
     isFetchingFavorites,
   };
 };

@@ -21,8 +21,11 @@ const ItemSelectionDisplay: React.FC<ItemSelectionDisplayProps> = ({
           {inventoryItems
             ?.filter(
               (item) =>
-                item.invItem.includes(searchTerm) ||
-                item.invItemBrand?.toString().includes(searchTerm)
+                item.invItem.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.invItemBrand
+                  ?.toString()
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase())
             )
             .map((item) => (
               <ItemSelectionCard key={item.invId} item={item} />

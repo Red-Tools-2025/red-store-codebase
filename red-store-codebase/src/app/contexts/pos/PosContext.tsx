@@ -12,7 +12,6 @@ import { ScheduleEntry } from "@/app/types/buckets/components";
 interface PosContextType {
   inventoryItems: Inventory[] | null;
   favoriteProducts: Inventory[] | null;
-  originalProducts: Inventory[] | null;
   buckets: (Bucket & { inventory: Inventory | null })[];
   bucketMap: Map<number, Bucket & { inventory: Inventory | null }>;
   scheduleMap: Map<string, ScheduleEntry>;
@@ -55,7 +54,6 @@ export const PosProvider = ({
   selectedStore,
   bucketMode,
   favoriteProducts,
-  originalProducts,
   buckets,
   bucketMap,
   scheduleMap,
@@ -70,7 +68,6 @@ export const PosProvider = ({
   children: ReactNode;
   inventoryItems: Inventory[] | null;
   favoriteProducts: Inventory[] | null;
-  originalProducts: Inventory[] | null;
   buckets: (Bucket & { inventory: Inventory | null })[];
   bucketMap: Map<number, Bucket & { inventory: Inventory | null }>;
   scheduleMap: Map<string, ScheduleEntry>;
@@ -110,7 +107,6 @@ export const PosProvider = ({
         searchTerm,
         selectedStore,
         favoriteProducts,
-        originalProducts,
         buckets,
         bucketMap,
         bucketMode,

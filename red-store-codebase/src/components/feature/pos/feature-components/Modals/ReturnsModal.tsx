@@ -28,14 +28,12 @@ interface ReturnsModalProps {
 }
 
 const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
-  const { originalProducts, favoriteProducts, selectedStore, returnsError } =
+  const { inventoryItems, favoriteProducts, selectedStore, returnsError } =
     usePos();
   const { saveToCache } = useBrowserCacheStorage();
   const [search, setSearch] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [products, setProducts] = useState<Inventory[] | null>(
-    originalProducts
-  );
+  const [products, setProducts] = useState<Inventory[] | null>(inventoryItems);
   const [selectedProducts, setSelectedProducts] = useState<
     { item_details: Inventory; return_amt: number }[]
   >([]);
@@ -115,9 +113,9 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
         <div className="flex flex-col gap-2">
           <div className="flex flex-row gap-2">
             <Button
-              onClick={() => setProducts(originalProducts)}
+              onClick={() => setProducts(inventoryItems)}
               className={`${
-                products === originalProducts
+                products === inventoryItems
                   ? "bg-blue-100 text-blue-600 border-blue-600"
                   : ""
               }`}

@@ -64,15 +64,13 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
 }) => {
   const { toast } = useToast();
   const {
-    originalProducts,
+    inventoryItems,
     favoriteProducts,
     selectedStore,
     handleRefreshBuckets,
   } = usePos();
   const [search, setSearch] = useState<string>("");
-  const [products, setProducts] = useState<Inventory[] | null>(
-    originalProducts
-  );
+  const [products, setProducts] = useState<Inventory[] | null>(inventoryItems);
   const [selectedProduct, setSelectedProduct] = useState<Inventory | null>(
     null
   );
@@ -125,9 +123,9 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
             <div className="flex flex-col gap-2">
               <div className="flex flex-row gap-2">
                 <Button
-                  onClick={() => setProducts(originalProducts)}
+                  onClick={() => setProducts(inventoryItems)}
                   className={`${
-                    products === originalProducts
+                    products === inventoryItems
                       ? "bg-blue-100 text-blue-600 border-blue-600"
                       : ""
                   }`}
