@@ -37,7 +37,7 @@ const useBucketAutoTrigger = (
     return () => clearInterval(interval);
   }, []);
 
-  // 🔥 Effect to set up auto-activation & auto-finishing
+  // Effect to set up auto-activation & auto-finishing
   useEffect(() => {
     if (!buckets || buckets.length === 0) return;
 

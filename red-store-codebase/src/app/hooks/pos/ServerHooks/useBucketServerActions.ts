@@ -4,6 +4,7 @@ import {
   DeleteBucketRequestBody,
 } from "@/app/types/buckets/api";
 import { useToast } from "@/hooks/use-toast";
+import { Inventory } from "@prisma/client";
 import axios, { AxiosResponse } from "axios";
 import { useState } from "react";
 
@@ -180,8 +181,10 @@ const useBucketServerActions = () => {
   const handleComplete = async (
     bucket_id: number,
     store_id: number,
-    remainingQty: number
+    remainingQty: number,
+    inventoryItem: Inventory | null
   ) => {
+    console.log(inventoryItem);
     try {
       setIsCompleting(true);
       const response: AxiosResponse<{ message: string }> = await axios.post(
@@ -190,6 +193,7 @@ const useBucketServerActions = () => {
           bucketId: bucket_id,
           storeId: store_id,
           remainingQty: remainingQty,
+          inventory_item: inventoryItem,
         }
       );
       toast({

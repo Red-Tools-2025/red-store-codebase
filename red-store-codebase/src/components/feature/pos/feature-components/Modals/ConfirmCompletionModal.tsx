@@ -25,7 +25,8 @@ interface ConfirmCompletionBucketModalProps {
 const ConfirmCompletionBucketModal: React.FC<
   ConfirmCompletionBucketModalProps
 > = ({ isOpen, activateId, onClose }) => {
-  const { handleRefreshBuckets, bucketMap } = usePos();
+  const { handleRefreshBuckets, bucketMap, handleResync, inventoryItems } =
+    usePos();
   const { handleComplete, isCompleting, completionError } =
     useBucketServerActions();
 
@@ -43,15 +44,21 @@ const ConfirmCompletionBucketModal: React.FC<
 
     setRemainingQty(value);
   };
+  const bucket = activateId ? bucketMap.get(activateId.bucket_id) : undefined;
+  const inventoryItem = inventoryItems?.find(
+    (item) => item.invId === bucket?.invId
+  );
 
   const processCompletion = async () => {
     if (activateId && remainingQty !== null && remainingQty >= 0) {
       await handleComplete(
         activateId.bucket_id,
         activateId.store_id,
-        remainingQty
+        remainingQty,
+        inventoryItem ?? null
       );
       handleRefreshBuckets();
+      handleResync();
       onClose();
     }
   };
@@ -133,7 +140,9 @@ const ConfirmCompletionBucketModal: React.FC<
               isCompleting ||
               !activateId ||
               remainingQty === null ||
-              remainingQty < 0
+              remainingQty < 0 ||
+              inventoryItem === null ||
+              bucket === null
             }
           >
             {isCompleting ? "Completing..." : "Mark as Complete"}

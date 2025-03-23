@@ -141,7 +141,42 @@ const useBrowserCacheStorage = () => {
     }
   };
 
-  return { saveToCache, syncToServer, isSyncingToInventory, syncProgress };
+  /*
+  The cache must always run up to date with the server to ensure this we mimic the operations of the server on the cache
+  prevents issues in scenarios where the user reloads the page which will cause race and inconsistencies if we let our actions behave in 
+  accordance to the cache 
+  
+  Activation marking --> Reserve stock in cache as in server
+  Returns marking --> Return mark should increment cached item count as in server
+  */
+
+  const updateCacheItemCount = (product_id, update_count) => {
+    setClientSideItems((prev) =>
+      prev
+        ? prev.map((item) =>
+            item.invId === product_id
+              ? {
+                  ...item,
+                  invItemStock:
+                    /* 
+                    Activation scenarios follow a decrement so pass in a positive count value
+                    Return scenarios follow an increment so pass in a negative count value
+                    */
+                    item.invItemStock - update_count,
+                }
+              : item
+          )
+        : prev
+    );
+  };
+
+  return {
+    saveToCache,
+    syncToServer,
+    updateCacheItemCount,
+    isSyncingToInventory,
+    syncProgress,
+  };
 };
 
 export default useBrowserCacheStorage;

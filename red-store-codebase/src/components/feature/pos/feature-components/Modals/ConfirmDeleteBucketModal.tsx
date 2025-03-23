@@ -119,7 +119,10 @@ const ConfirmDeleteBucketModal: React.FC<ConfirmDeleteBucketModalProps> = ({
           </div>
         </DialogHeader>
         <DialogFooter>
-          <Button onClick={() => void processDelete(deleteIds)}>
+          <Button
+            disabled={isDeleting}
+            onClick={() => void processDelete(deleteIds)}
+          >
             {isDeleting ? "Deleting..." : "Delete Bucket"}
           </Button>
           <Button variant={"secondary"} onClick={onClose}>

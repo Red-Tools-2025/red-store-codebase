@@ -1,4 +1,4 @@
-import { Inventory } from "@prisma/client";
+import { BucketStatus, Inventory } from "@prisma/client";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { usePos } from "@/app/contexts/pos/PosContext";
 
@@ -9,9 +9,10 @@ interface ItemSelectionCardProps {
 }
 
 const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
-  const { cartItems, bucketMap, setCartItems } = usePos();
+  const { cartItems, bucketMap, buckets, setCartItems } = usePos();
   const { handleAddToCart, handleCartItemQty } = useCart();
 
+  const bucket = buckets.find((bucket) => bucket.invId === item.invId);
   const inCart = cartItems.some(
     (cart_item) => cart_item.product_id === item.invId
   );
@@ -19,10 +20,10 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
   const isOutOfStock = item.invItemStock === 0;
 
   // bucket locking
-  const isUnderSchedule = bucketMap.has(item.invId)
-    ? bucketMap.get(item.invId)?.status === "COMPLETED" || "INACTIVE"
-      ? false
-      : true
+  const isUnderSchedule = bucket?.bucketId
+    ? ["ACTIVE", "FINISHED"].includes(
+        bucketMap.get(bucket.bucketId)?.status ?? ""
+      )
     : false;
 
   const isDisabled = isOutOfStock || isUnderSchedule;
@@ -31,18 +32,21 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
     <div
       onClick={() => {
         if (!isDisabled) {
-          handleAddToCart(
-            {
-              product_id: item.invId,
-              productQuantity: 1,
-              productBrand: item.invItemBrand ?? "",
-              productName: item.invItem,
-              productPrice: item.invItemPrice,
-              productCurrentStock: item.invItemStock,
-            },
-            cartItems,
-            setCartItems
-          );
+          // handleAddToCart(
+          //   {
+          //     product_id: item.invId,
+          //     productQuantity: 1,
+          //     productBrand: item.invItemBrand ?? "",
+          //     productName: item.invItem,
+          //     productPrice: item.invItemPrice,
+          //     productCurrentStock: item.invItemStock,
+          //   },
+          //   cartItems,
+          //   setCartItems
+          // );
+          if (bucket?.bucketId !== undefined) {
+            console.log(bucketMap.get(bucket.bucketId));
+          }
         }
       }}
       key={item.invId}

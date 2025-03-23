@@ -38,6 +38,7 @@ export interface BucketCompletionRequestBody {
   bucketId: number;
   storeId: number;
   remainingQty: number;
+  inventory_item: Inventory | null;
 }
 
 export type TimeSeries =

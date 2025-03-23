@@ -31,8 +31,6 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
   const { isActivating, handleActivate, activateError } =
     useBucketServerActions();
 
-  console.log(activateId);
-
   const processActivation = async () => {
     if (activateId) {
       setIsFinishedBucketId(activateId.bucket_id);
