@@ -80,6 +80,11 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
   const { handleCreateBucket, isCreating, createBucketError } =
     useBucketServerActions();
 
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+    onClose();
+  };
+
   const createBucket = async () => {
     const response = await handleCreateBucket({
       storeId: selectedStore?.storeId as number,
@@ -102,7 +107,7 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleCloseModal}>
       <DialogContent className="max-w-[500px] font-inter">
         <DialogHeader>
           <DialogTitle>Create Bucket</DialogTitle>

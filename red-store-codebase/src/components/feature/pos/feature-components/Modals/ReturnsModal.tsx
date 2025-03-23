@@ -38,6 +38,12 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
     { item_details: Inventory; return_amt: number }[]
   >([]);
 
+  // for safety and consistency purposes, clear out all saved states on close
+  const handleClose = () => {
+    setSelectedProducts([]);
+    onClose();
+  };
+
   const handleProductSelection = (item: Inventory) => {
     if (
       !selectedProducts.some(
@@ -98,7 +104,7 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-[600px] font-inter">
         <DialogHeader>
           <DialogTitle>Return Products</DialogTitle>
