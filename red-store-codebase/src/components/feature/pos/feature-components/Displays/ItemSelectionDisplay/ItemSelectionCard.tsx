@@ -9,19 +9,29 @@ interface ItemSelectionCardProps {
 }
 
 const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
-  const { cartItems, setCartItems } = usePos();
+  const { cartItems, bucketMap, buckets, setCartItems } = usePos();
   const { handleAddToCart, handleCartItemQty } = useCart();
 
+  const bucket = buckets.find((bucket) => bucket.invId === item.invId);
   const inCart = cartItems.some(
     (cart_item) => cart_item.product_id === item.invId
   );
 
   const isOutOfStock = item.invItemStock === 0;
 
+  // bucket locking
+  const isUnderSchedule = bucket?.bucketId
+    ? ["ACTIVE", "FINISHED"].includes(
+        bucketMap.get(bucket.bucketId)?.status ?? ""
+      )
+    : false;
+
+  const isDisabled = isOutOfStock || isUnderSchedule;
+
   return (
     <div
       onClick={() => {
-        if (!isOutOfStock) {
+        if (!isDisabled) {
           handleAddToCart(
             {
               product_id: item.invId,
@@ -42,6 +52,8 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
         transition-all ${
           isOutOfStock
             ? "bg-red-100 text-red-500 cursor-not-allowed opacity-50"
+            : isUnderSchedule
+            ? "bg-blue-100 text-blue-500 cursor-not-allowed opacity-50"
             : inCart
             ? "bg-blue-500 text-white group cursor-pointer"
             : "bg-white cursor-pointer"
@@ -50,10 +62,18 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
     >
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2 items-center">
-          <p className="text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all">
+          <p
+            className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
+              inCart ? "text-gray-800" : ""
+            }`}
+          >
             #{item.invId}
           </p>
-          <p className="text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all">
+          <p
+            className={`text-xs p-1 bg-gray-100 rounded-md border border-1 w-fit transition-all ${
+              inCart ? "text-gray-800" : ""
+            }`}
+          >
             {item.invItemBrand}
           </p>
         </div>
@@ -67,18 +87,22 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
         {isOutOfStock && (
           <p className="text-xs text-red-500 font-semibold">Out of Stock</p>
         )}
+        {isUnderSchedule && (
+          <p className="text-xs text-blue-500 font-semibold">Under Schedule</p>
+        )}
       </div>
 
       <div className="flex text-sm items-center justify-end gap-3">
         <CiCircleMinus
           onClick={() => {
-            if (!isOutOfStock)
+            if (!isDisabled)
               handleCartItemQty(item.invId, "negative", setCartItems);
           }}
           className={`text-2xl hover:cursor-pointer transition-all ${
-            isOutOfStock
-              ? "opacity-30 cursor-not-allowed"
-              : "hover:text-blue-500"
+            inCart ? "hover:text-white" : ""
+          }
+          ${
+            isDisabled ? "opacity-30 cursor-not-allowed" : "hover:text-blue-500"
           }`}
         />
         <p>
@@ -87,13 +111,13 @@ const ItemSelectionCard: React.FC<ItemSelectionCardProps> = ({ item }) => {
         </p>
         <CiCirclePlus
           onClick={() => {
-            if (!isOutOfStock)
+            if (!isDisabled)
               handleCartItemQty(item.invId, "positive", setCartItems);
           }}
           className={`text-2xl hover:cursor-pointer transition-all ${
-            isOutOfStock
-              ? "opacity-30 cursor-not-allowed"
-              : "hover:text-blue-500"
+            inCart ? "hover:text-white" : ""
+          } ${
+            isDisabled ? "opacity-30 cursor-not-allowed" : "hover:text-blue-500"
           }`}
         />
       </div>

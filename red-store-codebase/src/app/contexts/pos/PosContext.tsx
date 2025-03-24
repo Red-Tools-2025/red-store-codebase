@@ -12,7 +12,6 @@ import { ScheduleEntry } from "@/app/types/buckets/components";
 interface PosContextType {
   inventoryItems: Inventory[] | null;
   favoriteProducts: Inventory[] | null;
-  originalProducts: Inventory[] | null;
   buckets: (Bucket & { inventory: Inventory | null })[];
   bucketMap: Map<number, Bucket & { inventory: Inventory | null }>;
   scheduleMap: Map<string, ScheduleEntry>;
@@ -30,6 +29,7 @@ interface PosContextType {
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
+  setFavoriteProducts: Dispatch<SetStateAction<Inventory[] | null>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   handleReturns: (
     returns: {
@@ -55,7 +55,6 @@ export const PosProvider = ({
   selectedStore,
   bucketMode,
   favoriteProducts,
-  originalProducts,
   buckets,
   bucketMap,
   scheduleMap,
@@ -65,12 +64,12 @@ export const PosProvider = ({
   setCartItems,
   setBucketMode,
   setClientSideItems,
+  setFavoriteProducts,
   setSearchTerm,
 }: {
   children: ReactNode;
   inventoryItems: Inventory[] | null;
   favoriteProducts: Inventory[] | null;
-  originalProducts: Inventory[] | null;
   buckets: (Bucket & { inventory: Inventory | null })[];
   bucketMap: Map<number, Bucket & { inventory: Inventory | null }>;
   scheduleMap: Map<string, ScheduleEntry>;
@@ -88,6 +87,7 @@ export const PosProvider = ({
   setCartItems: Dispatch<SetStateAction<Cart[]>>;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
   setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
+  setFavoriteProducts: Dispatch<SetStateAction<Inventory[] | null>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   handleReturns: (
     returns: {
@@ -110,7 +110,6 @@ export const PosProvider = ({
         searchTerm,
         selectedStore,
         favoriteProducts,
-        originalProducts,
         buckets,
         bucketMap,
         bucketMode,
@@ -120,6 +119,7 @@ export const PosProvider = ({
         handleRefreshBuckets,
         setCartItems,
         setClientSideItems,
+        setFavoriteProducts,
         setBucketMode,
         setSearchTerm,
       }}

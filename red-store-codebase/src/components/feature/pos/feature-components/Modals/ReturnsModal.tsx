@@ -20,6 +20,7 @@ import { useState } from "react";
 import { Inventory } from "@prisma/client";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { IoIosCloseCircle } from "react-icons/io";
+import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 
 interface ReturnsModalProps {
   isOpen: boolean;
@@ -27,21 +28,21 @@ interface ReturnsModalProps {
 }
 
 const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
-  const {
-    originalProducts,
-    favoriteProducts,
-    selectedStore,
-    handleReturns,
-    isReturning,
-    returnsError,
-  } = usePos();
+  const { inventoryItems, favoriteProducts, selectedStore, returnsError } =
+    usePos();
+  const { saveToCache } = useBrowserCacheStorage();
   const [search, setSearch] = useState<string>("");
-  const [products, setProducts] = useState<Inventory[] | null>(
-    originalProducts
-  );
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [products, setProducts] = useState<Inventory[] | null>(inventoryItems);
   const [selectedProducts, setSelectedProducts] = useState<
     { item_details: Inventory; return_amt: number }[]
   >([]);
+
+  // for safety and consistency purposes, clear out all saved states on close
+  const handleClose = () => {
+    setSelectedProducts([]);
+    onClose();
+  };
 
   const handleProductSelection = (item: Inventory) => {
     if (
@@ -80,16 +81,30 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
     setSelectedProducts((prev) =>
       prev.filter((item) => item.item_details.invId !== product_id)
     );
-  };
-
-  const processReturns = async () => {
-    await handleReturns(selectedProducts, selectedStore?.storeId ?? 0);
     setSelectedProducts([]);
     onClose();
   };
 
+  const processReturns = async () => {
+    console.log(selectedProducts);
+    saveToCache(
+      selectedProducts.map((p) => ({
+        cartItem: {
+          product_id: p.item_details.invId,
+          product_current_stock: p.item_details.invItemStock,
+          product_name: p.item_details.invItem,
+          product_price: p.item_details.invItemPrice,
+          productQuantity: -Math.abs(p.return_amt),
+        },
+        store_id: selectedStore ? selectedStore.storeId.toString() : "",
+        purchase_time: new Date().toISOString(),
+      })),
+      setIsSaving
+    );
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-[600px] font-inter">
         <DialogHeader>
           <DialogTitle>Return Products</DialogTitle>
@@ -104,9 +119,9 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
         <div className="flex flex-col gap-2">
           <div className="flex flex-row gap-2">
             <Button
-              onClick={() => setProducts(originalProducts)}
+              onClick={() => setProducts(inventoryItems)}
               className={`${
-                products === originalProducts
+                products === inventoryItems
                   ? "bg-blue-100 text-blue-600 border-blue-600"
                   : ""
               }`}
@@ -236,10 +251,10 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
         )}
         <DialogFooter>
           <Button
-            disabled={selectedProducts.length === 0 || isReturning}
+            disabled={selectedProducts.length === 0 || isSaving}
             onClick={() => void processReturns()}
           >
-            {isReturning ? "Returning items...." : "Confirm Returns"}
+            {isSaving ? "Returning items...." : "Confirm Returns"}
           </Button>
           <Button onClick={onClose} variant="secondary">
             Exit

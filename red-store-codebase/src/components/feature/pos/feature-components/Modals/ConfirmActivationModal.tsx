@@ -1,4 +1,5 @@
 import { usePos } from "@/app/contexts/pos/PosContext";
+import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,17 +28,33 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
   onClose,
   setIsFinishedBucketId,
 }) => {
-  const { handleRefreshBuckets } = usePos();
+  const { handleRefreshBuckets, bucketMap, inventoryItems, favoriteProducts } =
+    usePos();
+  const { updateCacheItemCount } = useBrowserCacheStorage();
   const { isActivating, handleActivate, activateError } =
     useBucketServerActions();
 
-  console.log(activateId);
-
   const processActivation = async () => {
-    if (activateId) {
+    if (activateId && inventoryItems && favoriteProducts) {
       setIsFinishedBucketId(activateId.bucket_id);
       await handleActivate(activateId?.bucket_id, activateId?.store_id);
       handleRefreshBuckets();
+      /* Locate Bucket via Id and update client side */
+      const bucket = bucketMap.get(activateId.bucket_id);
+      const inventory_item =
+        inventoryItems.find((item) => item.invId === bucket?.invId) ??
+        favoriteProducts.find((item) => item.invId === bucket?.invId);
+      const bucketSizeValue =
+        bucket?.bucketSize === "FIFTY"
+          ? 50
+          : bucket?.bucketSize === "HUNDRED"
+          ? 100
+          : bucket?.bucketSize === "ONE_FIFTY"
+          ? 150
+          : 0;
+
+      console.log({ inventory_item, bucketSizeValue });
+      updateCacheItemCount(inventory_item?.invId as number, bucketSizeValue);
       onClose();
     }
   };
@@ -51,7 +68,8 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
             <p className="text-sm text-red-500 mt-1">{activateError}</p>
           )}
           <DialogDescription>
-            Please Verify and confirm activation
+            <span className="text-red-500">Please Sync Inventory</span> before
+            confirming activation
           </DialogDescription>
         </DialogHeader>
         {activateId ? (

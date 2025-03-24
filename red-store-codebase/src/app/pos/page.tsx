@@ -5,21 +5,22 @@ import ProductDisplayControl from "@/components/feature/pos/feature-components/P
 import CartDisplay from "@/components/feature/pos/feature-components/Displays/CartDisplay";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import BucketDisplay from "@/components/feature/pos/feature-components/Displays/BucketDisplay";
+import { useState } from "react";
 
 const POSPage = () => {
   const {
     selectedStore,
-    originalProducts,
-    favoriteProducts,
     inventoryItems,
+    favoriteProducts,
     isLoading,
     bucketMode,
     setBucketMode,
-    setClientSideItems,
     buckets,
     fetchError,
     isFetchingBuckets,
   } = usePos();
+  // State for favorites
+  const [toggleFavorites, setToggleFavorites] = useState<boolean>(false);
   return (
     <div className="flex flex-col h-screen">
       {/* Header Section */}
@@ -27,11 +28,10 @@ const POSPage = () => {
         <ProductDisplayControl
           selectedStore={selectedStore}
           bucketMode={bucketMode}
-          favoriteProducts={favoriteProducts}
-          originalProducts={originalProducts}
+          toggleFavorites={toggleFavorites}
           buckets={buckets}
           setBucketMode={setBucketMode}
-          setClientSideItems={setClientSideItems}
+          setToggleFavorites={setToggleFavorites}
         />
       </div>
 
@@ -48,7 +48,9 @@ const POSPage = () => {
               />
             ) : (
               <ItemSelectionDisplay
-                inventoryItems={inventoryItems}
+                inventoryItems={
+                  toggleFavorites ? favoriteProducts : inventoryItems
+                }
                 isLoading={isLoading}
               />
             )}

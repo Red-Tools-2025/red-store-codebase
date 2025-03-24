@@ -2,9 +2,6 @@
 
 import * as React from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { DateRange } from "react-day-picker";
-
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -14,86 +11,82 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-// Define props for the DatePickerWithRange component
-interface DatePickerWithRangeProps {
+interface DatePickerProps {
   className?: string;
-  onDateSelect?: (dateRange: DateRange) => void; // Callback function when a date is selected
+  onDateSelect?: (from: Date | undefined, to: Date | undefined) => void;
 }
 
-// Helper function to format dates
-const formatDate = (date: Date) => {
-  const options: Intl.DateTimeFormatOptions = {
+const formatDate = (date: Date | undefined) => {
+  if (!date) return "Pick a date";
+  return date.toLocaleDateString("en-US", {
     month: "short",
     day: "2-digit",
     year: "numeric",
-  };
-  return date.toLocaleDateString("en-US", options);
+  });
 };
 
 export function DatePickerWithRange({
   className,
   onDateSelect,
-}: DatePickerWithRangeProps) {
-  // Set the initial date range to current date and current date - 1 month
-  const currentDate = new Date();
-  const lastMonth = new Date(currentDate);
-  lastMonth.setMonth(currentDate.getMonth() - 1);
+}: DatePickerProps) {
+  const [fromDate, setFromDate] = React.useState<Date | undefined>();
+  const [toDate, setToDate] = React.useState<Date | undefined>();
 
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: lastMonth,
-    to: currentDate,
-  });
-
-  const handleDateSelect = () => {
-    if (date && onDateSelect) {
-      onDateSelect(date); // Trigger the callback with the selected date range
+  const handleSelect = () => {
+    if (onDateSelect) {
+      console.log(fromDate, toDate);
+      onDateSelect(fromDate, toDate);
     }
   };
 
   return (
-    <div className={cn("flex ", className)}>
+    <div className={cn("flex gap-4", className)}>
+      {/* From Date Picker */}
       <Popover>
-        <PopoverTrigger asChild>
+        <PopoverTrigger asChild className={!fromDate ? "text-gray-400" : ""}>
           <Button
-            id="date"
-            variant={"outline"}
-            className={cn(
-              "w-[300px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
+            variant="outline"
+            className="w-[150px] justify-start text-left font-normal border-gray-300"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {formatDate(date.from)} - {formatDate(date.to)}
-                </>
-              ) : (
-                formatDate(date.from)
-              )
-            ) : (
-              <span>Pick a date</span>
-            )}
+            {formatDate(fromDate)}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
+            mode="single"
+            selected={fromDate}
+            onSelect={setFromDate}
             initialFocus
-            mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
-            numberOfMonths={2}
           />
         </PopoverContent>
       </Popover>
 
-      {/* Flex container for date picker button and Done button */}
-      <div className="flex items-center pl-2 space-x-2">
-        <Button onClick={handleDateSelect} disabled={!date}>
-          Go
-        </Button>
-      </div>
+      {/* To Date Picker */}
+      <Popover>
+        <PopoverTrigger asChild className={!fromDate ? "text-gray-400" : ""}>
+          <Button
+            variant="outline"
+            className="w-[150px] justify-start text-left font-normal border-gray-300"
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {formatDate(toDate)}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={toDate}
+            onSelect={setToDate}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
+
+      {/* Submit Button */}
+      <Button onClick={handleSelect} disabled={!fromDate || !toDate}>
+        Go
+      </Button>
     </div>
   );
 }

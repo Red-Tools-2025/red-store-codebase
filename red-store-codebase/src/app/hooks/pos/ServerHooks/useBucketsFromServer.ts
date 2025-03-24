@@ -7,6 +7,10 @@ interface StoreBucketsFetchResponse {
   buckets: (Bucket & { inventory: Inventory | null })[];
 }
 const useBucketsFromServer = (store_id: string) => {
+  /* 
+  Bucket map is very important, as it not only provides a quick access mapping for everything but 
+  also the relevant bucket details that will be required for keeping the client side up to date 
+  */
   const [bucketMap, setBucketMap] = useState<
     Map<number, Bucket & { inventory: Inventory | null }>
   >(new Map());

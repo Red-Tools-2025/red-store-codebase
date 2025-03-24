@@ -1,9 +1,9 @@
-// hooks/useInventoryData.ts
+// hooks/useSalesData.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-interface InventoryDataResponse {
+interface SalesDataResponse {
   data: any[];
   total_pages: number;
   current_page: number;
@@ -11,14 +11,14 @@ interface InventoryDataResponse {
   total_count: number;
 }
 
-const useInventoryData = (
+const useSalesData = (
   currentPage: number,
   startDateState: string,
   endDateState: string,
   selectedStoreId: number,
   itemsPerPage: number
 ) => {
-  const [inventoryData, setInventoryData] = useState<any[]>([]);
+  const [salesData, setSalesData] = useState<any[]>([]);
   const [refreshInventory, setRefreshInventory] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(1);
@@ -29,10 +29,10 @@ const useInventoryData = (
   };
 
   useEffect(() => {
-    const fetchInventoryData = async () => {
+    const fetchSalesData = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get<InventoryDataResponse>(
+        const { data } = await axios.get<SalesDataResponse>(
           "/api/inventory/timeseries",
           {
             params: {
@@ -45,7 +45,9 @@ const useInventoryData = (
           }
         );
 
-        setInventoryData(data.data || []);
+        console.log(data);
+
+        setSalesData(data.data || []);
         setTotalPages(data.total_pages || 1);
         setTotalCount(data.total_count || 0);
       } catch (error) {
@@ -56,7 +58,7 @@ const useInventoryData = (
     };
 
     if (selectedStoreId) {
-      fetchInventoryData();
+      fetchSalesData();
     }
   }, [
     currentPage,
@@ -68,7 +70,7 @@ const useInventoryData = (
   ]);
 
   return {
-    inventoryData,
+    salesData,
     totalPages,
     loading,
     totalCount,
@@ -78,4 +80,4 @@ const useInventoryData = (
   };
 };
 
-export default useInventoryData;
+export default useSalesData;

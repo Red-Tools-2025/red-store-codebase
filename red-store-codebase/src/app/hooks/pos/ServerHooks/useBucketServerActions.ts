@@ -4,6 +4,7 @@ import {
   DeleteBucketRequestBody,
 } from "@/app/types/buckets/api";
 import { useToast } from "@/hooks/use-toast";
+import { Inventory } from "@prisma/client";
 import axios, { AxiosResponse } from "axios";
 import { useState } from "react";
 
@@ -57,21 +58,19 @@ const useBucketServerActions = () => {
   };
 
   const handleAwaitActivate = async (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     bucket_id: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     store_id: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     scheduled_time: string
   ) => {
     // Check if the activation time is before the scheduled time
-    const scheduledTime = new Date(scheduled_time);
-    const currentTime = new Date();
+    // const scheduledTime = new Date(scheduled_time);
+    // const currentTime = new Date();
 
-    // Prompt the confirmation modal, only if activation preceeds scheduled time
-    if (scheduledTime > currentTime) {
-      setDialogType("ACTIVATE");
-      setIsDialogOpen(true);
-    }
-
-    await handleActivate(bucket_id, store_id);
+    setDialogType("ACTIVATE");
+    setIsDialogOpen(true);
   };
 
   /* Hook call for activating (or pausing) a bucket */
@@ -180,8 +179,10 @@ const useBucketServerActions = () => {
   const handleComplete = async (
     bucket_id: number,
     store_id: number,
-    remainingQty: number
+    remainingQty: number,
+    inventoryItem: Inventory | null
   ) => {
+    console.log(inventoryItem);
     try {
       setIsCompleting(true);
       const response: AxiosResponse<{ message: string }> = await axios.post(
@@ -190,6 +191,7 @@ const useBucketServerActions = () => {
           bucketId: bucket_id,
           storeId: store_id,
           remainingQty: remainingQty,
+          inventory_item: inventoryItem,
         }
       );
       toast({

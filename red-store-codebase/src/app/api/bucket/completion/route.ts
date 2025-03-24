@@ -1,14 +1,15 @@
-import { BucketCompletionRequestBody } from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
 import supabase from "@/lib/supabase/client";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const body: BucketCompletionRequestBody = await req.json();
-    const { bucketId, remainingQty, storeId } = body;
+    const body = await req.json();
+    const { bucketId, remainingQty, storeId, inventory_item } = body; // Changed from inventory_item to inventory_item
 
-    if (!bucketId || !storeId) {
+    console.log({ body });
+
+    if (!bucketId || !storeId || !inventory_item) {
       return NextResponse.json(
         {
           error:
@@ -43,16 +44,22 @@ export async function POST(req: Request) {
     const bucket_amt = bucket.bucketSize === "FIFTY" ? 50 : 100;
     const soldQty = bucket_amt - remainingQty;
 
-    const inventory_item = await db.inventory.update({
+    // Calculate the stock values for accurate reporting
+
+    // THIS portion of the route is extremely important as it contains the cached data
+    const opening_stock = inventory_item.invItemStock + bucket_amt;
+    const closing_stock = inventory_item.invItemStock + remainingQty;
+
+    await db.inventory.update({
       where: { storeId_invId: { storeId, invId: bucket.invId } },
       data: { invItemStock: { increment: remainingQty } },
     });
 
     const timeseries_entry = {
-      closing_stock: inventory_item.invItemStock - soldQty,
+      closing_stock: closing_stock,
       sale_amount: bucket_amt,
       mrp_per_bottle: inventory_item.invItemPrice,
-      opening_stock: inventory_item.invItemStock + soldQty,
+      opening_stock: opening_stock,
       product_id: inventory_item.invId,
       product_name: inventory_item.invItem,
       received_stock: 0,

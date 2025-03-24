@@ -48,11 +48,11 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const {
     handleResync,
     handleReturns,
+    setFavoriteProducts,
     isReturning,
     returnsError,
     isLoading: isLoadingProducts,
     favoriteProducts,
-    originalProducts,
   } = useItems(
     selectedStore ? String(selectedStore.storeId) : "",
     userData?.storeManagerId ?? "",
@@ -84,7 +84,6 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       scheduleMap={scheduleMap}
       selectedStore={selectedStore}
       favoriteProducts={favoriteProducts}
-      originalProducts={originalProducts}
       buckets={buckets}
       bucketMap={bucketMap}
       cartItems={cartItems}
@@ -101,6 +100,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       handleReturns={handleReturns}
       handleRefreshBuckets={handleRefreshBuckets}
       setClientSideItems={setClientSideItems}
+      setFavoriteProducts={setFavoriteProducts}
       setBucketMode={setBucketMode}
       setSearchTerm={setSearchTerm}
     >

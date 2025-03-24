@@ -12,44 +12,63 @@ import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheS
 import CreateBucketModal from "../../Modals/CreateBucketModal";
 import BucketsScheduleModal from "../../Modals/BucketsScheduleModal";
 import { Input } from "@/components/ui/input";
+import SyncModal from "../../Modals/SyncModal";
 
 interface ProductDisplayControlProps {
   selectedStore: Store | null;
-  favoriteProducts: Inventory[] | null;
-  originalProducts: Inventory[] | null;
   buckets: (Bucket & { inventory: Inventory | null })[];
   bucketMode: boolean;
+  toggleFavorites: boolean;
   setBucketMode: Dispatch<SetStateAction<boolean>>;
-  setClientSideItems: Dispatch<SetStateAction<Inventory[] | null>>;
+  setToggleFavorites: Dispatch<SetStateAction<boolean>>;
 }
 
 const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   bucketMode,
-  favoriteProducts,
-  originalProducts,
+  toggleFavorites,
   selectedStore,
   setBucketMode,
-  setClientSideItems,
+  setToggleFavorites,
 }) => {
-  const { syncToServer } = useBrowserCacheStorage();
-  const { scheduleMap, bucketMap, setSearchTerm } = usePos();
-  const [toggleFavorites, setToggleFavorites] = useState<boolean>(false);
+  const { syncToServer, isSyncingToInventory, syncProgress } =
+    useBrowserCacheStorage();
+  const {
+    scheduleMap,
+    bucketMap,
+    setSearchTerm,
+    inventoryItems,
+    favoriteProducts,
+  } = usePos();
+
+  // States for bucket modals
   const [isBucketScheduleModalOpen, setIsBucketScheduleModalOpen] =
     useState<boolean>(false);
   const [isCreateBucketModalOpen, setIsCreateBucketModalOpen] =
     useState<boolean>(false);
 
-  const handleToggleFavorites = () => {
-    setToggleFavorites(!toggleFavorites);
-    setClientSideItems(!toggleFavorites ? favoriteProducts : originalProducts);
-  };
+  // Toggler for favorites
+  const handleToggleFavorites = () => setToggleFavorites((prev) => !prev);
 
+  // Toggler for Buckets
   const handleToggleBucketMode = () => setBucketMode(!bucketMode);
+
+  // Auto Sync Logic
+  // useEffect(() => {
+  //   if (!selectedStore?.storeId) return;
+
+  //   const syncInterval = setInterval(() => {
+  //     console.log("Syncing to server..."); // Debugging log
+  //     syncToServer(selectedStore.storeId);
+  //   }, 45 * 60 * 1000); // Sync every 30 seconds
+
+  //   return () => clearInterval(syncInterval); // Cleanup on unmount
+  // }, [selectedStore?.storeId]);
 
   /* Dynamic Display control render based on bucket mode*/
   return (
     <>
       {/* All action modals here */}
+      <SyncModal isOpen={isSyncingToInventory} syncProgress={syncProgress} />
       <CreateBucketModal
         isOpen={isCreateBucketModalOpen}
         onClose={() => setIsCreateBucketModalOpen(false)}
@@ -101,8 +120,8 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
                 disabled={
                   !favoriteProducts ||
                   favoriteProducts.length === 0 ||
-                  !originalProducts ||
-                  originalProducts.length === 0
+                  !inventoryItems ||
+                  inventoryItems.length === 0
                 }
                 variant="secondary"
               >
@@ -117,8 +136,8 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
               disabled={
                 !favoriteProducts ||
                 favoriteProducts.length === 0 ||
-                !originalProducts ||
-                originalProducts.length === 0
+                !inventoryItems ||
+                inventoryItems.length === 0
               }
               variant="secondary"
               className={
