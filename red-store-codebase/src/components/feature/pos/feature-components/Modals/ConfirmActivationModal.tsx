@@ -69,7 +69,8 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
             <p className="text-sm text-red-500 mt-1">{activateError}</p>
           )}
           <DialogDescription>
-            Please Verify and confirm activation
+            <span className="text-red-500">Please Sync Inventory</span> before
+            confirming activation
           </DialogDescription>
         </DialogHeader>
         {activateId ? (
