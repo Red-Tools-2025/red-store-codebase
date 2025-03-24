@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { IoIosStar } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 import { BsFillBucketFill } from "react-icons/bs";

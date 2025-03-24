@@ -1,5 +1,4 @@
 import { usePos } from "@/app/contexts/pos/PosContext";
-import useBrowserCache from "@/app/hooks/inventory/ServerHooks/useBrowserCache";
 import useBrowserCacheStorage from "@/app/hooks/pos/ServerHooks/useBrowserCacheStorage";
 import useBucketServerActions from "@/app/hooks/pos/ServerHooks/useBucketServerActions";
 import { Button } from "@/components/ui/button";

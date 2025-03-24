@@ -1,4 +1,3 @@
-import { BucketCompletionRequestBody } from "@/app/types/buckets/api";
 import { db } from "@/lib/prisma";
 import supabase from "@/lib/supabase/client";
 import { NextResponse } from "next/server";

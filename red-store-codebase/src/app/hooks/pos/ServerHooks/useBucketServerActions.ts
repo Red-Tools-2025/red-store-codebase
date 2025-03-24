@@ -63,8 +63,8 @@ const useBucketServerActions = () => {
     scheduled_time: string
   ) => {
     // Check if the activation time is before the scheduled time
-    const scheduledTime = new Date(scheduled_time);
-    const currentTime = new Date();
+    // const scheduledTime = new Date(scheduled_time);
+    // const currentTime = new Date();
 
     setDialogType("ACTIVATE");
     setIsDialogOpen(true);

@@ -1,4 +1,4 @@
-import { BucketStatus, Inventory } from "@prisma/client";
+import { Inventory } from "@prisma/client";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { usePos } from "@/app/contexts/pos/PosContext";
 
