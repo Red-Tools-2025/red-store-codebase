@@ -58,8 +58,11 @@ const useBucketServerActions = () => {
   };
 
   const handleAwaitActivate = async (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     bucket_id: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     store_id: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     scheduled_time: string
   ) => {
     // Check if the activation time is before the scheduled time

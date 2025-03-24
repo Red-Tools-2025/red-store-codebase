@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster } from "@/components/ui/toaster";
 import BucketsEmptyState from "./EmptyState";
-import { usePos } from "@/app/contexts/pos/PosContext";
 
 interface BucketDisplayProps {
   buckets: (Bucket & { inventory: Inventory | null })[];
@@ -25,9 +24,6 @@ const BucketDisplay: React.FC<BucketDisplayProps> = ({
   isFetching,
 }) => {
   const [index, setIndex] = useState(0);
-  const { bucketMap } = usePos();
-
-  // console.log(bucketMap);
 
   useEffect(() => {
     if (isFetching) {
