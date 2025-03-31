@@ -25,6 +25,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check, Trash2, X } from "lucide-react";
 
 import React, { useMemo, useState } from "react";
+import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { LuScanFace } from "react-icons/lu";
 
 interface RestockProductModalProps {
@@ -56,7 +57,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
     initializedScanner,
     license,
   } = useScanner();
-  const { selectedStore } = useInventory();
+  const { selectedStore, handleRefresh } = useInventory();
 
   const [isRestocking, setisRestocking] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -80,6 +81,32 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
       setSearchTerm("");
       setSelectedQuantity(1); // Reset quantity after adding
     }
+  };
+
+  const handleIncrementRestockValue = (product_id: number) => {
+    setProductsToUpdate(
+      productsToUpdate.map((p) =>
+        p.invId === product_id
+          ? { ...p, restockQuantity: p.restockQuantity + 1 }
+          : p
+      )
+    );
+  };
+
+  const handleDecrementRestockValue = (product_id: number) => {
+    setProductsToUpdate(
+      productsToUpdate.map((p) =>
+        p.invId === product_id
+          ? {
+              ...p,
+              restockQuantity:
+                p.restockQuantity === 1
+                  ? p.restockQuantity
+                  : p.restockQuantity - 1,
+            }
+          : p
+      )
+    );
   };
 
   const handleAddByBarcode = (searchBarcode: string) => {
@@ -123,6 +150,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
       });
       setisRestocking(false);
       setProductsToUpdate([]);
+      handleRefresh();
       onClose();
     } catch (err) {
       console.error(err);
@@ -153,7 +181,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Restock your products</DialogTitle>
           <DialogDescription>
@@ -228,31 +256,33 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="flex items-center justify-between bg-gray-100 p-2 rounded-lg mb-2"
+                className="flex items-center justify-between bg-gray-100 px-1 py-2 rounded-lg mb-2"
               >
-                <div className="flex items-center space-x-2">
-                  <div className="flex gap-3 items-center">
-                    <span>{product.invItem}</span>
-                    <div className="flex gap-2 text-xs">
-                      <span className="px-2 py-1 bg-white rounded-sm border border-gray-300">
-                        {product.productDetails.invItemBrand}
-                      </span>
-                      <span className="px-2 py-1 bg-white rounded-sm border border-gray-300">
-                        {product.productDetails.invItemType}
-                      </span>
-                    </div>
-                  </div>
-                  <span className=" bg-green-100 px-1 text-green-600 font-semibold">
+                <div className="flex flex-row items-center">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveProduct(product.invId)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                  <p className="text-sm">{product.invItem}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <CiCircleMinus
+                    onClick={() => handleDecrementRestockValue(product.invId)}
+                    className="cursor-pointer hover:text-blue-600 transition-all"
+                    size={20}
+                  />
+                  <span className="bg-blue-100 px-2 border text-sm rounded-md border-blue-600 py-1 text-blue-600 font-semibold">
                     +{product.restockQuantity}
                   </span>
+                  <CiCirclePlus
+                    onClick={() => handleIncrementRestockValue(product.invId)}
+                    className="cursor-pointer hover:text-blue-600 transition-all"
+                    size={20}
+                  />
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRemoveProduct(product.invId)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
               </motion.div>
             ))}
           </AnimatePresence>
