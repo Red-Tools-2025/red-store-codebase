@@ -60,10 +60,18 @@ const TableViewModal: React.FC<TableViewModalProps> = ({
 
   const handleSaveTableViews = () => {
     const newColumns: ColumnDef<Inventory>[] = selectedFields.map((field) => ({
-      accessorKey: field.fieldName,
+      // Use accessorFn to extract the value from invAdditional
+      accessorFn: (row) => {
+        // un processed row data access
+        const additionalData = row.invAdditional as InvAdditional;
+        return additionalData?.[field.fieldName] ?? null;
+      },
+      // Use an id so that filtering keys work properly
+      id: field.fieldName,
       header: field.label,
       filterFn: "includesString",
       cell: ({ row }) => {
+        // processed row data acess
         const additionalData = row.original.invAdditional as InvAdditional;
         return additionalData?.[field.fieldName] ?? "N/A";
       },

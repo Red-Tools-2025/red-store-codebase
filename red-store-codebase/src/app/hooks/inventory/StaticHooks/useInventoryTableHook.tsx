@@ -42,12 +42,13 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
     state: {
       sorting,
       columnFilters,
-      pagination, // ✅ Attach pagination state
+      pagination,
     },
     onPaginationChange: setPagination, //
   });
 
-  // ✅ TanStack API to get total pages
+  console.log({ columns, columnFilters });
+
   const totalPages = table.getPageCount();
 
   return { table, sorting, columnFilters, setColumnFilters, totalPages };
