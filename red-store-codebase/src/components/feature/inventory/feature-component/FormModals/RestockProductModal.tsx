@@ -142,7 +142,11 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
       .filter(
         (item) =>
           !productsToUpdate.some((p) => p.invId === item.invId) &&
-          item.invItem.toLowerCase().includes(searchTerm.toLowerCase())
+          (item.invItem.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (item.invItemBrand
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase()) ??
+              false))
       )
       .slice(0, 5); // Limit to 5 suggestions
   }, [inventoryItems, searchTerm, productsToUpdate]);
@@ -171,7 +175,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
             <CommandInput
               value={searchTerm}
               onValueChange={setSearchTerm}
-              placeholder="Search product to restock"
+              placeholder="Search via product or brand to restock"
             />
             <CommandList>
               {searchTerm && (

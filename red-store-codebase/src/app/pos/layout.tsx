@@ -1,11 +1,9 @@
 "use client";
-
 import React, { useState } from "react";
-import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
-import { Inventory, Store } from "@prisma/client";
-import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
+import { Inventory } from "@prisma/client";
 import { PosProvider } from "../contexts/pos/PosContext";
 import { Cart } from "../types/pos/cart";
+import { TbLogout } from "react-icons/tb";
 import useItems from "../hooks/pos/ServerHooks/useItems";
 import { usePosAuth } from "../providers/PosAuthProvider"; // Import the Auth Context
 import useBucketsFromServer from "../hooks/pos/ServerHooks/useBucketsFromServer";
@@ -108,14 +106,13 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
           <>
             <div className="flex justify-between">
               <h1 className="text-2xl font-semibold">Point of Sales</h1>
-              <div className="flex gap-2">
-                {/* <DropDownStoreSelect
-                  data={storeData}
-                  isDisabled={userStores.length === 0}
-                  setSelectedStore={setIsSelectedStore}
-                  selectedStore={selectedStore}
-                /> */}
-                {storeData.storeName}
+              <div className="flex flex-row gap-2">
+                <div className="px-4 py-2 border border-[#344054] rounded-md bg-white text-sm font-medium">
+                  {storeData.storeName}
+                </div>
+                <div className="py-2 px-4 border border-red-600 rounded-md bg-red-100 text-red-600 cursor-pointer transition-all hover:text-white hover:bg-red-600">
+                  <TbLogout size={18} />
+                </div>
               </div>
             </div>
             {children}
