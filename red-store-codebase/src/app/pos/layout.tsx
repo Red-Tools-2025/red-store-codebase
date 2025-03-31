@@ -11,6 +11,7 @@ import { usePosAuth } from "../providers/PosAuthProvider"; // Import the Auth Co
 import useBucketsFromServer from "../hooks/pos/ServerHooks/useBucketsFromServer";
 import useBucketAutoTrigger from "../hooks/pos/StaticHooks/useBucketAutoTriggers";
 import useBucketServerActions from "../hooks/pos/ServerHooks/useBucketServerActions";
+import useEmpDetails from "../hooks/pos/ServerHooks/useEmpDetails";
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -20,8 +21,6 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const { isAuthenticated, isGettingToken, userData } = usePosAuth();
   const { handleActivate, handleFinish } = useBucketServerActions();
 
-  // States for stores, and items
-  const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
   const [cartItems, setCartItems] = useState<Cart[]>([]);
   const [clientSideItems, setClientSideItems] = useState<Inventory[] | null>(
     []
@@ -34,16 +33,14 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   // Fetching store data and inventory data
-  const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
-    userData?.storeManagerId ? String(userData.storeManagerId) : ""
-  );
+  // const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
+  //   userData?.storeManagerId ? String(userData.storeManagerId) : ""
+  // );
 
-  // Set initial store when stores are loaded
-  React.useEffect(() => {
-    if (userStores && userStores.length > 0 && !selectedStore) {
-      setIsSelectedStore(userStores[0]);
-    }
-  }, [userStores]);
+  const { store: storeData, isLoading: isLoadingStores } = useEmpDetails(
+    userData?.storeId as number,
+    userData?.storeManagerId as string
+  );
 
   const {
     handleResync,
@@ -54,13 +51,13 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
     isLoading: isLoadingProducts,
     favoriteProducts,
   } = useItems(
-    selectedStore ? String(selectedStore.storeId) : "",
+    storeData ? String(storeData.storeId) : "",
     userData?.storeManagerId ?? "",
     setClientSideItems
   );
 
   const { buckets, bucketMap, fetchError, isFetching, handleRefreshBuckets } =
-    useBucketsFromServer(selectedStore?.storeId?.toString() || "");
+    useBucketsFromServer(storeData?.storeId?.toString() || "");
 
   const scheduleMap = useBucketAutoTrigger(
     buckets,
@@ -82,7 +79,7 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
   return (
     <PosProvider
       scheduleMap={scheduleMap}
-      selectedStore={selectedStore}
+      selectedStore={storeData}
       favoriteProducts={favoriteProducts}
       buckets={buckets}
       bucketMap={bucketMap}
@@ -107,17 +104,18 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
       <div className="p-5 font-inter">
         {isLoadingStores ? (
           <div>Loading...</div>
-        ) : userStores && userStores.length > 0 ? (
+        ) : storeData ? (
           <>
             <div className="flex justify-between">
               <h1 className="text-2xl font-semibold">Point of Sales</h1>
               <div className="flex gap-2">
-                <DropDownStoreSelect
-                  data={userStores}
+                {/* <DropDownStoreSelect
+                  data={storeData}
                   isDisabled={userStores.length === 0}
                   setSelectedStore={setIsSelectedStore}
                   selectedStore={selectedStore}
-                />
+                /> */}
+                {storeData.storeName}
               </div>
             </div>
             {children}

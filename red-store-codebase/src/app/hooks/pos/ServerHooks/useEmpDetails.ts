@@ -6,7 +6,10 @@ import { useEffect, useState } from "react";
 const useEmpDetails = (store_id: number, store_manager_id: string) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [store, setSelectedStore] = useState<Store | null>(null);
+
   useEffect(() => {
+    if (!store_id || !store_manager_id) return;
+
     const handleGetEmployeeStore = async () => {
       setIsLoading(true);
       try {
@@ -39,7 +42,7 @@ const useEmpDetails = (store_id: number, store_manager_id: string) => {
     };
 
     handleGetEmployeeStore();
-  });
+  }, [store_id, store_manager_id]);
 
   return { store, isLoading };
 };

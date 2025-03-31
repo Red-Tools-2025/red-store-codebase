@@ -1,10 +1,11 @@
-import { GetEmployeeStoreRequestBody } from "@/app/types/emp/api";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-  const body: GetEmployeeStoreRequestBody = await req.json();
-  const { store_id, store_manager_id } = body;
+  const { searchParams } = new URL(req.url);
+  const store_id = Number(searchParams.get("store_id"));
+  const store_manager_id = searchParams.get("store_manager_id") || "";
+
   try {
     const store = await db.store.findUnique({
       where: {
