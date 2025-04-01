@@ -86,6 +86,7 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
       const apiUrl = "/api/inventory/timeseries/metrics/report-gen";
 
       // Set up query parameters
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const params: any = {
         store_id: storeId,
         file_type: selectedFileType,
@@ -115,8 +116,6 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
       // Handle the response based on file type
       if (data) {
         let fileName = `inventory-report-${selectedFileType}`;
-        let fileExtension =
-          selectedFileType === "excel" ? "xlsx" : selectedFileType;
 
         // Add date information to filename
         if (downloadType === "month") {
