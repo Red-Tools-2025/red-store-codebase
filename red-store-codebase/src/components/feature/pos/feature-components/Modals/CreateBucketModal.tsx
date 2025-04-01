@@ -34,6 +34,7 @@ const TimePicker = ({
 }: {
   onTimeSelect: (time: string) => void;
 }) => {
+  const currentTime = format(new Date(), "HH:mm"); // Get current time in HH:mm format
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentDate = new Date();
     const formattedDate = format(currentDate, "yyyy-MM-dd");
@@ -55,7 +56,9 @@ const TimePicker = ({
     onTimeSelect(finalFormattedTime);
   };
 
-  return <input type="time" onChange={handleTimeChange} />;
+  return (
+    <input type="time" defaultValue={currentTime} onChange={handleTimeChange} />
+  );
 };
 
 const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
