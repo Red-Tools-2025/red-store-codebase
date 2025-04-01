@@ -109,6 +109,26 @@ export type Database = {
           month: number;
         }[];
       };
+      get_daily_sales_summary: {
+        Args: {
+          store_id_input: number;
+          date_input: string;
+        };
+        Returns: {
+          product_name: string;
+          product_id: number;
+          year: number;
+          month: number;
+          day: number;
+          opening_stock: number;
+          received_stock: number;
+          total: number;
+          closing_stock: number;
+          sales: number;
+          sale_amount: number;
+          total_value: number;
+        }[];
+      };
       get_mean_transaction_value_by_day: {
         Args: {
           store_id_input: number;
@@ -130,6 +150,7 @@ export type Database = {
           month: number;
           opening_stock: number;
           received_stock: number;
+          total: number;
           closing_stock: number;
           sales: number;
           sale_amount: number;

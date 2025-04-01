@@ -36,20 +36,22 @@ const InventorySelectFilterType: React.FC<InventorySelectFilterTypeProps> = ({
   const handleFilterChange = (value: string) => {
     setSelectedOption(value);
     setActiveFilter(true);
-    // table.getColumn(filterValue)?.setFilterValue(value);
-    setColumnFilters((prev) => [
-      ...prev,
-      ...[
-        { id: filterValue, value }, // Assuming `invItem` is the column ID for product names
-      ],
-    ]);
+    // Update column filters by adding the new filter
+    setColumnFilters((prev) => {
+      // First remove any existing filter with this id to avoid duplicates
+      const filtered = prev.filter((filter) => filter.id !== filterValue);
+      // Then add the new filter
+      return [...filtered, { id: filterValue, value }];
+    });
   };
 
   const handleDeactivateFilter = () => {
     setSelectedOption(undefined);
     setActiveFilter(false);
-    // table.getColumn(filterValue)?.setFilterValue(undefined);
-    setColumnFilters([]);
+    // Only remove this specific filter, not all filters
+    setColumnFilters((prev) =>
+      prev.filter((filter) => filter.id !== filterValue)
+    );
   };
 
   // Sync state when table updates externally

@@ -125,8 +125,6 @@ export async function POST(req: Request) {
         }
       );
 
-    console.log({ cartItems });
-
     const prepped_series_inserts: TimeSeries[] = cartItems.map((cartItem) => {
       const inventoryItem = products_inventory.find(
         (item) => item.invId === cartItem.product_id

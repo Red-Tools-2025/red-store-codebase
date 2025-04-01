@@ -81,6 +81,8 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
 
         const filterOptions = getUniqueFieldValues(filterConfig.accessorKey);
 
+        console.log({ filterConfig });
+
         return (
           <InventorySelectFilterType
             setColumnFilters={setColumnFilters}

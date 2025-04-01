@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 import {
   AddBatchRequestBody,
   DeleteProductBatchRequestBody,
+  TimeSeries,
   UpdateProductBatchRequestBody,
 } from "@/app/types/inventory/api";
+import supabase from "@/lib/supabase/client";
 
 // batch addition upload to inventory
 export async function POST(req: Request) {
@@ -176,7 +178,52 @@ export async function PATCH(req: Request) {
       })
     );
 
-    const updatedProducts = await Promise.all(updatePromises);
+    // post updates you will also need to record the restock in sales
+    const prepped_series_inserts: TimeSeries[] = productBatch.map(
+      (restockItem) => {
+        const inventoryItem = existingProducts.find(
+          (item) => item.invId === restockItem.productId
+        );
+
+        if (!inventoryItem)
+          throw new Error(
+            `Product with ID ${restockItem.productId} not found in inventory, please scan again`
+          );
+
+        return {
+          product_id: restockItem.productId,
+          product_name: inventoryItem.invItem,
+          store_id: restockItem.storeId,
+          opening_stock: inventoryItem.invItemStock,
+          received_stock: restockItem.recievedStock,
+          closing_stock:
+            inventoryItem?.invItemStock + restockItem.recievedStock,
+          mrp_per_bottle: inventoryItem.invItemPrice,
+          sale_amount: 0,
+          sales: 0,
+          time: new Date().toISOString(),
+        };
+      }
+    );
+
+    const { error: TimeseriesInsertionError } = await supabase
+      .from("inventory_timeseries")
+      .insert(prepped_series_inserts);
+
+    if (TimeseriesInsertionError) {
+      return NextResponse.json(
+        { error: TimeseriesInsertionError.message },
+        {
+          status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+    }
+
+    // Update processing to be done post sales logging to avoid inconsistencies in opening and closing amounts
+    const updatedProducts = await db.$transaction(updatePromises);
 
     return NextResponse.json({
       message: "Products updated successfully",

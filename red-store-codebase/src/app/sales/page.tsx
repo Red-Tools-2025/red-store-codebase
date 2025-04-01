@@ -1,4 +1,3 @@
-import InfoCards from "@/components/feature/inventory/info-card";
 import SalesControlPanel from "@/components/feature/sales/feature-component/Panels/SalesControlPanel";
 
 const SalesPage = () => {
@@ -11,7 +10,7 @@ const SalesPage = () => {
   // maybe move Info Cards to a global component cause we will be using them quite regularly across all pages
   return (
     <main>
-      <InfoCards />
+      {/* <InfoCards /> */}
       <SalesControlPanel />
     </main>
   );

@@ -29,6 +29,20 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // safe gaude for immediate return if the store has 0 sales whatsoever
+    if (count === 0) {
+      return NextResponse.json(
+        {
+          data: [],
+          total_pages: 0,
+          current_page: 0,
+          items_per_page: 0,
+          total_count: count,
+        },
+        { status: 200 }
+      );
+    }
+
     const totalPageCount = Math.ceil(count! / pageSize);
 
     if (page > totalPageCount)
