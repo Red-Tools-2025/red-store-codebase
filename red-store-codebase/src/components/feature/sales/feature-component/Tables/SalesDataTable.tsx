@@ -61,7 +61,7 @@ const SalesDataTable: React.FC<SalesDataTableProps> = ({
     "Sale Amount",
   ];
 
-  console.log(salesData);
+  console.log({ salesData });
 
   const cleanedData = useMemo(() => {
     if (!salesData || salesData.length === 0) return [];

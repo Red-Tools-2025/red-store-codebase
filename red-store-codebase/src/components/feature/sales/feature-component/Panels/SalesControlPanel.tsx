@@ -47,7 +47,8 @@ const SalesControlPanel = () => {
   const handleRefresh = () => setRefreshInventory(!refreshInventory);
 
   return (
-    <div className="flex-col w-full">
+    // remove margin if including info cards in the future
+    <div className="flex-col w-full mt-5">
       <div className="flex gap-4 mb-4">
         <DatePickerWithRange onDateSelect={handleDateChange} />
         <Button onClick={handleRefresh} variant={"secondary"}>
