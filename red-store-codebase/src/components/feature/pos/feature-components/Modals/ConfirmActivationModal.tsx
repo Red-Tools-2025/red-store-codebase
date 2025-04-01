@@ -30,13 +30,14 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
 }) => {
   const { handleRefreshBuckets, bucketMap, inventoryItems, favoriteProducts } =
     usePos();
-  const { updateCacheItemCount } = useBrowserCacheStorage();
+  const { updateCacheItemCount, syncToServer } = useBrowserCacheStorage();
   const { isActivating, handleActivate, activateError } =
     useBucketServerActions();
 
   const processActivation = async () => {
     if (activateId && inventoryItems && favoriteProducts) {
       setIsFinishedBucketId(activateId.bucket_id);
+      await syncToServer(activateId.store_id);
       await handleActivate(activateId?.bucket_id, activateId?.store_id);
       handleRefreshBuckets();
       /* Locate Bucket via Id and update client side */

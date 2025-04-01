@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { IoIosStar } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 import { BsFillBucketFill } from "react-icons/bs";
@@ -53,16 +53,16 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
   const handleToggleBucketMode = () => setBucketMode(!bucketMode);
 
   // Auto Sync Logic
-  // useEffect(() => {
-  //   if (!selectedStore?.storeId) return;
+  useEffect(() => {
+    if (!selectedStore?.storeId) return;
 
-  //   const syncInterval = setInterval(() => {
-  //     console.log("Syncing to server..."); // Debugging log
-  //     syncToServer(selectedStore.storeId);
-  //   }, 45 * 60 * 1000); // Sync every 30 seconds
+    const syncInterval = setInterval(() => {
+      console.log("Syncing to server..."); // Debugging log
+      syncToServer(selectedStore.storeId);
+    }, 45 * 60 * 1000); // Sync every 30 seconds
 
-  //   return () => clearInterval(syncInterval); // Cleanup on unmount
-  // }, [selectedStore?.storeId]);
+    return () => clearInterval(syncInterval); // Cleanup on unmount
+  }, [selectedStore?.storeId]);
 
   /* Dynamic Display control render based on bucket mode*/
   return (
