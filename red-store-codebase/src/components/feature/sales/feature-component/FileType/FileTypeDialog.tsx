@@ -81,33 +81,92 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
 
     setIsLoading(true);
 
-    const apiEndpoints: { [key: string]: string } = {
-      excel: "/api/inventory/timeseries/metrics/report-excel",
-      pdf: "/api/inventory/timeseries/metrics/report-pdf",
-      csv: "/api/inventory/timeseries/metrics/report-csv",
-    };
+    try {
+      // Use the correct API endpoint
+      const apiUrl = "/api/inventory/timeseries/metrics/report-gen";
 
-    let apiUrl = apiEndpoints[selectedFileType];
-    let filename = `report-${selectedFileType}`;
+      // Set up query parameters
+      const params: any = {
+        store_id: storeId,
+        file_type: selectedFileType,
+      };
 
-    if (downloadType === "month") {
-      const [year, month] = selectedMonth.split("-");
-      apiUrl += `?store_id=${storeId}&month_input=${year}-${month}-01`;
-      filename += `-${year}-${month}`;
-    } else {
-      const formattedDate = selectedDate?.toISOString().split("T")[0];
-      apiUrl += `?store_id=${storeId}&date_input=${formattedDate}`;
-      filename += `-${formattedDate}`;
-    }
+      // Add date parameters based on selection type
+      if (downloadType === "month") {
+        const [year, month] = selectedMonth.split("-");
+        params.month_input = `${year}-${String(month).padStart(2, "0")}-01`;
+      } else {
+        params.date_input = selectedDate
+          ? `${selectedDate.getFullYear()}-${String(
+              selectedDate.getMonth() + 1
+            ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(
+              2,
+              "0"
+            )}`
+          : "";
+      }
 
-    setTimeout(() => {
-      alert(
-        `Downloading: ${filename}.${
-          selectedFileType === "excel" ? "xlsx" : selectedFileType
-        }`
-      );
+      // Make the API request
+      const { data } = await axios.get(apiUrl, {
+        params,
+        responseType: "json",
+      });
+
+      // Handle the response based on file type
+      if (data) {
+        let fileName = `inventory-report-${selectedFileType}`;
+        let fileExtension =
+          selectedFileType === "excel" ? "xlsx" : selectedFileType;
+
+        // Add date information to filename
+        if (downloadType === "month") {
+          const [year, month] = selectedMonth.split("-");
+          fileName += `-${year}-${month}`;
+        } else {
+          fileName += selectedDate
+            ? `-${selectedDate.getFullYear()}-${String(
+                selectedDate.getMonth() + 1
+              ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(
+                2,
+                "0"
+              )}`
+            : "";
+        }
+
+        // Handle the download based on file type
+        const downloadFile = (dataUrl: string, filename: string) => {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        };
+
+        if (selectedFileType === "pdf" && data.pdf) {
+          // PDF comes back as a data URI
+          downloadFile(data.pdf, `${fileName}.pdf`);
+        } else if (selectedFileType === "excel" && data.excel) {
+          // Excel comes back as base64
+          downloadFile(
+            `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${data.excel}`,
+            `${fileName}.xlsx`
+          );
+        } else if (selectedFileType === "csv" && data.csv) {
+          // CSV comes back as base64
+          downloadFile(`data:text/csv;base64,${data.csv}`, `${fileName}.csv`);
+        } else {
+          alert("Failed to generate the file. Please try again.");
+        }
+      } else {
+        alert("No data received from the server");
+      }
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      alert("An error occurred while downloading the file. Please try again.");
+    } finally {
       setIsLoading(false);
-    }, 1000); // Simulating file download
+    }
   };
 
   return (
@@ -132,7 +191,7 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
             <Button
               variant={"secondary"}
               className={
-                selectedFileType === "pdf" ? "bg-blue-200 text-blue-500" : ""
+                selectedFileType === "pdf" ? "bg-blue-100 text-blue-600" : ""
               }
               onClick={() => setSelectedFileType("pdf")}
             >
@@ -141,7 +200,7 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
             <Button
               variant={"secondary"}
               className={
-                selectedFileType === "excel" ? "bg-blue-200 text-blue-500" : ""
+                selectedFileType === "excel" ? "bg-blue-100 text-blue-600" : ""
               }
               onClick={() => setSelectedFileType("excel")}
             >
@@ -150,7 +209,7 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
             <Button
               variant={"secondary"}
               className={
-                selectedFileType === "csv" ? "bg-blue-200 text-blue-500" : ""
+                selectedFileType === "csv" ? "bg-blue-100 text-blue-600" : ""
               }
               onClick={() => setSelectedFileType("csv")}
             >
@@ -162,7 +221,7 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
               onClick={() => setDownloadType("month")}
               className={`px-3 py-1 border rounded-md transition-all  ${
                 downloadType === "month"
-                  ? "bg-blue-100 text-blue-600 border-blue-600"
+                  ? "bg-yellow-100 text-yellow-600 border-yellow-600"
                   : "border-gray-600"
               }`}
             >
@@ -172,7 +231,7 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
               onClick={() => setDownloadType("day")}
               className={`px-3 py-1 border rounded-md transition-all  ${
                 downloadType === "day"
-                  ? "bg-blue-100 text-blue-600 border-blue-600"
+                  ? "bg-yellow-100 text-yellow-600 border-yellow-600"
                   : "border-gray-600"
               }`}
             >
@@ -208,7 +267,7 @@ export function FileTypeDialog({ storeId }: FileTypeDialogProps) {
         </div>
         <DialogFooter>
           <Button onClick={handleDownload} disabled={isLoading}>
-            {isLoading ? "Downloading..." : "Print"}
+            {isLoading ? "Downloading..." : "Download"}
           </Button>
         </DialogFooter>
       </DialogContent>
