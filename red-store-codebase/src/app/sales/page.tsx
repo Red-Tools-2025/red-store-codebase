@@ -1,4 +1,3 @@
-import InfoCards from "@/components/feature/inventory/info-card";
 import SalesControlPanel from "@/components/feature/sales/feature-component/Panels/SalesControlPanel";
 
 const SalesPage = () => {
