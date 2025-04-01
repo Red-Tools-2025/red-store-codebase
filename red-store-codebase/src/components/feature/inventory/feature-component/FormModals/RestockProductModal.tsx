@@ -165,19 +165,24 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
 
   // Memoized filtered suggestions
   const suggestionItems = useMemo(() => {
-    // Filter out already selected products and match search term
-    return inventoryItems
-      .filter(
-        (item) =>
-          !productsToUpdate.some((p) => p.invId === item.invId) &&
-          (item.invItem.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (item.invItemBrand
-              ?.toLowerCase()
-              .includes(searchTerm.toLowerCase()) ??
-              false))
-      )
-      .slice(0, 5); // Limit to 5 suggestions
+    const filtered = inventoryItems.filter((item) => {
+      const matchesProductName = item.invItem
+        .toLowerCase()
+        .includes(searchTerm.trim().toLowerCase());
+      const matchesBrand = item.invItemBrand
+        ?.toLowerCase()
+        .includes(searchTerm.trim().toLowerCase());
+
+      return (
+        !productsToUpdate.some((p) => p.invId === item.invId) &&
+        (matchesProductName || matchesBrand)
+      );
+    });
+
+    return filtered.slice(0, 5);
   }, [inventoryItems, searchTerm, productsToUpdate]);
+
+  console.log(suggestionItems);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -207,31 +212,39 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
             />
             <CommandList>
               {searchTerm && (
-                <CommandGroup heading="Suggestions">
-                  {suggestionItems.map((product) => (
-                    <CommandItem
-                      key={product.invId}
-                      value={product.invItem}
-                      onSelect={() => handleAddProduct(product)}
-                    >
-                      <div className="flex justify-between w-full items-center">
-                        <div className="flex gap-3 items-center">
-                          <span>{product.invItem}</span>
-                          <div className="flex gap-2 text-xs">
-                            <span className="px-2 py-1 bg-white rounded-sm border border-gray-300">
-                              {product.invItemBrand}
-                            </span>
-                            <span className="px-2 py-1 bg-white rounded-sm border border-gray-300">
-                              {product.invItemType}
-                            </span>
+                <CommandGroup>
+                  {suggestionItems.length > 0 ? (
+                    suggestionItems.map((product) => (
+                      <CommandItem
+                        key={product.invId}
+                        value={`${product.invItemBrand || ""} - ${
+                          product.invItem
+                        }`}
+                        onSelect={() => handleAddProduct(product)}
+                      >
+                        <div className="flex justify-between w-full items-center">
+                          <div className="flex gap-3 items-center">
+                            <span>{product.invItem}</span>
+                            <div className="flex gap-2 text-xs">
+                              <span className="px-2 py-1 bg-white rounded-sm border border-gray-300">
+                                {product.invItemBrand}
+                              </span>
+                              <span className="px-2 py-1 bg-white rounded-sm border border-gray-300">
+                                {product.invItemType}
+                              </span>
+                            </div>
                           </div>
+                          <Button variant="ghost" size="icon">
+                            <Check className="h-4 w-4" />
+                          </Button>
                         </div>
-                        <Button variant="ghost" size="icon">
-                          <Check className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CommandItem>
-                  ))}
+                      </CommandItem>
+                    ))
+                  ) : (
+                    <div className="py-2 px-4 text-sm">
+                      No matching products found
+                    </div>
+                  )}
                 </CommandGroup>
               )}
             </CommandList>
