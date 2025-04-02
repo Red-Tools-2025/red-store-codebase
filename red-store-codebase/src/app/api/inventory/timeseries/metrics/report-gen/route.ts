@@ -6,6 +6,9 @@ import { parse } from "json2csv";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import dayjs from "dayjs";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function GET(req: Request) {
   try {
@@ -62,9 +65,40 @@ export async function GET(req: Request) {
       );
     }
 
-    // Headers for tables
+    // Fetch product brand information from Prisma
+    const productIds = data.map((item: any) => item.product_id);
+    const inventoryItems = await prisma.inventory.findMany({
+      where: {
+        storeId: store_id,
+        invId: {
+          in: productIds,
+        },
+      },
+      select: {
+        invId: true,
+        invItemBrand: true,
+      },
+    });
+
+    // Create a mapping of product IDs to brands
+    const brandMap = inventoryItems.reduce(
+      (map: Record<number, string>, item) => {
+        map[item.invId] = item.invItemBrand || "N/A";
+        return map;
+      },
+      {}
+    );
+
+    // Merge brand information with RPC data
+    const enrichedData = data.map((item: any) => ({
+      ...item,
+      product_brand: brandMap[item.product_id] || "N/A",
+    }));
+
+    // Headers for tables (now including brand)
     const headers = [
       "Product Name",
+      "Brand",
       "Product ID",
       "Opening Stock",
       "Received Stock",
@@ -81,7 +115,7 @@ export async function GET(req: Request) {
     switch (file_type) {
       case "pdf":
         responseData = generatePdfReport(
-          data,
+          enrichedData,
           headers,
           store_id,
           startDate,
@@ -90,10 +124,10 @@ export async function GET(req: Request) {
         );
         break;
       case "excel":
-        responseData = generateExcelReport(data);
+        responseData = generateExcelReport(enrichedData);
         break;
       case "csv":
-        responseData = generateCsvReport(data);
+        responseData = generateCsvReport(enrichedData);
         break;
       default:
         return NextResponse.json(
@@ -138,9 +172,10 @@ function generatePdfReport(
   doc.setFontSize(16);
   doc.text(heading, 14, 20);
 
-  // Format the data for the table
+  // Format the data for the table (now including brand)
   const tableData = data.map((row: any) => [
     row.product_name,
+    row.product_brand,
     row.product_id,
     row.opening_stock,
     row.received_stock,
@@ -171,9 +206,10 @@ function generatePdfReport(
 
 // Generate Excel report
 function generateExcelReport(data: any[]) {
-  // Format data for Excel
+  // Format data for Excel (now including brand)
   const excelData = data.map((row: any) => ({
     "Product Name": row.product_name,
+    Brand: row.product_brand,
     "Product ID": row.product_id,
     "Opening Stock": row.opening_stock,
     "Received Stock": row.received_stock,
@@ -201,9 +237,10 @@ function generateExcelReport(data: any[]) {
 // Generate CSV report
 function generateCsvReport(data: any[]) {
   try {
-    // Define fields for CSV
+    // Define fields for CSV (now including brand)
     const fields = [
       { label: "Product Name", value: "product_name" },
+      { label: "Brand", value: "product_brand" },
       { label: "Product ID", value: "product_id" },
       { label: "Opening Stock", value: "opening_stock" },
       { label: "Received Stock", value: "received_stock" },

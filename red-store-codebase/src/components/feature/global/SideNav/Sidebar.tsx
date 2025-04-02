@@ -94,7 +94,7 @@ export default function Sidebar() {
         {/* Toggle Button - Now at the bottom */}
         <button
           onClick={toggleSidebar}
-          className={`absolute bottom-4 right-0 transform translate-x-full flex items-center justify-center w-6 h-12 bg-gray-700 border border-l-0 rounded-r-md`}
+          className={`absolute top-[50%] right-0 transform translate-x-full flex items-center justify-center w-6 h-12 bg-gray-700 border border-l-0 rounded-r-md`}
         >
           {isOpen ? (
             <ChevronLeft className="w-4 h-4 text-white" />
