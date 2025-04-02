@@ -168,7 +168,10 @@ const useBrowserCacheStorage = () => {
   ) => {
     const db = await initDB;
     // Get all sales records
-    const sales_records = await db.getAll("sales");
+    const salesStore = db.transaction("sales").objectStore("sales");
+    const sales_records = await salesStore.getAll();
+    const sales_keys = await salesStore.getAllKeys();
+
     if (sales_records.length === 0) {
       toast({
         title: "No Sales",
@@ -177,10 +180,17 @@ const useBrowserCacheStorage = () => {
       return;
     }
 
+    // Track record indicies in cache
+    const indicies = sales_records.reduce((indicies, record, i) => {
+      if (record.cartItem.product_id === product_id) {
+        indicies.push(i);
+      }
+      return indicies;
+    }, [] as number[]);
+
     // Filter sales records to only include the specific product
-    const productSalesRecords = sales_records.filter(
-      (record) => record.cartItem.product_id === product_id
-    );
+    const productSalesRecords = indicies.map((index) => sales_records[index]);
+    const productSalesRecordKeys = indicies.map((index) => sales_keys[index]);
 
     if (productSalesRecords.length === 0) {
       toast({
@@ -219,17 +229,17 @@ const useBrowserCacheStorage = () => {
 
       if (update_response.status === 200) {
         setSyncProgress(80);
-
-        // Only remove the synced product records from local storage
-        for (const record of productSalesRecords) {
-          await db.delete("sales", record.cartItem.product_id);
-        }
-
-        toast({
-          title: "Product Sales Synced",
-          description: "Sales for this product synced to server",
-        });
       }
+
+      // Only remove the synced product records from local storage via keys
+      for (const key of productSalesRecordKeys) {
+        await db.delete("sales", key);
+      }
+
+      toast({
+        title: "Product Sales Synced",
+        description: "Sales for this product synced to server",
+      });
     } catch (error) {
       console.error("Error syncing product sales to server:", error);
       toast({
