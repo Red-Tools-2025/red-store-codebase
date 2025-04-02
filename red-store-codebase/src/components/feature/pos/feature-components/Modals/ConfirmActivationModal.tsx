@@ -30,17 +30,17 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
 }) => {
   const { handleRefreshBuckets, bucketMap, inventoryItems, favoriteProducts } =
     usePos();
-  const { updateCacheItemCount, syncToServer } = useBrowserCacheStorage();
+  const {
+    updateCacheItemCount,
+    syncProductSalesToServer,
+    isSyncingToInventory,
+  } = useBrowserCacheStorage();
   const { isActivating, handleActivate, activateError } =
     useBucketServerActions();
 
   const processActivation = async () => {
     if (activateId && inventoryItems && favoriteProducts) {
-      setIsFinishedBucketId(activateId.bucket_id);
-      await syncToServer(activateId.store_id);
-      await handleActivate(activateId?.bucket_id, activateId?.store_id);
-      handleRefreshBuckets();
-      /* Locate Bucket via Id and update client side */
+      /* Locate Bucket via Id*/
       const bucket = bucketMap.get(activateId.bucket_id);
       const inventory_item =
         inventoryItems.find((item) => item.invId === bucket?.invId) ??
@@ -54,7 +54,15 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
           ? 150
           : 0;
 
-      console.log({ inventory_item, bucketSizeValue });
+      setIsFinishedBucketId(activateId.bucket_id);
+      await syncProductSalesToServer(
+        activateId.store_id,
+        inventory_item?.invId as number
+      );
+      await handleActivate(activateId?.bucket_id, activateId?.store_id);
+      handleRefreshBuckets();
+
+      // update client side
       updateCacheItemCount(inventory_item?.invId as number, bucketSizeValue);
       onClose();
     }
@@ -84,9 +92,13 @@ const ConfirmActivateBucketModal: React.FC<ConfirmActivateBucketModalProps> = ({
         <DialogFooter>
           <Button
             onClick={() => void processActivation()}
-            disabled={isActivating || !activateId}
+            disabled={isActivating || !activateId || isSyncingToInventory}
           >
-            {isActivating ? "Activating..." : "Activate Bucket"}
+            {isActivating
+              ? "Activating..."
+              : isSyncingToInventory
+              ? "Syncing..."
+              : "Activate Bucket"}
           </Button>
           <Button variant={"secondary"} onClick={onClose}>
             Cancel

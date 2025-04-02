@@ -34,6 +34,7 @@ const TimePicker = ({
 }: {
   onTimeSelect: (time: string) => void;
 }) => {
+  const currentTime = format(new Date(), "HH:mm"); // Get current time in HH:mm format
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentDate = new Date();
     const formattedDate = format(currentDate, "yyyy-MM-dd");
@@ -55,7 +56,9 @@ const TimePicker = ({
     onTimeSelect(finalFormattedTime);
   };
 
-  return <input type="time" onChange={handleTimeChange} />;
+  return (
+    <input type="time" defaultValue={currentTime} onChange={handleTimeChange} />
+  );
 };
 
 const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
@@ -109,7 +112,7 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCloseModal}>
-      <DialogContent className="max-w-[500px] font-inter">
+      <DialogContent className="max-w-[600px] font-inter">
         <DialogHeader>
           <DialogTitle>Create Bucket</DialogTitle>
           {createBucketError && (
@@ -166,17 +169,21 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
                   </CommandEmpty>
                   <CommandGroup heading="Suggestions">
                     {products
-                      ?.filter((product) =>
-                        product.invItem
-                          .toLowerCase()
-                          .includes(search.toLowerCase())
+                      ?.filter(
+                        (product) =>
+                          product.invItem
+                            .toLowerCase()
+                            .includes(search.toLowerCase()) ||
+                          product.invItemBrand
+                            ?.toLowerCase()
+                            .includes(search.toLowerCase())
                       )
                       .map((product) => {
                         const isOutOfStock = product.invItemStock === 0;
                         return (
                           <CommandItem
                             key={product.invId}
-                            value={`${product.invId}-${product.invItem}`}
+                            value={`${product.invItemBrand}-${product.invItem}`}
                             onSelect={() => {
                               if (!isOutOfStock) setSelectedProduct(product);
                             }}
@@ -186,11 +193,7 @@ const CreateBucketModal: React.FC<CreateBucketModalProps> = ({
                                 : "hover:bg-gray-100"
                             }`}
                           >
-                            <p>
-                              {product.invItem.length > 30
-                                ? product.invItem.slice(0, 30) + "..."
-                                : product.invItem}
-                            </p>
+                            <p>{product.invItem}</p>
                             <span className="text-xs py-1 px-2 border border-gray-300 rounded-sm bg-gray-100">
                               {product.invItemBrand}
                             </span>

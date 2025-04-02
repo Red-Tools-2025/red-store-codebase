@@ -162,6 +162,96 @@ const useBrowserCacheStorage = () => {
     }
   };
 
+  const syncProductSalesToServer = async (
+    store_id: number,
+    product_id: number
+  ) => {
+    const db = await initDB;
+    // Get all sales records
+    const salesStore = db.transaction("sales").objectStore("sales");
+    const sales_records = await salesStore.getAll();
+    const sales_keys = await salesStore.getAllKeys();
+
+    if (sales_records.length === 0) {
+      toast({
+        title: "No Sales",
+        description: "No sales to sync",
+      });
+      return;
+    }
+
+    // Track record indicies in cache
+    const indicies = sales_records.reduce((indicies, record, i) => {
+      if (record.cartItem.product_id === product_id) {
+        indicies.push(i);
+      }
+      return indicies;
+    }, [] as number[]);
+
+    // Filter sales records to only include the specific product
+    const productSalesRecords = indicies.map((index) => sales_records[index]);
+    const productSalesRecordKeys = indicies.map((index) => sales_keys[index]);
+
+    if (productSalesRecords.length === 0) {
+      toast({
+        title: "No Sales For This Product",
+        description: "No sales to sync for the selected product",
+      });
+      return;
+    }
+
+    setIsSyncingToInventory(true);
+    setSyncProgress(10);
+
+    // Process the filtered records
+    const bulkPayload = productSalesRecords.reduce((acc, record) => {
+      const existingRecord = acc.find(
+        (r) => r.purchase_time === record.purchase_time
+      );
+      if (existingRecord) {
+        existingRecord.purchases.push(record.cartItem);
+      } else {
+        acc.push({
+          purchases: [record.cartItem],
+          purchase_time: record.purchase_time,
+        });
+      }
+      setSyncProgress(40);
+      return acc;
+    }, [] as { purchases: POSDbBuffer["sales"]["value"]["cartItem"][]; purchase_time: string }[]);
+
+    try {
+      setSyncProgress(60);
+      const update_response = await axios.post("/api/cart/bulk", {
+        sales_records: bulkPayload,
+        store_id,
+      });
+
+      if (update_response.status === 200) {
+        setSyncProgress(80);
+      }
+
+      // Only remove the synced product records from local storage via keys
+      for (const key of productSalesRecordKeys) {
+        await db.delete("sales", key);
+      }
+
+      toast({
+        title: "Product Sales Synced",
+        description: "Sales for this product synced to server",
+      });
+    } catch (error) {
+      console.error("Error syncing product sales to server:", error);
+      toast({
+        title: "Sync Failed",
+        description: "Failed to sync product sales to server.",
+      });
+    } finally {
+      setSyncProgress(100);
+      setIsSyncingToInventory(false);
+    }
+  };
+
   /*
   The cache must always run up to date with the server to ensure this we mimic the operations of the server on the cache
   prevents issues in scenarios where the user reloads the page which will cause race and inconsistencies if we let our actions behave in 
@@ -212,6 +302,7 @@ const useBrowserCacheStorage = () => {
   return {
     saveToCache,
     syncToServer,
+    syncProductSalesToServer,
     updateCacheItemCount,
     isSyncingToInventory,
     syncProgress,

@@ -282,12 +282,29 @@ const useAuthServerHook = () => {
     }
   };
 
+  const handleEmployeeLogout = async () => {
+    try {
+      // Remove token from cookies
+      document.cookie =
+        "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+
+      // If using Supabase, sign out the user
+      await authClient.auth.signOut();
+
+      // Redirect to login page
+      window.location.href = "/auth/emp";
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   return {
     handleRegister,
     handleLogin,
     handleVerifyOTP,
     handleSendOTP,
     handleEmployeeLogin,
+    handleEmployeeLogout,
   };
 };
 

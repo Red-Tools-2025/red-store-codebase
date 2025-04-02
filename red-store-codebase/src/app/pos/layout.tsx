@@ -10,6 +10,7 @@ import useBucketsFromServer from "../hooks/pos/ServerHooks/useBucketsFromServer"
 import useBucketAutoTrigger from "../hooks/pos/StaticHooks/useBucketAutoTriggers";
 import useBucketServerActions from "../hooks/pos/ServerHooks/useBucketServerActions";
 import useEmpDetails from "../hooks/pos/ServerHooks/useEmpDetails";
+import ConfirmLogoutModal from "@/components/feature/pos/feature-components/Modals/ConfrirmLogoutModal";
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -29,6 +30,9 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
 
   // States for search
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const [openConfirmLogoutModal, setOpenConfirmLogoutModal] =
+    useState<boolean>(false);
 
   // Fetching store data and inventory data
   // const { data: userStores, isLoading: isLoadingStores } = useStoreServerFetch(
@@ -111,7 +115,14 @@ const POSLayout: React.FC<POSLayoutProps> = ({ children }) => {
                   {storeData.storeName}
                 </div>
                 <div className="py-2 px-4 border border-red-600 rounded-md bg-red-100 text-red-600 cursor-pointer transition-all hover:text-white hover:bg-red-600">
-                  <TbLogout size={18} />
+                  <TbLogout
+                    onClick={() => setOpenConfirmLogoutModal(true)}
+                    size={18}
+                  />
+                  <ConfirmLogoutModal
+                    isOpen={openConfirmLogoutModal}
+                    handleClose={() => setOpenConfirmLogoutModal(false)}
+                  />
                 </div>
               </div>
             </div>
