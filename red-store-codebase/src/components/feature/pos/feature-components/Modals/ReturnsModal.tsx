@@ -156,15 +156,21 @@ const ReturnsModal: React.FC<ReturnsModalProps> = ({ isOpen, onClose }) => {
               </CommandEmpty>
               <CommandGroup heading="Suggestions">
                 {products
-                  ?.filter((product) =>
-                    product.invItem.toLowerCase().includes(search.toLowerCase())
+                  ?.filter(
+                    (product) =>
+                      product.invItem
+                        .toLowerCase()
+                        .includes(search.toLowerCase()) ||
+                      (product.invItemBrand?.toLowerCase() || "").includes(
+                        search.toLowerCase()
+                      )
                   )
                   .map((product) => {
                     const isOutOfStock = product.invItemStock === 0;
                     return (
                       <CommandItem
                         key={product.invId}
-                        value={`${product.invId}-${product.invItem}`}
+                        value={`${product.invItemBrand}-${product.invItem}`}
                         onSelect={() => {
                           if (!isOutOfStock) handleProductSelection(product);
                         }}
