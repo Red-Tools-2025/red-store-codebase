@@ -3,6 +3,8 @@ import { Inventory } from "@prisma/client";
 import {
   ColumnDef,
   ColumnFiltersState,
+  FilterFn,
+  Row,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -10,26 +12,32 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
+import { getPaginationRowModel } from "@tanstack/react-table";
 
 interface InventoryTableHookProps {
   data: Inventory[];
   columns: ColumnDef<Inventory>[];
 }
-import { getPaginationRowModel } from "@tanstack/react-table";
+
 const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
-  // const betweenFilter: FilterFn<any> = (row, columnId, filterValue) => {
-  //   const [min, max] = filterValue;
-  //   const value = row.getValue(columnId) as number;
-  //   return value >= min && value <= max;
-  // };
+  // Global filter for searching by name or brand
+  const globalSearchFilter: FilterFn<Inventory> = (
+    row: Row<Inventory>,
+    _columnId: string,
+    filterValue: string
+  ) => {
+    const name = row.original.invItem?.toLowerCase() || "";
+    const brand = row.original.invItemBrand?.toLowerCase() || "";
+    const search = filterValue.toLowerCase();
+    return name.includes(search) || brand.includes(search);
+  };
 
   const [sorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  // const [isLoading, setIsLoading] = useState(false); //
-
+  const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState({
-    pageIndex: 0, // Default to first page (0-based index)
-    pageSize: 10, // Default page size
+    pageIndex: 0,
+    pageSize: 10,
   });
 
   const table = useReactTable({
@@ -38,20 +46,30 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(), //
+    getPaginationRowModel: getPaginationRowModel(),
     state: {
       sorting,
       columnFilters,
+      globalFilter,
       pagination,
     },
-    onPaginationChange: setPagination, //
+    onPaginationChange: setPagination,
+    onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
+    globalFilterFn: globalSearchFilter,
   });
-
-  console.log({ columns, columnFilters });
 
   const totalPages = table.getPageCount();
 
-  return { table, sorting, columnFilters, setColumnFilters, totalPages };
+  return {
+    table,
+    sorting,
+    columnFilters,
+    setColumnFilters,
+    globalFilter,
+    setGlobalFilter,
+    totalPages,
+  };
 };
 
 export default useInventoryTableHook;
