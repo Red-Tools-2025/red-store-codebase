@@ -111,12 +111,11 @@ const InventoryPage = () => {
     inventoryItems,
     isLoading: isLoadingProducts,
     selectedStore,
-    
-    
+
     sessionData,
     handleRefresh,
   } = useInventory();
-  const { table, setColumnFilters } = useInventoryTableHook({
+  const { table, setColumnFilters, setGlobalFilter } = useInventoryTableHook({
     data: inventoryItems ?? [],
     columns: viewableColumns,
   });
@@ -239,7 +238,7 @@ const InventoryPage = () => {
       <InventoryControlPanel
         displayState={displayState}
         handleOpenModal={handleOpenModal}
-        setColumnFilters={setColumnFilters}
+        setGlobalFilter={setGlobalFilter}
         handleRefresh={handleRefresh}
         setDisplayState={setDisplayState}
         setIsAddProdModalOpen={setIsAddProdModalOpen}
@@ -284,7 +283,7 @@ const InventoryPage = () => {
       </div>
 
       {/* Inventory Pagination Controls */}
-      <InventoryPaginationPanel table={table}  />
+      <InventoryPaginationPanel table={table} />
     </div>
   );
 };

@@ -6,7 +6,6 @@ import InventoryActionsCTA from "./InventoryActionsCTA";
 import { Dispatch, SetStateAction } from "react";
 import InventroySearch from "./InventorySearch";
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
-import { ColumnFiltersState } from "@tanstack/react-table";
 import { IoIosStar } from "react-icons/io";
 
 interface InventoryControlPanelProps {
@@ -19,7 +18,7 @@ interface InventoryControlPanelProps {
   setIsFavortiesModalOpen: Dispatch<React.SetStateAction<boolean>>;
   handleOpenModal: (setModalType: Dispatch<SetStateAction<boolean>>) => void;
   handleRefresh: () => void;
-  setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
+  setGlobalFilter: Dispatch<SetStateAction<string>>;
 }
 
 const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
@@ -31,15 +30,13 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
   setIsDeleteProdModalOpen,
   setIsRestockProdModalOpen,
   setIsTableViewModalOpen,
-  setColumnFilters,
   setIsFavortiesModalOpen,
+  setGlobalFilter,
 }) => {
   const { inventoryItems } = useInventory();
 
   const setSearchFilter = (value: string) => {
-    setColumnFilters([
-      { id: "invItem", value }, // Assuming `invItem` is the column ID for product names
-    ]);
+    setGlobalFilter(value); // Coming from your hook
   };
   return (
     <div className="my-5 flex items-center justify-between">
