@@ -51,6 +51,20 @@ export const BucketDataTableColumns: ColumnDef<
     filterFn: "includesString",
   },
   {
+    accessorFn: (row) => row.inventory?.invItemBrand || "No Brand Assigned",
+    header: "Brand",
+    id: "brand",
+    cell: ({ row }) => {
+      const invItem = row.original.inventory;
+      return (
+        <div className="text-xs px-3 rounded-md bg-gray-100 border border-gray-300 w-fit py-1">
+          {invItem?.invItemBrand || "No Brand Assigned"}
+        </div>
+      );
+    },
+    filterFn: "includesString",
+  },
+  {
     accessorFn: (row) => row.bucketSize,
     header: "Bucket Size",
     id: "bucketSize",
