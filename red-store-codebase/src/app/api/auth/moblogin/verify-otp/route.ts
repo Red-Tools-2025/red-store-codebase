@@ -1,4 +1,3 @@
-import { MobileLoginResponse } from "@/app/types/auth/login";
 import { Employee } from "@prisma/client";
 
 import jwt from "jsonwebtoken";

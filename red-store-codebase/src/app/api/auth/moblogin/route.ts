@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import jwt from "jsonwebtoken";
 
 interface MobLoginRouteRequestType {
   empphone: string;
