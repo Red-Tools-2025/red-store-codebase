@@ -3,6 +3,7 @@ import {
   HandleMobileLoginInputObject,
   MobileLoginResponse,
   MobileOtpResponse,
+  VerifyOtpResponse,
 } from "@/app/types/auth/login";
 import {
   HandleRegisterInputObject,
@@ -181,12 +182,12 @@ const useAuthServerHook = () => {
     empname: string;
     empstore: string;
     otp: string;
+    login_response: MobileLoginResponse | null;
     // TEMPORARY FOR DEMO PURPOSES REMOVE LATER FOR CACHE
     OTPTemporaryClient: string;
     setOTPError: (msg: string) => void;
     setIsVerifyingOtp: (loading: boolean) => void;
     setOpenOTPDialog: (open: boolean) => void;
-    onSuccess: () => void;
   }) => {
     const {
       otp,
@@ -194,7 +195,7 @@ const useAuthServerHook = () => {
       setIsVerifyingOtp,
       setOpenOTPDialog,
       OTPTemporaryClient,
-      onSuccess,
+      login_response,
     } = obj;
     setOTPError("");
     setIsVerifyingOtp(true);
@@ -236,12 +237,26 @@ const useAuthServerHook = () => {
         return;
       }
 
+      if (!login_response) {
+        setOTPError("Invalid Flow");
+        return;
+      }
+
       console.log("OTP verified successfully.");
 
-      // Proceed with employee login
-      onSuccess();
+      // the cookie setter api here will be used in conjunction with the redis cache model went brought in
+      // make sure to move Redis cache verification logic to endpoint below
+      const response: AxiosResponse<VerifyOtpResponse> = await axios.post(
+        "/api/auth/moblogin/verify-otp",
+        {
+          employee_details: login_response.employee_details,
+        }
+      );
 
-      setOpenOTPDialog(false);
+      if (response.data.verified) {
+        window.location.href = "/pos";
+        setOpenOTPDialog(false);
+      }
     } catch (error) {
       console.error(error);
       setOTPError("Error verifying OTP. Please try again.");
@@ -250,8 +265,10 @@ const useAuthServerHook = () => {
     }
   };
 
-  const handleEmployeeLogin = async (obj: HandleMobileLoginInputObject) => {
-    const { empname, empstore, phone, setError, setIsLoading } = obj;
+  const handleEmployeeLogin = async (
+    obj: HandleMobileLoginInputObject
+  ): Promise<MobileLoginResponse | null> => {
+    const { empname, empstore, phone, setError, setIsLoading, onSuccess } = obj;
     setError("");
     setIsLoading(true);
 
@@ -266,8 +283,9 @@ const useAuthServerHook = () => {
           storename: empstore,
         }
       );
-      if (response.data.verifiedRedirect) {
-        window.location.href = "/pos";
+      if (response.data.otp_proceed) {
+        onSuccess();
+        return response.data;
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -280,6 +298,8 @@ const useAuthServerHook = () => {
     } finally {
       setIsLoading(false);
     }
+
+    return null;
   };
 
   const handleEmployeeLogout = async () => {

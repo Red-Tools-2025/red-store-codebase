@@ -18,6 +18,7 @@ import { Spinner } from "../ui/spinner";
 import { PhoneInput } from "../ui/phone-input";
 import useAuthServerHook from "@/app/hooks/auth/ServerHooks/useAuthServerHook";
 import OTPDialog from "./OTPDialog";
+import { MobileLoginResponse } from "@/app/types/auth/login";
 
 const EmployeeLoginSchema = Yup.object().shape({
   storeName: Yup.string().required("Store Name is required"),
@@ -30,6 +31,8 @@ export const EmployeeLoginForm = () => {
     useAuthServerHook();
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loginResponse, setLoginResponse] =
+    useState<MobileLoginResponse | null>(null);
 
   // for OTP
   const [OTPError, setOTPError] = useState<string>("");
@@ -75,14 +78,27 @@ export const EmployeeLoginForm = () => {
     setError("");
     setFormValues(values);
     setIsLoading(true);
-    // Send OTP to the phone number
-    setOpenOTPDialog(true);
-    await handleSendOTP({
+    // Initiate for verification on employee login
+    const login_response = await handleEmployeeLogin({
+      empname: values.employeeName,
+      empstore: values.storeName,
       phone: values.employeePhone,
-      setOTPError,
-      setOTPTemporaryClient,
-      setIsSendingOTP,
+      setError: setError,
+      setIsLoading: setIsLoading,
+      // on success signal a pop up on the OTP verification modal
+      onSuccess: async () => {
+        setOpenOTPDialog(true);
+        await handleSendOTP({
+          phone: values.employeePhone,
+          setOTPError,
+          setOTPTemporaryClient,
+          setIsSendingOTP,
+        });
+      },
     });
+
+    // save the login response in a state
+    setLoginResponse(login_response);
     setIsLoading(false);
   };
 
@@ -94,20 +110,11 @@ export const EmployeeLoginForm = () => {
       empname: formValues.employeeName,
       empstore: formValues.storeName,
       otp: enteredOtp,
+      login_response: loginResponse,
       setOTPError,
       setIsVerifyingOtp: setIsVerifyingOTP,
       OTPTemporaryClient,
       setOpenOTPDialog,
-      onSuccess: async () => {
-        await handleEmployeeLogin({
-          empname: formValues.employeeName,
-          empstore: formValues.storeName,
-          phone: formValues.employeePhone,
-          setError: setError,
-          setIsLoading: setIsLoading,
-        });
-        console.log("Login successful:");
-      },
     });
   };
 
