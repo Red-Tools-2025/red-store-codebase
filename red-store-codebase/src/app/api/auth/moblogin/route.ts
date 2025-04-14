@@ -77,24 +77,25 @@ export async function POST(req: Request) {
     }
 
     // Create Web Token
-    const token = jwt.sign(
-      {
-        empId: emp[0].empId,
-        empName: emp[0].empName,
-        empPhone: emp[0].empPhone,
-        storeId: emp[0].storeId,
-        storeManagerId: emp[0].storeManagerId,
-      },
-      "emp-token-key",
-      {
-        expiresIn: "2h",
-      }
-    );
+    // const token = jwt.sign(
+    //   {
+    //     empId: emp[0].empId,
+    //     empName: emp[0].empName,
+    //     empPhone: emp[0].empPhone,
+    //     storeId: emp[0].storeId,
+    //     storeManagerId: emp[0].storeManagerId,
+    //   },
+    //   "emp-token-key",
+    //   {
+    //     expiresIn: "2h",
+    //   }
+    // );
 
     // No return of web token store to http-cookie
     const response = NextResponse.json(
       {
-        verifiedRedirect: true,
+        otp_proceed: true,
+        employee_details: emp[0],
       },
       {
         status: 200,
@@ -104,15 +105,15 @@ export async function POST(req: Request) {
       }
     );
 
-    response.cookies.set({
-      name: "authToken",
-      value: token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days expiration
-    });
+    // response.cookies.set({
+    //   name: "authToken",
+    //   value: token,
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "strict",
+    //   path: "/",
+    //   maxAge: 60 * 60 * 24 * 7, // 7 days expiration
+    // });
 
     return response;
   } catch (err) {
