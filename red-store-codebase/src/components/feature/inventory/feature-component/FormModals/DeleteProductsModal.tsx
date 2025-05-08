@@ -57,7 +57,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
     initializedScanner,
     license,
   } = useScanner();
-  const { selectedStore } = useInventory();
+  const { selectedStore, handleRefresh } = useInventory();
 
   // Memoized filtered suggestions
   const suggestionItems = useMemo(() => {
@@ -131,10 +131,10 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
       });
 
       setIsDeleting(false);
-
       // Reset state
       setProductsToDelete([]);
       onClose();
+      handleRefresh();
     } catch (error) {
       setIsDeleting(false);
       console.error(error);

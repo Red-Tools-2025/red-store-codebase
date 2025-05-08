@@ -32,8 +32,8 @@ import useScanner from "@/app/hooks/scanner/StaticHooks/useScanner";
 
 interface AddProductModalProps {
   isOpen: boolean;
-  onClose: () => void;
   productTypes: string[];
+  onClose: () => void;
 }
 
 interface StoreDefination {
@@ -58,6 +58,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   onClose,
   productTypes,
 }) => {
+  const { handleRefresh } = useInventory();
   const { toast } = useToast();
   const {
     closeScanner,
@@ -159,6 +160,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           description: response.data.message || "Product added successfully",
           variant: "default",
         });
+        handleRefresh();
         formik.resetForm();
         setIsSubmitting(false);
         onClose();
