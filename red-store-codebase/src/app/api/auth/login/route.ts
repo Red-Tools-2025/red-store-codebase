@@ -6,7 +6,7 @@ interface LoginRouteRequestType extends NextRequest {
   email: string;
   password: string;
 }
-export async function POST(req: LoginRouteRequestType) {
+export async function POST(req: LoginRouteRequestType, res) {
   try {
     const body = await req.json();
     const { email, password } = body;

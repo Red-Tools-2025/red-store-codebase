@@ -12,6 +12,7 @@ interface ManagementContextType {
   sessionData: SessionUserType | null;
   selectedStore: Store | null;
   employeeData: Employee[] | null;
+  handleStoreDataRefresh: () => void;
 }
 
 const ManagementContext = createContext<ManagementContextType | undefined>(
@@ -25,16 +26,24 @@ export const ManagementProvider = ({
   sessionData,
   selectedStore,
   employeeData,
+  handleStoreDataRefresh,
 }: {
   children: React.ReactNode;
   storeData: Store[] | null;
   selectedStore: Store | null;
   sessionData: SessionUserType | null;
   employeeData: Employee[] | null;
+  handleStoreDataRefresh: () => void;
 }) => {
   return (
     <ManagementContext.Provider
-      value={{ selectedStore, storeData, sessionData, employeeData }}
+      value={{
+        selectedStore,
+        storeData,
+        sessionData,
+        employeeData,
+        handleStoreDataRefresh,
+      }}
     >
       {children}
     </ManagementContext.Provider>
