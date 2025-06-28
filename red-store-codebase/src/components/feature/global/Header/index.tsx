@@ -1,23 +1,14 @@
 import Image from "next/image";
 import LogoV1 from "@/public/logos/Logov1.svg";
 import { usePathname } from "next/navigation";
-import { IconType } from "react-icons/lib";
-import {
-  IoNotifications,
-  IoNotificationsOutline,
-  IoSettingsOutline,
-  IoStorefrontOutline,
-} from "react-icons/io5";
-import { MdPointOfSale } from "react-icons/md";
-import { FaDatabase } from "react-icons/fa";
-import { TbFileAnalytics } from "react-icons/tb";
+import { IoNotificationsOutline, IoSettingsOutline } from "react-icons/io5";
 import React from "react";
 
-const NavigationLinks: { label: string; href: string; icon: IconType }[] = [
-  { label: "Dashboard", href: "/dashboard", icon: TbFileAnalytics },
-  { label: "Sales", href: "/sales", icon: MdPointOfSale },
-  { label: "Inventory", href: "/inventory", icon: FaDatabase },
-  { label: "Stores", href: "/management", icon: IoStorefrontOutline },
+const NavigationLinks: { label: string; href: string }[] = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Sales", href: "/sales" },
+  { label: "Inventory", href: "/inventory" },
+  { label: "Stores", href: "/management" },
 ];
 
 const Header = () => {
@@ -31,7 +22,7 @@ const Header = () => {
           {NavigationLinks.map((link, i) => {
             return (
               <a
-                className={`text-[13px] font-medium text-gray-600 transition-all hover:text-black hover:font-semibold
+                className={`text-[14px] font-medium text-gray-600 transition-all hover:text-black hover:font-semibold
                     ${
                       pathname.includes(link.href)
                         ? "text-red-600 px-3 bg-red-100 rounded-md py-1"
@@ -41,7 +32,7 @@ const Header = () => {
                 href={link.href}
               >
                 <div className="flex flex-row gap-2 items-center">
-                  <> {React.createElement(link.icon)}</>
+                  {/* <> {React.createElement(link.icon)}</> */}
 
                   <p>{link.label}</p>
                 </div>

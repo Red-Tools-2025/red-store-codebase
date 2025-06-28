@@ -2,6 +2,7 @@
 
 import Header from "@/components/feature/global/Header";
 import { usePathname } from "next/navigation";
+import { useStoreContext } from "./StoreProvider";
 
 export default function StructureProvider({
   children,
@@ -18,6 +19,9 @@ export default function StructureProvider({
   ];
   const pathname = usePathname();
   const isAuthPage = whiteList.includes(pathname);
+  const { selectedStore } = useStoreContext();
+
+  console.log({ selectedStore });
 
   return (
     <div className="flex-1">
