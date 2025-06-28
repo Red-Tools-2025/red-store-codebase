@@ -10,6 +10,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "bg-[#344054] text-white shadow hover:bg-gray-600",
+        new_prime:
+          "shadow-sm text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700",
         secondary:
           "shadow-sm text-[#344054] border border-[#344054] rounded-lg hover:bg-gray-100",
         danger: "bg-red-500 text-white shadow hover:bg-red-600",

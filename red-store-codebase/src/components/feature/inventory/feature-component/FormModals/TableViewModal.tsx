@@ -109,9 +109,9 @@ const TableViewModal: React.FC<TableViewModalProps> = ({
                 selectedFields.find(
                   (selectedField) => selectedField.fieldName === field.fieldName
                 )
-                  ? "bg-blue-200 text-blue-500 border-blue-500"
+                  ? "bg-red-200 text-red-600 border-red-600"
                   : "bg-gray-200 text-gray-600"
-              } hover:bg-blue-200 hover:text-blue-500 hover:border-blue-500 cursor-pointer transition-all`}
+              } hover:bg-red-200 hover:text-red-600 hover:border-red-600 cursor-pointer transition-all`}
               onClick={() => handleFieldClick(field)}
             >
               {field.label}
@@ -135,7 +135,7 @@ const TableViewModal: React.FC<TableViewModalProps> = ({
                 {selectedFields.map((field) => (
                   <motion.th
                     key={field.fieldName}
-                    className="px-2 py-1 bg-blue-500 text-white bg-blue-500 text-white"
+                    className="px-2 py-1 bg-red-600 text-white bg-red-600 text-white"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 10 }}

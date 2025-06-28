@@ -111,7 +111,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
             selectedFilters={selectedFilters}
           >
             <Button variant="ghost" className="px-[5px]">
-              <IoIosAddCircle className="text-blue-300 hover:text-blue-500 text-xl cursor-pointer transition-colors" />
+              <IoIosAddCircle className="text-red-300 hover:text-red-600 text-xl cursor-pointer transition-colors" />
             </Button>
           </InventoryExtraFiltersControls>
         )}
