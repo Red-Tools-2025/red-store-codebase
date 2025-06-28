@@ -52,7 +52,7 @@ const Header = () => {
           selectedStore={selectedStore}
           setSelectedStore={(value) => {
             if (typeof value === "function") {
-              // If DropDownStoreSelect ever calls with a function, handle it gracefully
+              // If DropDownStoreSelect ever calls with a function, this will handle it gracefully
               setSelectedStore(value(selectedStore));
             } else {
               setSelectedStore(value);

@@ -6,15 +6,14 @@ import { MdOutlineAssignment } from "react-icons/md";
 import { ManagementProvider } from "../contexts/management/ManagementContext";
 
 import React, { SetStateAction, useMemo, useState } from "react";
-import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect";
-import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch";
+
 import AddStoreModal from "@/components/feature/management/feature-component/FormModals/AddStoreModal";
 import AddEmployeeModal from "@/components/feature/management/feature-component/FormModals/AddEmployeeModal";
-import { Store } from "@prisma/client";
 import useEmployeeServerFetch from "../hooks/management/ServerHooks/useEmployeeServerFetch";
 import AssignEmployeeModal from "@/components/feature/management/feature-component/FormModals/AssignEmployeeModal";
 import { useAuth } from "../providers/AuthProvider";
 import SessionValidator from "@/components/feature/global/layouts/SessionValidator";
+import { useStoreContext } from "../providers/StoreProvider";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
@@ -22,21 +21,20 @@ interface ManagementPageLayoutProps {
 
 const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   // Fetching session details
+  const {
+    handleStoreDataRefresh,
+    isLoading: isLoadingStores,
+    selectedStore,
+    storeData: data,
+  } = useStoreContext();
   const { session, isLoading: isLoadingSession } = useAuth();
   const sessionUser = session?.user;
 
-  const {
-    data,
-    isLoading: isLoadingStores,
-    handleRefresh: handleStoreDataRefresh,
-  } = useStoreServerFetch(sessionUser?.id ?? "");
   const { data: employeeData } = useEmployeeServerFetch(sessionUser?.id ?? ""); // Fetch employee data
 
   const [isStoreModalOpen, setisStoreModalOpen] = useState<boolean>(false);
   const [isEmpModalOpen, setIsEmpModalOpen] = useState<boolean>(false);
   const [isAssignModalOpen, setAssignModalOpen] = useState<boolean>(false);
-
-  const [selectedStore, setIsSelectedStore] = useState<Store | null>(null);
 
   const handleOpenModal = (
     setModalType: React.Dispatch<SetStateAction<boolean>>
@@ -90,12 +88,6 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                   User and Store Management
                 </h1>
                 <div className="flex gap-2">
-                  <DropDownStoreSelect
-                    data={data ?? []}
-                    isDisabled={data?.length === 0}
-                    setSelectedStore={setIsSelectedStore}
-                    selectedStore={selectedStore}
-                  />
                   <Button
                     disabled={selectedStore ? false : true}
                     onClick={() => handleOpenModal(setAssignModalOpen)}
