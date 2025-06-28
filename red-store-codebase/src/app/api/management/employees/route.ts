@@ -66,6 +66,13 @@ export async function GET(req: Request) {
         storeManagerId: storeManagerID,
         storeId: storeIdNumber,
       },
+      include: {
+        store: {
+          select: {
+            storeName: true,
+          },
+        },
+      },
     });
 
     if (emp_for_manager.length === 0) {

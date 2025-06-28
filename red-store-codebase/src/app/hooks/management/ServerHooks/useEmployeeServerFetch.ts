@@ -8,6 +8,10 @@ interface Role {
 // Extend the existing Employee type to include role
 interface Employee extends PrismaEmployee {
   role: Role; // Now Employee has a role field
+  // Extending on store name for management table
+  store: {
+    storeName: string;
+  };
 }
 
 interface FetchEmployeesResult {
