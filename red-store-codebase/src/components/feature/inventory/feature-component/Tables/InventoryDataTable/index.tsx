@@ -47,7 +47,7 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
         />
       )}
 
-      <motion.div className="w-full border border-gray-200">
+      <motion.div className="w-full border border-1 border-gray-300 rounded-lg">
         {isLoading ? (
           // ✅ Small black bouncing dots when paginating
           <div className="flex justify-center items-center h-24">
@@ -65,7 +65,7 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="border-b border-gray-200 p-3 font-semibold text-gray-500"
+                      className="border-b border-gray-300 p-3 font-semibold text-gray-500"
                     >
                       {header.isPlaceholder
                         ? null
@@ -85,7 +85,7 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
                   {rows.map((row, index) => (
                     <motion.tr
                       key={row.id}
-                      className={`border-b border-gray-200 hover:bg-green-100 cursor-pointer ${
+                      className={`border-b border-gray-200 hover:bg-red-100 cursor-pointer ${
                         index % 2 === 0 ? "bg-gray-50" : "bg-white"
                       }`}
                     >

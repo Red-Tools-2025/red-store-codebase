@@ -129,19 +129,24 @@ const SetFavoritesModal: React.FC<SetFavoritesModalProps> = ({
                 className="text-[23px] rounded-md bg-gray-100 border border-gray-400 hover:bg-gray-200 p-1 cursor-pointer"
               />
             </div>
-            <div className="flex flex-wrap gap-2 pt-2">
+            <div
+              className="flex flex-wrap gap-2 pt-2 max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 rounded-md border border-gray-200 bg-white"
+              style={{ minHeight: "40px" }}
+            >
               {selectedKeys.map((key) => (
                 <span
                   key={key.invId}
-                  className="px-2 py-1 text-xs border border-yellow-700 text-yellow-700 rounded-md bg-yellow-100 flex gap-2"
+                  className="px-2 py-1 text-xs border border-yellow-700 text-yellow-700 rounded-md bg-yellow-100 flex gap-2 items-center"
                 >
                   <p>{key.invItem}</p>
-                  <p
+                  <button
+                    type="button"
                     onClick={() => handleRemoveProduct(key)}
-                    className="hover:text-red-500 cursor-pointer transition-all"
+                    className="hover:text-red-500 cursor-pointer transition-all p-0 m-0 bg-transparent border-none"
+                    aria-label="Remove"
                   >
                     <X className="h-4 w-4" />
-                  </p>
+                  </button>
                 </span>
               ))}
             </div>
