@@ -1,9 +1,5 @@
 "use client";
-import React, { useState } from "react";
-import { Store } from "@prisma/client";
-import { DashBoardProvider } from "../contexts/dashboard/DashboardContext"; // Adjust path as needed
-import DropDownStoreSelect from "@/components/feature/management/feature-component/DropDownStoreSelect"; // Adjust path as needed
-import useStoreServerFetch from "../hooks/management/ServerHooks/useStoreServerFetch"; // Adjust path as needed
+import { DashBoardProvider } from "../contexts/dashboard/DashboardContext";
 import { useAuth } from "../providers/AuthProvider";
 import SessionValidator from "@/components/feature/global/layouts/SessionValidator";
 import { useStoreContext } from "../providers/StoreProvider";
