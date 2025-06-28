@@ -5,14 +5,11 @@ import StoreControlPanel from "@/components/feature/management/feature-component
 import EmployeeControlPanel from "@/components/feature/management/feature-component/Panels/EmployeeConrolPanel";
 import { Toaster } from "@/components/ui/toaster";
 
-import InfoCards from "@/components/feature/management/info-card";
-
 const ManagementPage: React.FC = () => {
   const { storeData, employeeData } = useManagement();
 
   return (
     <main>
-      <InfoCards employeeData={employeeData} storeData={storeData}></InfoCards>
       <div className="flex my-2 gap-2">
         {/* Control panel for store data */}
         <StoreControlPanel storeData={storeData} />

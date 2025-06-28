@@ -21,24 +21,28 @@ interface EmployeesResponse {
 }
 
 const useEmployeeServerFetch = (
-  storeManagerID: string | null
+  storeManagerID: string | null,
+  selectedStoreID: number | null
 ): FetchEmployeesResult => {
   const [data, setData] = useState<Employee[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!storeManagerID) return;
+    if (!storeManagerID || !selectedStoreID) return;
 
     const fetchEmployees = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const res = await axios.get<EmployeesResponse>(`/api/management/employees`, {
-          params: { storeManagerID },
-          headers: { "Content-Type": "application/json" },
-        });
+        const res = await axios.get<EmployeesResponse>(
+          `/api/management/employees`,
+          {
+            params: { storeManagerID, storeID: selectedStoreID },
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
         if (res.data.emp_for_manager) {
           setData(res.data.emp_for_manager);
@@ -52,7 +56,7 @@ const useEmployeeServerFetch = (
     };
 
     fetchEmployees();
-  }, [storeManagerID]);
+  }, [storeManagerID, selectedStoreID]);
 
   return { data, isLoading, error };
 };

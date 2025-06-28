@@ -30,7 +30,10 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
   const { session, isLoading: isLoadingSession } = useAuth();
   const sessionUser = session?.user;
 
-  const { data: employeeData } = useEmployeeServerFetch(sessionUser?.id ?? ""); // Fetch employee data
+  const { data: employeeData } = useEmployeeServerFetch(
+    sessionUser?.id ?? "",
+    selectedStore?.storeId ?? null
+  ); // Fetch employee data
 
   const [isStoreModalOpen, setisStoreModalOpen] = useState<boolean>(false);
   const [isEmpModalOpen, setIsEmpModalOpen] = useState<boolean>(false);
@@ -84,14 +87,12 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
           ) : (
             <>
               <div className="flex justify-between">
-                <h1 className="text-2xl font-semibold">
-                  User and Store Management
-                </h1>
+                <h1 className="text-2xl font-semibold">Store Management</h1>
                 <div className="flex gap-2">
                   <Button
                     disabled={selectedStore ? false : true}
                     onClick={() => handleOpenModal(setAssignModalOpen)}
-                    variant={"icon-left"}
+                    variant={"secondary"}
                   >
                     <MdOutlineAssignment className="mr-2" />
                     Assign Employee
@@ -99,14 +100,14 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
                   <Button
                     disabled={selectedStore ? false : true}
                     onClick={() => handleOpenModal(setIsEmpModalOpen)}
-                    variant={"icon-left"}
+                    variant={"secondary"}
                   >
                     <IoMdPersonAdd className="mr-2" />
                     Add Employee
                   </Button>
                   <Button
                     onClick={() => handleOpenModal(setisStoreModalOpen)}
-                    variant={"icon-left"}
+                    variant={"new_prime"}
                   >
                     <IoStorefront className="mr-2" />
                     Add Store
