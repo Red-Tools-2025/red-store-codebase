@@ -16,7 +16,7 @@ const TableLayout: React.FC<TableLayoutProps> = ({
 }) => {
   return (
     <Table>
-      <TableHeader className="border ">
+      <TableHeader className="border">
         {TableColumnValues.map((col, index) => {
           return (
             <TableCell

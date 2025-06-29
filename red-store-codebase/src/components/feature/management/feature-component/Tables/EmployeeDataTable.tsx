@@ -1,8 +1,19 @@
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Employee } from "@prisma/client";
+import { Employee as PrismaEmployee } from "@prisma/client";
 import TableLayout from "../../layouts/TableLayout";
 import { useMemo } from "react";
 import { useManagement } from "@/app/contexts/management/ManagementContext";
+
+interface Role {
+  roleType: string;
+}
+
+interface Employee extends PrismaEmployee {
+  role: Role;
+  store: {
+    storeName: string;
+  };
+}
 
 interface EmployeeDataTableProps {
   employeeData: Employee[] | null;
@@ -27,15 +38,22 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
   roleValues,
 }) => {
   const { selectedStore } = useManagement();
-  const headers: string[] = ["Employee ID", "Employee Name", "Role"];
+  const headers: string[] = [
+    "Employee ID",
+    "Employee Name",
+    "Phone",
+    "Role",
+    "Status",
+    "Store",
+    "Date Joined",
+    // Add more fields here if needed
+  ];
 
-  // Handle all filtering in one place with useMemo
   const filteredData = useMemo(() => {
     if (!employeeData) return null;
 
     let filtered = employeeData;
 
-    // Apply search filter
     if (searchValue && searchValue.trim() !== "") {
       const searchValueLower = searchValue.toLowerCase();
       filtered = filtered.filter((employee) =>
@@ -49,7 +67,6 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
       );
     }
 
-    // Apply role filter - only filter if not "All"
     if (roleFilterValue !== "All") {
       const roleIdToFilter = roleMapping[roleFilterValue.toString()];
       if (roleIdToFilter) {
@@ -62,39 +79,61 @@ const EmployeeDataTable: React.FC<EmployeeDataTableProps> = ({
     return filtered;
   }, [employeeData, searchValue, roleFilterValue, selectedStore]);
 
-  // Map directly to table rows without additional filtering
   const tableRows = filteredData
-    ?.filter(
-      (employee) =>
-        statusFilterValue === "active"
-          ? employee.empStatus === true
-          : statusFilterValue === "inactive"
-          ? employee.empStatus === false
-          : true // Show all if statusFilterValue is "All"
+    ?.filter((employee) =>
+      statusFilterValue === "active"
+        ? employee.empStatus === true
+        : statusFilterValue === "inactive"
+        ? employee.empStatus === false
+        : true
     )
     .map((employee, index) => (
-      <TableRow key={index}>
-        <TableCell className="w-auto">{employee.empId}</TableCell>
-        <TableCell className="w-auto">{employee.empName}</TableCell>
-        <TableCell className="w-auto flex pt-3 gap-2">
-          {employee.roleId.map((roleId, i) => {
-            return (
-              <p
-                key={i}
-                className="text-[10px] px-2 rounded-full bg-blue-100 border border-blue-500 text-blue-500"
-              >
-                {roleValues[roleId - 1]}
-              </p>
-            );
-          })}
-        </TableCell>{" "}
+      <TableRow key={index} className="border-l border-r border-gray-300">
+        <TableCell className="border-l border-gray-300">{`#${employee.empId}`}</TableCell>
+        <TableCell
+          className={index === filteredData.length - 1 ? "rounded-bl-lg" : ""}
+        >
+          {employee.empName}
+        </TableCell>
+        <TableCell>{employee.empPhone}</TableCell>
+        <TableCell className="flex pt-3 gap-2">
+          {employee.roleId.map((roleId, i) => (
+            <p
+              key={i}
+              className={`text-[10px] px-2 rounded-full bg-blue-100 border border-blue-500 text-blue-500
+              ${i !== employee.roleId.length - 1 ? "mr-2" : ""}
+              border-b border-r
+              `}
+              style={{
+                borderBottom: "1px solid #3b82f6",
+                borderRight:
+                  i !== employee.roleId.length - 1
+                    ? "1px solid #3b82f6"
+                    : undefined,
+              }}
+            >
+              {roleValues[roleId - 1]}
+            </p>
+          ))}
+        </TableCell>
+        <TableCell>
+          {employee.empStatus ? (
+            <span className="text-green-600">Active</span>
+          ) : (
+            <span className="text-red-600">Inactive</span>
+          )}
+        </TableCell>
+        <TableCell>{employee.store?.storeName}</TableCell>
+        <TableCell className="border-r border-gray-300">
+          {employee.createdAt
+            ? new Date(employee.createdAt).toLocaleDateString()
+            : "-"}
+        </TableCell>
       </TableRow>
     ));
 
-  console.log(employeeData);
-
   return (
-    <div className="flex flex-col mt-3">
+    <div className="flex flex-col mt-5">
       {filteredData && filteredData.length > 0 ? (
         <TableLayout TableColumnValues={headers}>{tableRows}</TableLayout>
       ) : (

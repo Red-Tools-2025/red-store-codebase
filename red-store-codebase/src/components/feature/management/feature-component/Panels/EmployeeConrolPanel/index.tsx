@@ -1,9 +1,22 @@
-import { Employee } from "@prisma/client";
+import { Employee as PrismaEmployee } from "@prisma/client";
 import { RoleType } from "@prisma/client";
 
 import EmployeeTableController from "../../Tables/EmployeeTableController";
 import EmployeeDataTable from "../../Tables/EmployeeDataTable";
 import { useEffect, useState } from "react";
+
+interface Role {
+  roleType: string;
+}
+
+// Extend the existing Employee type to include role
+interface Employee extends PrismaEmployee {
+  role: Role; // Now Employee has a role field
+  // Extending on store name for management table
+  store: {
+    storeName: string;
+  };
+}
 
 interface EmployeeControlPanelProps {
   employeeData: Employee[] | null;
@@ -65,7 +78,7 @@ const EmployeeControlPanel: React.FC<EmployeeControlPanelProps> = ({
   }, [employeeData]);
 
   return (
-    <div className="flex-col w-1/2">
+    <div className="w-full overflow-x-auto">
       <EmployeeTableController
         roles={roles}
         employeeData={employeeData}

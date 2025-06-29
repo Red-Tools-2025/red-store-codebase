@@ -10,9 +10,9 @@ const ManagementPage: React.FC = () => {
 
   return (
     <main>
-      <div className="flex my-2 gap-2">
+      <div className="">
         {/* Control panel for store data */}
-        <StoreControlPanel storeData={storeData} />
+        {/* <StoreControlPanel storeData={storeData} /> */}
         {/* Control panel for employee data */}
         <EmployeeControlPanel employeeData={employeeData} />
         <Toaster /> {/* Call for toast to be displayed */}
