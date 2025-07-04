@@ -3,7 +3,7 @@ import React, { SetStateAction, useState } from "react";
 import { useInventory } from "../contexts/inventory/InventoryContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
+import AddProductPanel from "@/components/feature/inventory/feature-component/Panels/InventoryActionsPanel/AddProductPanel";
 import { Toaster } from "@/components/ui/toaster";
 import DeleteProductModal from "@/components/feature/inventory/feature-component/FormModals/DeleteProductsModal";
 import RestockProductModal from "@/components/feature/inventory/feature-component/FormModals/RestockProductModal";
@@ -204,7 +204,7 @@ const InventoryPage = () => {
         inventoryItems={inventoryItems ?? []}
         onClose={() => handleCloseModal(setIsDeleteProdModalOpen)}
       />
-      <AddProductModal
+      <AddProductPanel
         isOpen={isAddProdModalOpen}
         productTypes={["G", "P", "C"]}
         // G - Glass

@@ -30,7 +30,7 @@ import { MdAddBusiness } from "react-icons/md";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import useScanner from "@/app/hooks/scanner/StaticHooks/useScanner";
 
-interface AddProductModalProps {
+interface AddProductPanelProps {
   isOpen: boolean;
   productTypes: string[];
   onClose: () => void;
@@ -53,7 +53,7 @@ interface intitialAddProductFormValues {
   invItemBarcode: string;
 }
 
-const AddProductModal: React.FC<AddProductModalProps> = ({
+const AddProductPanel: React.FC<AddProductPanelProps> = ({
   isOpen,
   onClose,
   productTypes,
@@ -377,4 +377,4 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   );
 };
 
-export default AddProductModal;
+export default AddProductPanel;
