@@ -2,15 +2,14 @@
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { LuScanFace } from "react-icons/lu";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +26,7 @@ import { Inventory } from "@prisma/client";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { AddProductFormValidation } from "@/lib/formik/formik";
+import { MdAddBusiness } from "react-icons/md";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import useScanner from "@/app/hooks/scanner/StaticHooks/useScanner";
 
@@ -60,15 +60,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 }) => {
   const { handleRefresh } = useInventory();
   const { toast } = useToast();
-  const {
-    closeScanner,
-    onScannedAddProduct,
-    toggleScanning,
-    setInitializedScanner,
-    openScanner,
-    initializedScanner,
-    license,
-  } = useScanner();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isFormLoading, setIsFormLoading] = useState<boolean>(false);
   const [initial_v, setInitial_v] = useState<{ [key: string]: string }>({});
@@ -146,7 +137,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           invItemType: values.invItemType,
           invCreatedDate: new Date(),
           invItemBarcode: values.invItemBarcode,
-
           invAdditional: invAdditional,
         };
         const response = await axios.post<{
@@ -184,168 +174,142 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       } finally {
         setIsSubmitting(false);
       }
-      // console.log({ values });
     },
   });
 
   if (isFormLoading) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Loading...</DialogTitle>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <Drawer open={isOpen} onOpenChange={onClose}>
+        <DrawerContent dir="right" className="w-96">
+          <DrawerHeader>
+            <DrawerTitle className="text-2xl">Loading...</DrawerTitle>
+          </DrawerHeader>
+        </DrawerContent>
+      </Drawer>
     );
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[500px] font-inter">
-        <DialogHeader>
-          <DialogTitle>Add New Product</DialogTitle>
-          <DialogDescription>
+    <Drawer open={isOpen} onOpenChange={onClose}>
+      <DrawerContent dir="right" className="font-inter">
+        <DrawerHeader>
+          <DrawerTitle className="text-2xl">
+            <div className="flex flex-row gap-2 items-center">
+              <MdAddBusiness className="text-red-600" size={30} />
+              <p>Add New Product</p>
+            </div>
+          </DrawerTitle>
+          <DrawerDescription>
             Fill in the details to add a new product to the inventory.
-          </DialogDescription>
-        </DialogHeader>
-        <BarcodeScanner
-          license={license}
-          onInitialized={() => setInitializedScanner(true)}
-          isActive={openScanner}
-          onScanned={(results) =>
-            onScannedAddProduct(results, formik.setFieldValue)
-          }
-          onClose={closeScanner} // Pass onClose function here
-        />
-        <form
-          onSubmit={formik.handleSubmit}
-          className="py-4 grid grid-cols-2 gap-4"
-        >
-          <div className="col-span-1">
-            <Label htmlFor="invItem">Product Name</Label>
-            <Input
-              id="invItem"
-              name="invItem"
-              type="text"
-              value={formik.values.invItem}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.invItem && formik.errors.invItem && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.invItem}
-              </div>
-            )}
-          </div>
-          <div className="col-span-1">
-            <Label htmlFor="invItemBrand">Brand</Label>
-            <Input
-              id="invItemBrand"
-              name="invItemBrand"
-              type="text"
-              value={formik.values.invItemBrand}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.invItemBrand && formik.errors.invItemBrand && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.invItemBrand}
-              </div>
-            )}
-          </div>
-          <div className="col-span-1">
-            <Label htmlFor="invItemType">Package Type</Label>
-            <Select
-              name="invItemType"
-              onValueChange={(value) =>
-                formik.setFieldValue("invItemType", value)
-              }
-              value={formik.values.invItemType}
-            >
-              <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
-                <SelectValue placeholder="Select package type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {productTypes.map((type, index) => (
-                    <SelectItem key={index} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            {formik.touched.invItemType && formik.errors.invItemType && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.invItemType}
-              </div>
-            )}
-          </div>
-          <div className="col-span-1">
-            <Label htmlFor="invItemPrice">Price</Label>
-            <Input
-              id="invItemPrice"
-              name="invItemPrice"
-              type="number"
-              value={formik.values.invItemPrice}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.invItemPrice && formik.errors.invItemPrice && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.invItemPrice}
-              </div>
-            )}
-          </div>
-          <div className="col-span-1">
-            <Label htmlFor="invItemStock">Stock</Label>
-            <Input
-              id="invItemStock"
-              name="invItemStock"
-              type="number"
-              value={formik.values.invItemStock}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.invItemStock && formik.errors.invItemStock && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.invItemStock}
-              </div>
-            )}
-          </div>
-          <div className="col-span-1">
-            <Label htmlFor="invItemBarcode">Barcode</Label>
-            <Input
-              id="invItemBarcode"
-              name="invItemBarcode"
-              type="string"
-              value={formik.values.invItemBarcode}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-          </div>
-          {/* <div className="col-span-1">
-            <Label htmlFor="category">Category</Label>
-            <Input
-              id="category"
-              name="category"
-              type="text"
-              value={formik.values.category}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.category && formik.errors.category && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.category}
-              </div>
-            )}
-          </div> */}
-          {customFields.map(
-            (
-              field,
-              index // Map over custom fields
-            ) => (
+          </DrawerDescription>
+        </DrawerHeader>
+
+        <form onSubmit={formik.handleSubmit} className="flex flex-col h-full">
+          <div className="p-4 grid grid-cols-2 gap-x-5 gap-y-2 flex-1 overflow-y-auto">
+            <div className="col-span-1">
+              <Label htmlFor="invItem">Product Name</Label>
+              <Input
+                id="invItem"
+                name="invItem"
+                type="text"
+                value={formik.values.invItem}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.invItem && formik.errors.invItem && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.invItem}
+                </div>
+              )}
+            </div>
+            <div className="col-span-1">
+              <Label htmlFor="invItemBrand">Brand</Label>
+              <Input
+                id="invItemBrand"
+                name="invItemBrand"
+                type="text"
+                value={formik.values.invItemBrand}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.invItemBrand && formik.errors.invItemBrand && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.invItemBrand}
+                </div>
+              )}
+            </div>
+            <div className="col-span-1">
+              <Label htmlFor="invItemType">Package Type</Label>
+              <Select
+                name="invItemType"
+                onValueChange={(value) =>
+                  formik.setFieldValue("invItemType", value)
+                }
+                value={formik.values.invItemType}
+              >
+                <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
+                  <SelectValue placeholder="Select package type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {productTypes.map((type, index) => (
+                      <SelectItem key={index} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {formik.touched.invItemType && formik.errors.invItemType && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.invItemType}
+                </div>
+              )}
+            </div>
+            <div className="col-span-1">
+              <Label htmlFor="invItemPrice">Price</Label>
+              <Input
+                id="invItemPrice"
+                name="invItemPrice"
+                type="number"
+                value={formik.values.invItemPrice}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.invItemPrice && formik.errors.invItemPrice && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.invItemPrice}
+                </div>
+              )}
+            </div>
+            <div className="col-span-1">
+              <Label htmlFor="invItemStock">Stock</Label>
+              <Input
+                id="invItemStock"
+                name="invItemStock"
+                type="number"
+                value={formik.values.invItemStock}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.invItemStock && formik.errors.invItemStock && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.invItemStock}
+                </div>
+              )}
+            </div>
+            <div className="col-span-1">
+              <Label htmlFor="invItemBarcode">Barcode</Label>
+              <Input
+                id="invItemBarcode"
+                name="invItemBarcode"
+                type="string"
+                value={formik.values.invItemBarcode}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </div>
+            {customFields.map((field, index) => (
               <div key={index} className="col-span-1">
                 <Label htmlFor={field.fieldName}>{field.label}</Label>
                 {field.type === "select" ? (
@@ -389,114 +353,27 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     </div>
                   )}
               </div>
-            )
-          )}
-          {/* <div className="col-span-1">
-            <Label htmlFor="category">Category</Label>
-            <Select
-              name="category"
-              onValueChange={(value) => formik.setFieldValue("category", value)}
-              value={formik.values.category}
-            >
-              <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {productCategories.map((type, index) => (
-                    <SelectItem key={index} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            {formik.touched.category && formik.errors.category && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.category}
-              </div>
-            )}
+            ))}
           </div>
-          <div className="col-span-1">
-            <Label htmlFor="size">Amount</Label>
-            <Input
-              id="amount"
-              name="amount"
-              type="text"
-              value={formik.values.amount}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.amount && formik.errors.amount && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.amount}
-              </div>
-            )}
-          </div> */}
-          {/* <div className="col-span-1">
-            <Label htmlFor="measurement">Measurement</Label>
-            <Input
-              id="measurement"
-              name="measurement"
-              type="text"
-              value={formik.values.measurement}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.measurement && formik.errors.measurement && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.measurement}
-              </div>
-            )}
-          </div> */}
-          {/* <div className="col-span-1">
-            <Label htmlFor="measurement">Measurement</Label>
-            <Select
-              name="measurement"
-              onValueChange={(value) =>
-                formik.setFieldValue("measurement", value)
-              }
-              value={formik.values.measurement}
-            >
-              <SelectTrigger className="w-full data-[placeholder]:text-muted-foreground">
-                <SelectValue placeholder="Select measurement" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {amountMeasurements.map((type, index) => (
-                    <SelectItem key={index} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            {formik.touched.measurement && formik.errors.measurement && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.measurement}
-              </div>
-            )}
-          </div> */}
-          <DialogFooter className="col-span-2 mt-5">
-            {initializedScanner ? (
-              <>
-                <Button type="button" onClick={toggleScanning}>
-                  <div className="flex items-center gap-2">
-                    <LuScanFace size={16} />
-                    <p>Scan</p>
-                  </div>
-                </Button>
-              </>
-            ) : (
-              <div>Initializing...</div>
-            )}
-            <Button type="submit" variant="secondary" disabled={isSubmitting}>
-              {isSubmitting ? "Adding..." : "Add Product"}
-            </Button>
-          </DialogFooter>
+
+          <DrawerFooter className="flex-shrink-0 p-4 pt-2">
+            <div className="flex flex-row gap-2">
+              <Button type="submit" variant="new_prime" disabled={isSubmitting}>
+                {isSubmitting ? "Adding..." : "Add Product"}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={onClose}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            </div>
+          </DrawerFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
