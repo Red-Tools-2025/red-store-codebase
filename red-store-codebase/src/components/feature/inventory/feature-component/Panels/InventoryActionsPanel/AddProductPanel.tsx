@@ -205,7 +205,7 @@ const AddProductPanel: React.FC<AddProductPanelProps> = ({
         </DrawerHeader>
 
         <form onSubmit={formik.handleSubmit} className="flex flex-col h-full">
-          <div className="p-4 grid grid-cols-2 gap-x-5 gap-y-2 flex-1 overflow-y-auto">
+          <div className="p-4 grid grid-cols-2 gap-x-5 flex-1 overflow-y-auto">
             <div className="col-span-1">
               <Label htmlFor="invItem">Product Name</Label>
               <Input
