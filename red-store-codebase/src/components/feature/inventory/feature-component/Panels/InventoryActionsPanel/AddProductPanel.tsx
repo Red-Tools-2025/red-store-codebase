@@ -159,10 +159,11 @@ const AddProductPanel: React.FC<AddProductPanelProps> = ({
           toast({
             title: "Error",
             description:
-              error.response?.data?.error ||
+              error.response?.data.message ||
               "Failed to add product. Please try again.",
             variant: "destructive",
           });
+          console.error("Error adding product:", error.response?.data.message);
         } else {
           toast({
             title: "Error",
@@ -170,7 +171,6 @@ const AddProductPanel: React.FC<AddProductPanelProps> = ({
             variant: "destructive",
           });
         }
-        console.error("Error adding product:", error);
       } finally {
         setIsSubmitting(false);
       }
