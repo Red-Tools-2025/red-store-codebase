@@ -1,5 +1,5 @@
 "use client";
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { useInventory } from "../contexts/inventory/InventoryContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -102,30 +102,6 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
 
 // Main Inventory Page Component
 const InventoryPage = () => {
-  const { searchKeys } = useInventory();
-  const [viewableColumns, setViewableColumns] = useState<
-    ColumnDef<Inventory>[]
-  >(InventoryDataTableColumns);
-
-  const {
-    inventoryItems,
-    isLoading: isLoadingProducts,
-    selectedStore,
-
-    sessionData,
-    handleRefresh,
-  } = useInventory();
-  const { table, setColumnFilters, setGlobalFilter } = useInventoryTableHook({
-    data: inventoryItems ?? [],
-    columns: viewableColumns,
-  });
-  const [availableNewFilters, setAvailableNewFilters] = useState<
-    {
-      header: string;
-      accessorKey: string;
-      cell: ColumnDefBase<Inventory, string | number | boolean | null>["cell"]; // Use ColumnDefBase's cell type
-    }[]
-  >([]);
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
 
@@ -134,6 +110,33 @@ const InventoryPage = () => {
   const [selectedProduct, setSelectedProduct] = useState<Inventory | null>(
     null
   );
+
+  const { searchKeys } = useInventory();
+  const [viewableColumns, setViewableColumns] = useState<
+    ColumnDef<Inventory>[]
+  >(() =>
+    InventoryDataTableColumns(setSelectedProduct, setIsEditProdModalOpen)
+  );
+
+  const {
+    inventoryItems,
+    isLoading: isLoadingProducts,
+    selectedStore,
+    sessionData,
+    handleRefresh,
+  } = useInventory();
+  const { table, setColumnFilters, setGlobalFilter, selectedRows } =
+    useInventoryTableHook({
+      data: inventoryItems ?? [],
+      columns: viewableColumns,
+    });
+  const [availableNewFilters, setAvailableNewFilters] = useState<
+    {
+      header: string;
+      accessorKey: string;
+      cell: ColumnDefBase<Inventory, string | number | boolean | null>["cell"]; // Use ColumnDefBase's cell type
+    }[]
+  >([]);
 
   /* const _handleOpenEditModal = (product: Inventory) => {
   setSelectedProduct(product);
@@ -166,7 +169,10 @@ const InventoryPage = () => {
   };
 
   const handleSaveTableViews = (newColumns: ColumnDef<Inventory>[]) => {
-    setViewableColumns([...InventoryDataTableColumns, ...newColumns]);
+    setViewableColumns([
+      ...InventoryDataTableColumns(setSelectedProduct, setIsEditProdModalOpen),
+      ...newColumns,
+    ]);
     console.log({ newColumns });
     setAvailableNewFilters(() => [
       ...newColumns.map((col) => ({
@@ -181,6 +187,14 @@ const InventoryPage = () => {
       })),
     ]);
   };
+
+  // useEffect(() => {
+  //   console.log({ selectedRows });
+  //   Object.entries(selectedRows).forEach((entry) => {
+  //     const prod = table.getRow(entry[0]).original;
+  //     console.log({ prod });
+  //   });
+  // }, [selectedRows]);
 
   return (
     <div>

@@ -23,14 +23,14 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
   const [inventoryItem, setInventoryItem] = useState<Inventory | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleCellClick = (inventory: Inventory) => {
-    toggleInfoPanel();
-    setInventoryItem(inventory);
-  };
+  // const handleCellClick = (inventory: Inventory) => {
+  //   toggleInfoPanel();
+  //   setInventoryItem(inventory);
+  // };
 
   const rows = table.getRowModel().rows;
 
-  // ✅ Show loading animation when page changes
+  // loading animation when page changes
   useEffect(() => {
     setIsLoading(true);
     const timeout = setTimeout(() => setIsLoading(false), 500); // Simulated delay
@@ -49,7 +49,6 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
 
       <motion.div className="w-full border border-1 border-gray-300 rounded-lg">
         {isLoading ? (
-          // ✅ Small black bouncing dots when paginating
           <div className="flex justify-center items-center h-24">
             <div className="flex space-x-2">
               <div className="h-2 w-2 bg-black rounded-full animate-bounce"></div>
@@ -85,15 +84,18 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
                   {rows.map((row, index) => (
                     <motion.tr
                       key={row.id}
-                      className={`border-b border-gray-200 hover:bg-red-100 cursor-pointer ${
-                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      }`}
+                      className={`border-b border-gray-200
+                        ${
+                          row.getIsSelected()
+                            ? "bg-red-100"
+                            : index % 2 === 0
+                            ? "bg-gray-50"
+                            : "bg-white"
+                        }
+                      `}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          onClick={() => handleCellClick(row.original)}
-                          key={cell.id}
-                        >
+                        <TableCell key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()

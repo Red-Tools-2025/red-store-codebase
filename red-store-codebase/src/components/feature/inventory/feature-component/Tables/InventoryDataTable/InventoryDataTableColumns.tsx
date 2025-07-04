@@ -1,8 +1,35 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Inventory } from "@prisma/client";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dispatch, SetStateAction } from "react";
 
-export const InventoryDataTableColumns: ColumnDef<Inventory>[] = [
+export const InventoryDataTableColumns = (
+  setSelectedProduct: Dispatch<SetStateAction<Inventory | null>>,
+  setEditModalOpen: Dispatch<SetStateAction<boolean>>
+): ColumnDef<Inventory>[] => [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        disabled={!row.getCanSelect()}
+        onCheckedChange={(value) => {
+          row.toggleSelected(!!value);
+        }}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "invId",
     header: "ID",
@@ -26,7 +53,7 @@ export const InventoryDataTableColumns: ColumnDef<Inventory>[] = [
     header: "Quantity",
     cell: ({ row }) => row.getValue("invItemStock"),
   },
-  
+
   {
     accessorKey: "invItemPrice",
     header: ({ column }) => {
@@ -47,6 +74,29 @@ export const InventoryDataTableColumns: ColumnDef<Inventory>[] = [
       );
     },
     cell: ({ row }) => `₹${row.getValue("invItemPrice")}`,
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const item = row.original;
+
+      return (
+        <div className="flex items-center gap-4">
+          <Pencil
+            onClick={() => {
+              setSelectedProduct(item);
+              setEditModalOpen(true);
+            }}
+            className="w-4 h-4 cursor-pointer"
+          />
+          <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" />
+          <MoreHorizontal className="w-4 h-4 cursort-pointer" />
+        </div>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
   },
   //   {
   //     accessorKey: "invAdditional",
