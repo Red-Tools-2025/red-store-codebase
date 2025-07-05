@@ -20,6 +20,7 @@ import InventoryFilterPanel from "@/components/feature/inventory/feature-compone
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 import SetFavortiesModal from "@/components/feature/inventory/feature-component/Modals/SetFavoritesModal";
 import EditProductModal from "@/components/feature/inventory/feature-component/FormModals/EditProductModal";
+import InventoryItemInfoPanel from "@/components/feature/inventory/feature-component/Panels/InventoryItemInfoPanel";
 
 interface InventoryDisplayProps {
   displayState: "list" | "grid";
@@ -102,6 +103,7 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
 
 // Main Inventory Page Component
 const InventoryPage = () => {
+  const { toggleInfoPanel, infoPanelOpenState } = useInventory();
   const [displayState, setDisplayState] = useState<string>("list");
   const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
 
@@ -111,11 +113,21 @@ const InventoryPage = () => {
     null
   );
 
+  const handleInfoPanelView = (inventory: Inventory) => {
+    toggleInfoPanel();
+    console.log("hi");
+    setSelectedProduct(inventory);
+  };
+
   const { searchKeys } = useInventory();
   const [viewableColumns, setViewableColumns] = useState<
     ColumnDef<Inventory>[]
   >(() =>
-    InventoryDataTableColumns(setSelectedProduct, setIsEditProdModalOpen)
+    InventoryDataTableColumns(
+      setSelectedProduct,
+      setIsEditProdModalOpen,
+      handleInfoPanelView
+    )
   );
 
   const {
@@ -170,7 +182,11 @@ const InventoryPage = () => {
 
   const handleSaveTableViews = (newColumns: ColumnDef<Inventory>[]) => {
     setViewableColumns([
-      ...InventoryDataTableColumns(setSelectedProduct, setIsEditProdModalOpen),
+      ...InventoryDataTableColumns(
+        setSelectedProduct,
+        setIsEditProdModalOpen,
+        handleInfoPanelView
+      ),
       ...newColumns,
     ]);
     console.log({ newColumns });
@@ -201,12 +217,19 @@ const InventoryPage = () => {
       {/* All modals */}
       <Toaster />
       {selectedProduct && (
-        <EditProductModal
-          isOpen={isEditProdModalOpen}
-          onClose={() => setIsEditProdModalOpen(false)}
-          productTypes={["G", "P", "C"]}
-          product={selectedProduct}
-        />
+        <>
+          <EditProductModal
+            isOpen={isEditProdModalOpen}
+            onClose={() => setIsEditProdModalOpen(false)}
+            productTypes={["G", "P", "C"]}
+            product={selectedProduct}
+          />
+          <InventoryItemInfoPanel
+            inventoryItemDetails={selectedProduct}
+            InfoPanelOpenState={infoPanelOpenState}
+            toggleInfoPanel={toggleInfoPanel}
+          />
+        </>
       )}
       <RestockProductModal
         isOpen={isRestockProdModalOpen}

@@ -6,7 +6,8 @@ import { Dispatch, SetStateAction } from "react";
 
 export const InventoryDataTableColumns = (
   setSelectedProduct: Dispatch<SetStateAction<Inventory | null>>,
-  setEditModalOpen: Dispatch<SetStateAction<boolean>>
+  setEditModalOpen: Dispatch<SetStateAction<boolean>>,
+  handleInfoPanelView: (inventory: Inventory) => void
 ): ColumnDef<Inventory>[] => [
   {
     id: "select",
@@ -91,7 +92,13 @@ export const InventoryDataTableColumns = (
             className="w-4 h-4 cursor-pointer"
           />
           <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" />
-          <MoreHorizontal className="w-4 h-4 cursort-pointer" />
+          <MoreHorizontal
+            onClick={() => {
+              console.log("hi");
+              handleInfoPanelView(row.original);
+            }}
+            className="w-4 h-4 cursor-pointer"
+          />
         </div>
       );
     },
