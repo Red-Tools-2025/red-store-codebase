@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,8 +26,9 @@ import { Inventory } from "@prisma/client";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { AddProductFormValidation } from "@/lib/formik/formik";
+import { RiEdit2Fill } from "react-icons/ri";
 
-interface EditProductModalProps {
+interface EditProductDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   productTypes: string[];
@@ -41,7 +42,7 @@ interface StoreDefinition {
   allowedValues?: string[];
 }
 
-const EditProductModal: React.FC<EditProductModalProps> = ({
+const EditProductDrawer: React.FC<EditProductDrawerProps> = ({
   isOpen,
   onClose,
   productTypes,
@@ -130,17 +131,23 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   });
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[500px] font-inter">
-        <DialogHeader>
-          <DialogTitle>Edit Product</DialogTitle>
-          <DialogDescription>
+    <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DrawerContent dir="right" className="max-w-[500px] font-inter">
+        <DrawerHeader>
+          <DrawerTitle className="text-2xl">
+            <div className="flex flex-row items-center gap-2">
+              <RiEdit2Fill />
+              <p>Edit Product</p>
+            </div>
+          </DrawerTitle>
+          <DrawerDescription>
             Modify the product details and save.
-          </DialogDescription>
-        </DialogHeader>
+          </DrawerDescription>
+        </DrawerHeader>
+
         <form
           onSubmit={formik.handleSubmit}
-          className="py-4 grid grid-cols-2 gap-4"
+          className="p-4 grid grid-cols-2 gap-x-5 flex-1 overflow-y-auto"
         >
           {/* Standard Form Fields */}
           <div className="col-span-1">
@@ -277,10 +284,10 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
             </div>
           ))}
 
-          <DialogFooter className="col-span-2 mt-5 flex justify-end gap-3">
+          <div className="flex flex-row gap-2 items-end">
             <Button
               type="submit"
-              variant="primary"
+              variant="new_prime"
               disabled={!formik.dirty || isSubmitting}
             >
               {isSubmitting ? "Saving..." : "Save Changes"}
@@ -288,15 +295,15 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
             <Button
               type="button"
               variant="secondary"
-              onClick={onClose} // Close modal without saving
+              onClick={onClose} // Close drawer without saving
             >
               Cancel
             </Button>
-          </DialogFooter>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
-export default EditProductModal;
+export default EditProductDrawer;
