@@ -1,12 +1,11 @@
 "use client";
 import { useManagement } from "../contexts/management/ManagementContext";
 import React from "react";
-import StoreControlPanel from "@/components/feature/management/feature-component/Panels/StoreControlPanel";
 import EmployeeControlPanel from "@/components/feature/management/feature-component/Panels/EmployeeConrolPanel";
 import { Toaster } from "@/components/ui/toaster";
 
 const ManagementPage: React.FC = () => {
-  const { storeData, employeeData } = useManagement();
+  const { employeeData } = useManagement();
 
   return (
     <main>

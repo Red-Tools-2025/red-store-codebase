@@ -1,5 +1,5 @@
 "use client";
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useState } from "react";
 import { useInventory } from "../contexts/inventory/InventoryContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -137,11 +137,10 @@ const InventoryPage = () => {
     sessionData,
     handleRefresh,
   } = useInventory();
-  const { table, setColumnFilters, setGlobalFilter, selectedRows } =
-    useInventoryTableHook({
-      data: inventoryItems ?? [],
-      columns: viewableColumns,
-    });
+  const { table, setColumnFilters, setGlobalFilter } = useInventoryTableHook({
+    data: inventoryItems ?? [],
+    columns: viewableColumns,
+  });
   const [availableNewFilters, setAvailableNewFilters] = useState<
     {
       header: string;
