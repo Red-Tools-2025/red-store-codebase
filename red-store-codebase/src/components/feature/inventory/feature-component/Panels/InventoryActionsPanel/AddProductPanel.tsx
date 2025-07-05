@@ -27,8 +27,6 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { AddProductFormValidation } from "@/lib/formik/formik";
 import { MdAddBusiness } from "react-icons/md";
-import BarcodeScanner from "@/components/BarcodeScanner";
-import useScanner from "@/app/hooks/scanner/StaticHooks/useScanner";
 
 interface AddProductPanelProps {
   isOpen: boolean;

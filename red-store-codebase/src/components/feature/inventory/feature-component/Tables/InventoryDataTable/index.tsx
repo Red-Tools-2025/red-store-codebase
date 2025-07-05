@@ -17,15 +17,7 @@ interface InventoryDataTableProps {
 }
 
 const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
-  // const { toggleInfoPanel, infoPanelOpenState } = useInventory();
-  // const [inventoryItem, setInventoryItem] = useState<Inventory | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // const handleCellClick = (inventory: Inventory) => {
-  //   toggleInfoPanel();
-  //   setInventoryItem(inventory);
-  // };
-
   const rows = table.getRowModel().rows;
 
   // loading animation when page changes
@@ -36,15 +28,6 @@ const InventoryDataTable: React.FC<InventoryDataTableProps> = ({ table }) => {
   }, [table.getState().pagination.pageIndex]);
 
   return (
-    // <>
-    //   {inventoryItem && (
-    //     <InventoryItemInfoPanel
-    //       inventoryItemDetails={inventoryItem}
-    //       InfoPanelOpenState={infoPanelOpenState}
-    //       toggleInfoPanel={toggleInfoPanel}
-    //     />
-    //   )}
-
     <motion.div className="w-full border border-1 border-gray-300 rounded-lg">
       {isLoading ? (
         <div className="flex justify-center items-center h-24">

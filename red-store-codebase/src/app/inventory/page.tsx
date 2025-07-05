@@ -150,11 +150,6 @@ const InventoryPage = () => {
     }[]
   >([]);
 
-  /* const _handleOpenEditModal = (product: Inventory) => {
-  setSelectedProduct(product);
-  setIsEditProdModalOpen(true);
-}; */
-
   const [showAdditionalFilters, setShowAdditionalFilters] =
     useState<boolean>(false);
   const [isTableViewModalOpen, setIsTableViewModalOpen] =
