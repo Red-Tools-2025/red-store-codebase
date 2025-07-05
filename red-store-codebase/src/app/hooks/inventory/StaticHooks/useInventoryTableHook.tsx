@@ -10,6 +10,7 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
+  RowSelectionState,
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { getPaginationRowModel } from "@tanstack/react-table";
@@ -34,6 +35,7 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
 
   const [sorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -48,6 +50,7 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     state: {
+      rowSelection: selectedRows,
       sorting,
       columnFilters,
       globalFilter,
@@ -56,7 +59,9 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
     onPaginationChange: setPagination,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
+    onRowSelectionChange: setSelectedRows,
     globalFilterFn: globalSearchFilter,
+    enableRowSelection: true,
   });
 
   const totalPages = table.getPageCount();
@@ -67,6 +72,7 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
     columnFilters,
     setColumnFilters,
     globalFilter,
+    selectedRows,
     setGlobalFilter,
     totalPages,
   };

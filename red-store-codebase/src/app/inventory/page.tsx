@@ -3,7 +3,7 @@ import React, { SetStateAction, useState } from "react";
 import { useInventory } from "../contexts/inventory/InventoryContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import AddProductModal from "@/components/feature/inventory/feature-component/FormModals/AddProductModal";
+import AddProductPanel from "@/components/feature/inventory/feature-component/Panels/InventoryActionsPanel/AddProductPanel";
 import { Toaster } from "@/components/ui/toaster";
 import DeleteProductModal from "@/components/feature/inventory/feature-component/FormModals/DeleteProductsModal";
 import RestockProductModal from "@/components/feature/inventory/feature-component/FormModals/RestockProductModal";
@@ -19,7 +19,8 @@ import { ColumnDef, ColumnDefBase, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 import SetFavortiesModal from "@/components/feature/inventory/feature-component/Modals/SetFavoritesModal";
-import EditProductModal from "@/components/feature/inventory/feature-component/FormModals/EditProductModal";
+import EditProductModal from "@/components/feature/inventory/feature-component/Panels/InventoryActionsPanel/EditProductPanel";
+import InventoryItemInfoPanel from "@/components/feature/inventory/feature-component/Panels/InventoryItemInfoPanel";
 
 interface InventoryDisplayProps {
   displayState: "list" | "grid";
@@ -102,16 +103,37 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({
 
 // Main Inventory Page Component
 const InventoryPage = () => {
+  const { toggleInfoPanel, infoPanelOpenState } = useInventory();
+  const [displayState, setDisplayState] = useState<string>("list");
+  const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
+
+  const [isEditProdModalOpen, setIsEditProdModalOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedProduct, setSelectedProduct] = useState<Inventory | null>(
+    null
+  );
+
+  const handleInfoPanelView = (inventory: Inventory) => {
+    toggleInfoPanel();
+    console.log("hi");
+    setSelectedProduct(inventory);
+  };
+
   const { searchKeys } = useInventory();
   const [viewableColumns, setViewableColumns] = useState<
     ColumnDef<Inventory>[]
-  >(InventoryDataTableColumns);
+  >(() =>
+    InventoryDataTableColumns(
+      setSelectedProduct,
+      setIsEditProdModalOpen,
+      handleInfoPanelView
+    )
+  );
 
   const {
     inventoryItems,
     isLoading: isLoadingProducts,
     selectedStore,
-
     sessionData,
     handleRefresh,
   } = useInventory();
@@ -126,19 +148,6 @@ const InventoryPage = () => {
       cell: ColumnDefBase<Inventory, string | number | boolean | null>["cell"]; // Use ColumnDefBase's cell type
     }[]
   >([]);
-  const [displayState, setDisplayState] = useState<string>("list");
-  const [isAddProdModalOpen, setIsAddProdModalOpen] = useState<boolean>(false);
-
-  const [isEditProdModalOpen, setIsEditProdModalOpen] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedProduct, setSelectedProduct] = useState<Inventory | null>(
-    null
-  );
-
-  /* const _handleOpenEditModal = (product: Inventory) => {
-  setSelectedProduct(product);
-  setIsEditProdModalOpen(true);
-}; */
 
   const [showAdditionalFilters, setShowAdditionalFilters] =
     useState<boolean>(false);
@@ -166,7 +175,14 @@ const InventoryPage = () => {
   };
 
   const handleSaveTableViews = (newColumns: ColumnDef<Inventory>[]) => {
-    setViewableColumns([...InventoryDataTableColumns, ...newColumns]);
+    setViewableColumns([
+      ...InventoryDataTableColumns(
+        setSelectedProduct,
+        setIsEditProdModalOpen,
+        handleInfoPanelView
+      ),
+      ...newColumns,
+    ]);
     console.log({ newColumns });
     setAvailableNewFilters(() => [
       ...newColumns.map((col) => ({
@@ -182,17 +198,32 @@ const InventoryPage = () => {
     ]);
   };
 
+  // useEffect(() => {
+  //   console.log({ selectedRows });
+  //   Object.entries(selectedRows).forEach((entry) => {
+  //     const prod = table.getRow(entry[0]).original;
+  //     console.log({ prod });
+  //   });
+  // }, [selectedRows]);
+
   return (
     <div>
       {/* All modals */}
       <Toaster />
       {selectedProduct && (
-        <EditProductModal
-          isOpen={isEditProdModalOpen}
-          onClose={() => setIsEditProdModalOpen(false)}
-          productTypes={["G", "P", "C"]}
-          product={selectedProduct}
-        />
+        <>
+          <EditProductModal
+            isOpen={isEditProdModalOpen}
+            onClose={() => setIsEditProdModalOpen(false)}
+            productTypes={["G", "P", "C"]}
+            product={selectedProduct}
+          />
+          <InventoryItemInfoPanel
+            inventoryItemDetails={selectedProduct}
+            InfoPanelOpenState={infoPanelOpenState}
+            toggleInfoPanel={toggleInfoPanel}
+          />
+        </>
       )}
       <RestockProductModal
         isOpen={isRestockProdModalOpen}
@@ -204,7 +235,7 @@ const InventoryPage = () => {
         inventoryItems={inventoryItems ?? []}
         onClose={() => handleCloseModal(setIsDeleteProdModalOpen)}
       />
-      <AddProductModal
+      <AddProductPanel
         isOpen={isAddProdModalOpen}
         productTypes={["G", "P", "C"]}
         // G - Glass

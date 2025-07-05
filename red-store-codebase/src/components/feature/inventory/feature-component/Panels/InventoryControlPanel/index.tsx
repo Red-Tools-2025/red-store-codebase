@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction } from "react";
 import InventroySearch from "./InventorySearch";
 import { useInventory } from "@/app/contexts/inventory/InventoryContext";
 import { IoIosStar } from "react-icons/io";
+import { AiFillProduct } from "react-icons/ai";
 
 interface InventoryControlPanelProps {
   displayState: string;
@@ -48,14 +49,14 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
             className={`flex items-center justify-center p-1.5 rounded-sm border cursor-pointer 
           ${
             displayState === "grid"
-              ? "bg-blue-200 border-blue-500"
+              ? "bg-red-600 border-red-600"
               : "bg-gray-300 border-gray-500 opacity-50"
           } transition-all duration-300 ease-in-out`}
             onClick={() => setDisplayState("grid")}
           >
             <IoGrid
               className={`text-md ${
-                displayState === "grid" ? "text-blue-500" : "text-gray-500"
+                displayState === "grid" ? "text-white" : "text-gray-500"
               } transition-all duration-300 ease-in-out`}
             />
           </div>
@@ -64,14 +65,14 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
             className={`flex items-center justify-center p-1.5 rounded-sm border cursor-pointer 
           ${
             displayState === "list"
-              ? "bg-blue-200 border-blue-500"
+              ? "bg-red-600 border-red-600"
               : "bg-gray-300 border-gray-500 opacity-50"
           }`}
             onClick={() => setDisplayState("list")}
           >
             <FaListUl
               className={`text-md ${
-                displayState === "list" ? "text-blue-500" : "text-gray-500"
+                displayState === "list" ? "text-white" : "text-gray-500"
               }`}
             />
           </div>
@@ -86,20 +87,17 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
 
       {/* Other Options */}
       <div className="flex space-x-2">
-        <InventoryActionsCTA
-          inventoryItems={inventoryItems}
-          openRestockModal={() => handleOpenModal(setIsRestockProdModalOpen)}
-          openDeleteModal={() => handleOpenModal(setIsDeleteProdModalOpen)}
-          openTableViewModal={() => handleOpenModal(setIsTableViewModalOpen)}
-        />
         <Button
           onClick={() => handleOpenModal(setIsAddProdModalOpen)}
-          variant={"secondary"}
+          variant={"new_prime"}
           disabled={
             !inventoryItems || inventoryItems.length === 0 ? true : false
           }
         >
-          Add Product
+          <div className="flex flex-row items-center gap-1">
+            <AiFillProduct />
+            <p>Add Product</p>
+          </div>
         </Button>
         <Button
           onClick={() => handleOpenModal(setIsFavortiesModalOpen)}
@@ -110,6 +108,12 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
             <p>Favorites</p>
           </div>
         </Button>
+        <InventoryActionsCTA
+          inventoryItems={inventoryItems}
+          openRestockModal={() => handleOpenModal(setIsRestockProdModalOpen)}
+          openDeleteModal={() => handleOpenModal(setIsDeleteProdModalOpen)}
+          openTableViewModal={() => handleOpenModal(setIsTableViewModalOpen)}
+        />
       </div>
     </div>
   );

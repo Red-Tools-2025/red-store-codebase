@@ -4,6 +4,7 @@ import "./globals.css";
 import ThemeProvider from "@/app/providers/theme-provider";
 import StructureProvider from "./providers/StructureProvider";
 import ClientLayout from "./layouts/ClientLayout";
+import { StoreProvider } from "./providers/StoreProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,7 +39,10 @@ export default async function RootLayout({
           defaultTheme="light"
         >
           <ClientLayout>
-            <StructureProvider>{children}</StructureProvider>
+            {/* Store Provider will control all global interactions pertaining to the store or it's data  */}
+            <StoreProvider>
+              <StructureProvider>{children}</StructureProvider>
+            </StoreProvider>
           </ClientLayout>
         </ThemeProvider>
       </body>

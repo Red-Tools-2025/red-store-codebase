@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useFormik } from "formik";
+import { useState } from "react";
 import * as Yup from "yup";
 
 interface AddStoreModalProps {
@@ -24,7 +25,9 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({
   onClose,
   // onStoreAdded,
 }) => {
-  const { sessionData } = useManagement();
+  const { sessionData, handleStoreDataRefresh } = useManagement();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const formik = useFormik({
     initialValues: {
       storeName: "",
@@ -38,6 +41,8 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({
     }),
     onSubmit: async (values) => {
       try {
+        setIsLoading(true);
+        // Make API call to add store
         const response = await fetch("/api/management/stores", {
           method: "POST",
           headers: {
@@ -51,11 +56,14 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({
         }
 
         await response.json();
-        // onStoreAdded(); // Refresh store data
+        handleStoreDataRefresh(); // Refresh store data
         formik.resetForm(); // Reset the form after submission
         onClose(); // Close the modal after submission
       } catch (error) {
+        setIsLoading(false);
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     },
   });
@@ -110,7 +118,9 @@ const AddStoreModal: React.FC<AddStoreModalProps> = ({
           </div>
 
           <DialogFooter>
-            <Button type="submit">Add Store</Button>
+            <Button disabled={isLoading} type="submit">
+              {isLoading ? "Adding..." : "Add Store"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

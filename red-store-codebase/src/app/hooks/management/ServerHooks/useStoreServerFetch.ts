@@ -6,6 +6,7 @@ interface FetchStoresResult {
   data: Store[] | null;
   isLoading: boolean;
   error: string | null;
+  handleRefresh: () => void;
 }
 
 interface StoresResponse {
@@ -18,6 +19,12 @@ const useStoreServerFetch = (
   const [data, setData] = useState<Store[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [refreshBool, setRefreshBool] = useState(false);
+
+  const handleRefresh = () => {
+    setRefreshBool(!refreshBool);
+  };
 
   useEffect(() => {
     if (!storeManagerID) return;
@@ -44,9 +51,9 @@ const useStoreServerFetch = (
     };
 
     fetchStores();
-  }, [storeManagerID]);
+  }, [storeManagerID, refreshBool]);
 
-  return { data, isLoading, error };
+  return { data, isLoading, error, handleRefresh };
 };
 
 export default useStoreServerFetch;

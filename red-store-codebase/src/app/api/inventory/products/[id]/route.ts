@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 
-// ✅ Corrected API for Next.js App Router
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const productId = params.id; // Extract product ID from URL
     const body = await req.json();

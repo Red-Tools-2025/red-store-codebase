@@ -50,6 +50,8 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const storeManagerID = searchParams.get("storeManagerID");
+    const storeID = searchParams.get("storeID");
+    const storeIdNumber = storeID !== null ? Number(storeID) : undefined;
 
     if (!storeManagerID) {
       return NextResponse.json(
@@ -62,6 +64,14 @@ export async function GET(req: Request) {
     const emp_for_manager = await db.employee.findMany({
       where: {
         storeManagerId: storeManagerID,
+        storeId: storeIdNumber,
+      },
+      include: {
+        store: {
+          select: {
+            storeName: true,
+          },
+        },
       },
     });
 
