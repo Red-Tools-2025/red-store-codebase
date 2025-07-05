@@ -19,7 +19,7 @@ import { ColumnDef, ColumnDefBase, Table } from "@tanstack/react-table";
 import InventoryFilterPanel from "@/components/feature/inventory/feature-component/Panels/InventoryFilterPanel";
 import TableViewModal from "@/components/feature/inventory/feature-component/FormModals/TableViewModal";
 import SetFavortiesModal from "@/components/feature/inventory/feature-component/Modals/SetFavoritesModal";
-import EditProductModal from "@/components/feature/inventory/feature-component/FormModals/EditProductModal";
+import EditProductModal from "@/components/feature/inventory/feature-component/Panels/InventoryActionsPanel/EditProductPanel";
 import InventoryItemInfoPanel from "@/components/feature/inventory/feature-component/Panels/InventoryItemInfoPanel";
 
 interface InventoryDisplayProps {

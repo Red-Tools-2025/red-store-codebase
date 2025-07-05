@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/drawer";
 import { BsArrowRight } from "react-icons/bs";
 import { Inventory } from "@prisma/client";
-import EditProductModal from "@/components/feature/inventory/feature-component/FormModals/EditProductModal";
+import EditProductModal from "@/components/feature/inventory/feature-component/Panels/InventoryActionsPanel/EditProductPanel";
 
 interface InventoryItemInfoPanelProps {
   InfoPanelOpenState: boolean;
