@@ -48,15 +48,15 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
     []
   );
   const { toast } = useToast();
-  const {
-    closeScanner,
-    onScannedSearchProduct,
-    toggleScanning,
-    setInitializedScanner,
-    openScanner,
-    initializedScanner,
-    license,
-  } = useScanner();
+  // const {
+  //   closeScanner,
+  //   onScannedSearchProduct,
+  //   toggleScanning,
+  //   setInitializedScanner,
+  //   openScanner,
+  //   initializedScanner,
+  //   license,
+  // } = useScanner();
   const { selectedStore, handleRefresh } = useInventory();
 
   // Memoized filtered suggestions
@@ -157,7 +157,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
             Search and select products to delete from inventory
           </DialogDescription>
         </DialogHeader>
-        <BarcodeScanner
+        {/* <BarcodeScanner
           license={license}
           onInitialized={() => setInitializedScanner(true)}
           isActive={openScanner}
@@ -165,7 +165,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
             onScannedSearchProduct(results, handleAddByBarcode)
           }
           onClose={closeScanner} // Pass onClose function here
-        />
+        /> */}
 
         <Command>
           <CommandInput
@@ -238,7 +238,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
         </div>
 
         <DialogFooter>
-          {initializedScanner ? (
+          {/* {initializedScanner ? (
             <>
               <Button type="button" onClick={toggleScanning}>
                 <div className="flex items-center gap-2">
@@ -249,7 +249,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
             </>
           ) : (
             <div>Initializing...</div>
-          )}
+          )} */}
           <Button
             variant="secondary"
             onClick={handleBulkDelete}
