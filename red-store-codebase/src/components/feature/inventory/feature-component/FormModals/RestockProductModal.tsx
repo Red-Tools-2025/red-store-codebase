@@ -48,15 +48,15 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
   onClose,
 }) => {
   const { toast } = useToast();
-  const {
-    closeScanner,
-    onScannedSearchProduct,
-    toggleScanning,
-    setInitializedScanner,
-    openScanner,
-    initializedScanner,
-    license,
-  } = useScanner();
+  // const {
+  //   closeScanner,
+  //   onScannedSearchProduct,
+  //   toggleScanning,
+  //   setInitializedScanner,
+  //   openScanner,
+  //   initializedScanner,
+  //   license,
+  // } = useScanner();
   const { selectedStore, handleRefresh } = useInventory();
 
   const [isRestocking, setisRestocking] = useState<boolean>(false);
@@ -197,7 +197,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
             Search and select products to restock
           </DialogDescription>
         </DialogHeader>
-        <BarcodeScanner
+        {/* <BarcodeScanner
           license={license}
           onInitialized={() => setInitializedScanner(true)}
           isActive={openScanner}
@@ -205,7 +205,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
             onScannedSearchProduct(results, handleAddByBarcode)
           }
           onClose={closeScanner} // Pass onClose function here
-        />
+        /> */}
 
         <div className="flex items-center space-x-2 mb-4">
           <Command className="flex-grow">
@@ -305,7 +305,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
           </AnimatePresence>
         </div>
         <DialogFooter>
-          {initializedScanner ? (
+          {/* {initializedScanner ? (
             <>
               <Button type="button" onClick={toggleScanning}>
                 <div className="flex items-center gap-2">
@@ -316,7 +316,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
             </>
           ) : (
             <div>Initializing...</div>
-          )}
+          )} */}
           <Button
             onClick={() => handleBulkUpdate(productsToUpdate)}
             disabled={productsToUpdate.length === 0 || isRestocking}
