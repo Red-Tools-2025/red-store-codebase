@@ -7,6 +7,7 @@ import {
   UpdateProductBatchRequestBody,
 } from "@/app/types/inventory/api";
 import supabase from "@/lib/supabase/client";
+import { redis } from "@/lib/redis";
 
 // batch addition upload to inventory
 export async function POST(req: Request) {
@@ -79,6 +80,7 @@ export async function DELETE(req: Request) {
   try {
     const body: DeleteProductBatchRequestBody = await req.json();
     const { productBatch } = body;
+    const cache_key = `inv_products:${productBatch[0].storeId}`;
 
     if (!Array.isArray(productBatch) || productBatch.length === 0) {
       return NextResponse.json(
@@ -118,6 +120,19 @@ export async function DELETE(req: Request) {
         })),
       },
     });
+
+    console.log("Removed from DB");
+
+    // Deleting from cache store
+    const delete_pipeline = redis.pipeline();
+    idsToDelete.forEach(({ invId }) => {
+      const item_key = `${cache_key}:${invId}`;
+      delete_pipeline.srem(cache_key, invId);
+      delete_pipeline.del(item_key);
+    });
+
+    await delete_pipeline.exec();
+    console.log("Removed from cache store");
 
     return NextResponse.json({
       message: `${deleteResult.count} products removed from inventory successfully.`,
