@@ -5,6 +5,7 @@ import {
   DeleteProductRequestBody,
   UpdateProductRequestBody,
 } from "@/app/types/inventory/api";
+import { redis } from "@/lib/redis";
 
 // Function to handle the POST request for adding inventory
 export async function POST(req: Request) {
@@ -88,6 +89,10 @@ export async function POST(req: Request) {
         invCreatedDate: new Date(), // Automatically set the created timestamp
       },
     });
+
+    // Update to cache
+    const cache_key = `inv_products:${storeId}:${inventory.invId}`;
+    await redis.set(cache_key, JSON.stringify(inventory));
 
     // Return the newly created inventory data
     return NextResponse.json(
@@ -178,7 +183,6 @@ export async function GET(req: Request) {
   }
 }
 
-
 /* export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -238,7 +242,6 @@ export async function GET(req: Request) {
   }
 }
  */
-
 
 // Endpoint to delete product from inventory
 export async function DELETE(req: Request) {
