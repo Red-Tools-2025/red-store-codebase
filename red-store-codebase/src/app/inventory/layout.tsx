@@ -54,6 +54,9 @@ const Layout: React.FC<ManagementPageLayoutProps> = ({ children }) => {
     pageSize */
   );
 
+  const item = inventoryItems?.filter((item) => item.invItemBrand === "Malibu");
+  console.log({ item });
+
   return (
     <InventoryProvider
       toggleInfoPanel={toggleInfoPanel}

@@ -90,9 +90,13 @@ export async function POST(req: Request) {
       },
     });
 
+    console.log("Added to DB");
+
     // Update to cache
     const cache_key = `inv_products:${storeId}:${inventory.invId}`;
     await redis.set(cache_key, JSON.stringify(inventory));
+
+    console.log("Added to Cache");
 
     // Return the newly created inventory data
     return NextResponse.json(
