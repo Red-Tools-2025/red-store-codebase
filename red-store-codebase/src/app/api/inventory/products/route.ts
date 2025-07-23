@@ -93,8 +93,13 @@ export async function POST(req: Request) {
     console.log("Added to DB");
 
     // Update to cache
-    const cache_key = `inv_products:${storeId}:${inventory.invId}`;
-    await redis.set(cache_key, JSON.stringify(inventory));
+    const cache_key = `inv_products:${storeId}`;
+    const item_key = `${cache_key}:${inventory.invId}`;
+    await redis
+      .multi()
+      .set(item_key, JSON.stringify(inventory))
+      .sadd(cache_key, inventory.invId)
+      .exec();
 
     console.log("Added to Cache");
 

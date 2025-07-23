@@ -99,7 +99,9 @@ const useProducts = (
   total_count: number;
   handleRefresh: () => void;
 } => {
-  const [inventoryItems, setInventoryItems] = useState<Inventory[] | null>(null);
+  const [inventoryItems, setInventoryItems] = useState<Inventory[] | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState<number>(0); // Used to trigger re-fetching
@@ -141,4 +143,3 @@ const useProducts = (
 };
 
 export default useProducts;
-
