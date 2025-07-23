@@ -154,8 +154,7 @@ export async function PATCH(req: Request) {
   try {
     const body: UpdateProductBatchRequestBody = await req.json();
     const { productBatch } = body;
-
-    console.log(productBatch);
+    const cache_key = `inv_products:${productBatch[0].storeId}`;
 
     const idsToUpdate = productBatch.map((p) => ({
       storeId: p.storeId,
@@ -239,6 +238,20 @@ export async function PATCH(req: Request) {
 
     // Update processing to be done post sales logging to avoid inconsistencies in opening and closing amounts
     const updatedProducts = await db.$transaction(updatePromises);
+
+    console.log("Updated In DB");
+
+    // Updating in cache store
+    const update_pipeline = redis.pipeline();
+    updatedProducts.forEach((item) => {
+      const item_key = `${cache_key}:${item.invId}`;
+      // Reparse and set updated product to cache (Set remains the same)
+      update_pipeline.set(item_key, JSON.stringify(item));
+    });
+
+    await update_pipeline.exec();
+
+    console.log("Updated in Cache");
 
     return NextResponse.json({
       message: "Products updated successfully",
