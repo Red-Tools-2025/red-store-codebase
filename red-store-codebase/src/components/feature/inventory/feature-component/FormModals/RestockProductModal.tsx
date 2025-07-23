@@ -31,7 +31,7 @@ import { LuScanFace } from "react-icons/lu";
 interface RestockProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  inventoryItems: Inventory[];
+  inventoryItems: Inventory[] | null;
 }
 
 interface ProductToUpdate {
@@ -110,7 +110,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
   };
 
   const handleAddByBarcode = (searchBarcode: string) => {
-    const productToAdd = inventoryItems.find(
+    const productToAdd = inventoryItems?.find(
       (item) => item.invItemBarcode === searchBarcode
     );
     handleAddProduct(productToAdd as Inventory);
@@ -165,12 +165,16 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
 
   // Memoized filtered suggestions
   const suggestionItems = useMemo(() => {
-    const filtered = inventoryItems.filter((item) => {
-      const matchesProductName = item.invItem
+    const filtered = inventoryItems?.filter((item) => {
+      if (!item.invItem) {
+        console.warn("Missing invItem for inventory item:", item);
+      }
+      const matchesProductName = (item.invItem ?? "")
         .toLowerCase()
         .includes(searchTerm.trim().toLowerCase());
-      const matchesBrand = item.invItemBrand
-        ?.toLowerCase()
+
+      const matchesBrand = (item.invItemBrand ?? "")
+        .toLowerCase()
         .includes(searchTerm.trim().toLowerCase());
 
       return (
@@ -179,7 +183,7 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
       );
     });
 
-    return filtered.slice(0, 5);
+    return filtered?.slice(0, 5);
   }, [inventoryItems, searchTerm, productsToUpdate]);
 
   console.log(suggestionItems);
@@ -213,8 +217,8 @@ const RestockProductModal: React.FC<RestockProductModalProps> = ({
             <CommandList>
               {searchTerm && (
                 <CommandGroup>
-                  {suggestionItems.length > 0 ? (
-                    suggestionItems.map((product) => (
+                  {suggestionItems && suggestionItems.length > 0 ? (
+                    suggestionItems?.map((product) => (
                       <CommandItem
                         key={product.invId}
                         value={`${product.invItemBrand || ""} - ${

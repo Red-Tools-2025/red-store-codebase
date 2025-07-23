@@ -61,13 +61,15 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
 
   // Memoized filtered suggestions
   const suggestionItems = useMemo(() => {
-    // If no barcode is scanned, filter based on search term
+    const normalizedSearchTerm = searchTerm.toLowerCase().trim();
     return inventoryItems
       .filter(
         (item) =>
           !productsToDelete.some((p) => p.invId === item.invId) &&
-          (item.invItem.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.invItemBrand?.toLowerCase().includes(searchTerm.toLowerCase()))
+          ((item.invItem ?? "").toLowerCase().includes(normalizedSearchTerm) ||
+            (item.invItemBrand ?? "")
+              .toLowerCase()
+              .includes(normalizedSearchTerm))
       )
       .slice(0, 5); // Limit to 5 suggestions
   }, [inventoryItems, searchTerm, productsToDelete]);
