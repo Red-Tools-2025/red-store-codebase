@@ -1,81 +1,46 @@
 import { InventoryKey } from "@/app/types/inventory/components";
-import { DBSchema, openDB } from "idb";
 import axios from "axios";
 import { Dispatch, SetStateAction, useState } from "react";
-interface InventoryStoreCache extends DBSchema {
-  // search keys cache
-  keys: {
-    key: string; // store_id as the primary key
-    value: {
-      search_keys: InventoryKey[];
-      store_id: string;
-    };
-    indexes: { store_id: string };
-  };
-
-  // favorite search keys cache store
-  favorites: {
-    key: string; // store_id as the primary key
-    value: {
-      favorite_keys: InventoryKey[];
-      store_id: string;
-      storemanagerid: string;
-    };
-    indexes: { store_id: string };
-  };
-}
 
 const useBrowserCache = () => {
   const [fetchingFavorites, setFetchingFavorites] = useState<boolean>(false);
-  // Initialize the IndexedDB store
-  const initStoreCache = () =>
-    openDB<InventoryStoreCache>("inventory-cache", 1, {
-      upgrade(db) {
-        // facilitating creation of keys cache
-        if (!db.objectStoreNames.contains("keys")) {
-          const keysStore = db.createObjectStore("keys", {
-            keyPath: "store_id",
-          });
-          keysStore.createIndex("store_id", "store_id");
-        }
-
-        // facilitating creation of favorites cache
-        if (!db.objectStoreNames.contains("favorites")) {
-          const favoriteProducts = db.createObjectStore("favorites", {
-            keyPath: "store_id",
-          });
-          favoriteProducts.createIndex("store_id", "store_id");
-        }
-      },
-    });
 
   // Store data to cache
   const storeToCache = async (
     search_keys: InventoryKey[],
     store_id: string
   ) => {
-    const db = await initStoreCache();
-    const existingEntry = await db.get("keys", store_id);
-
-    if (!existingEntry) {
+    try {
       console.log(`Storing new entry for store_id: ${store_id}`);
-      await db.put("keys", { store_id, search_keys });
-    } else {
-      console.log(`Cache already exists for store_id: ${store_id}, skipping.`);
+      await axios.post(`/api/inventory/keys/${store_id}`, { search_keys });
+    } catch (error) {
+      console.error(`Error caching search keys for store ${store_id}:`, error);
     }
   };
 
   // Get specific key from cache
   const getKeysFromCache = async (store_id: string) => {
-    const db = await initStoreCache();
-    const keyStore = await db.get("keys", store_id);
-    return keyStore;
+    try {
+      const response = await axios.get(`/api/inventory/keys/${store_id}`);
+      return response.data;
+    } catch (error) {
+      console.error(
+        `Error fetching keys from cache for store ${store_id}:`,
+        error
+      );
+      return null;
+    }
   };
 
   // Check if cache exists for a store
   const checkCacheForStore = async (store_id: string) => {
-    const db = await initStoreCache();
-    return (await db.get("keys", store_id)) !== undefined;
+    try {
+      const result = await getKeysFromCache(store_id);
+      return result !== null && result.search_keys?.length > 0;
+    } catch (error) {
+      console.error(`Error checking cache for store ${store_id}:`, error);
+      return false;
+    }
   };
 
   // Store keys to favorites cache
@@ -85,16 +50,17 @@ const useBrowserCache = () => {
     storemanagerid: string
   ) => {
     try {
-      const db = await initStoreCache();
-      const existingFavorites = await db.get("favorites", store_id);
+      const currentFavorites = await getFavoritesForStore(
+        store_id,
+        storemanagerid
+      );
+      const initialFavoriteKeys = currentFavorites?.favorite_keys ?? [];
 
       console.log(
         "📌 Existing Favorites in Cache BEFORE update:",
-        existingFavorites?.favorite_keys
+        initialFavoriteKeys
       );
       console.log("📌 Newly Selected Favorites:", favorite_keys);
-
-      const initialFavoriteKeys = existingFavorites?.favorite_keys ?? [];
 
       // ✅ Detect newly added and removed favorites BEFORE updating cache
       const newFavorites = favorite_keys.filter(
@@ -166,15 +132,6 @@ const useBrowserCache = () => {
         }
       }
 
-      // ✅ Now update the cache **AFTER** processing API calls
-      if (existingFavorites) {
-        existingFavorites.favorite_keys = favorite_keys;
-        existingFavorites.storemanagerid = storemanagerid;
-        await db.put("favorites", existingFavorites);
-      } else {
-        await db.put("favorites", { store_id, favorite_keys, storemanagerid });
-      }
-
       console.log("📌 Cache updated with new favorites:", favorite_keys);
     } catch (error) {
       console.error(`🚨 Error storing favorite for store ${store_id}:`, error);
@@ -183,36 +140,21 @@ const useBrowserCache = () => {
 
   // Remove a favorite key from the cache
   const removeFavoriteKeyFromCache = async (
-    favorite_key: InventoryKey, // The key to be removed
-    store_id: string
+    favorite_key: InventoryKey,
+    store_id: string,
+    storemanagerid: string
   ) => {
     try {
-      const db = await initStoreCache();
-      const existingFavorites = await db.get("favorites", store_id);
+      const storeidNumber = Number(store_id);
 
-      if (existingFavorites) {
-        // Find the index of the favorite key to remove
-        const favoriteIndex = existingFavorites.favorite_keys.findIndex(
-          (key) => key.invId === favorite_key.invId
-        );
+      const response = await axios.delete(
+        `/api/inventory/products/favorites/${storeidNumber}/${favorite_key.invId}?storemanagerid=${storemanagerid}`
+      );
 
-        if (favoriteIndex !== -1) {
-          // Remove the key from the favorites array
-          existingFavorites.favorite_keys.splice(favoriteIndex, 1);
-
-          // Ensure storemanagerid is retained while updating IndexedDB
-          await db.put("favorites", {
-            store_id,
-            favorite_keys: existingFavorites.favorite_keys,
-            storemanagerid: existingFavorites.storemanagerid, // Retain storemanagerid
-          });
-
-          console.log(`Favorite product removed for store ${store_id}.`);
-        } else {
-          console.log(`Product not found in favorites for store ${store_id}.`);
-        }
+      if (response.status === 200) {
+        console.log(`Favorite product removed for store ${store_id}.`);
       } else {
-        console.log(`No favorites found for store ${store_id}.`);
+        console.log(`Product not found in favorites for store ${store_id}.`);
       }
     } catch (error) {
       console.error(`Error removing favorite for store ${store_id}:`, error);
@@ -226,55 +168,24 @@ const useBrowserCache = () => {
     storemanagerid: string
   ) => {
     try {
-      const db = await initStoreCache();
-      let favorites = await db.get("favorites", store_id);
+      const response = await axios.get(
+        `/api/inventory/products/favorites/${store_id}?storemanagerid=${storemanagerid}`
+      );
 
-      // If no data is found in the cache, fetch from the API
-      if (!favorites) {
-        console.log(
-          `Cache is empty for store ${store_id}, fetching from API...`
-        );
-        setFetchingFavorites(true);
-        try {
-          const response = await axios.get(
-            `/api/inventory/products/favorites/${store_id}?storemanagerid=${storemanagerid}`
-          );
+      const favorite_keys = Array.isArray(response.data?.favorite_keys)
+        ? response.data.favorite_keys
+        : [];
 
-          if (
-            response.data &&
-            Array.isArray(response.data.favorite_keys) &&
-            response.data.favorite_keys.length > 0
-          ) {
-            favorites = {
-              favorite_keys: response.data.favorite_keys ?? [], // Ensure it's always an array
-              storemanagerid: response.data.storemanagerid ?? "", // Ensure it's always a string
-              store_id: store_id, // Ensure store_id is included
-            };
+      const storemanageridFromResponse = response.data?.storemanagerid ?? "";
 
-            // Store the fetched data into IndexedDB for future use
-            await db.put("favorites", favorites);
-            console.log(`Fetched and stored favorites for store ${store_id}`);
-          } else {
-            console.log(`No favorites found in API for store ${store_id}`);
-            favorites = { favorite_keys: [], storemanagerid: "", store_id }; // Ensure store_id is included
-          }
-        } catch (error) {
-          console.error(`Error fetching favorites from API:`, error);
-          favorites = { favorite_keys: [], storemanagerid: "", store_id }; // Ensure store_id is included even in case of error
-        } finally {
-          setFetchingFavorites(false);
-        }
-      }
-
-      // Ensure the return object always includes store_id
       return {
-        favorite_keys: favorites.favorite_keys ?? [],
-        storemanagerid: favorites.storemanagerid ?? "",
-        store_id: favorites.store_id ?? store_id, // Ensure store_id is always present
+        favorite_keys,
+        storemanagerid: storemanageridFromResponse,
+        store_id,
       };
     } catch (error) {
-      console.error(`Error fetching favorites for store ${store_id}:`, error);
-      return { favorite_keys: [], storemanagerid: "", store_id }; // Ensure store_id is always returned
+      console.error(`Error fetching favorites from API:`, error);
+      return { favorite_keys: [], storemanagerid: "", store_id };
     }
   };
 
@@ -289,37 +200,25 @@ const useBrowserCache = () => {
         `🔄 Force fetching favorites from API for store ${store_id}...`
       );
 
-      // Fetch latest data from API
       setFetchingFavorites(true);
       const response = await axios.get(
         `/api/inventory/products/favorites/${store_id}?storemanagerid=${storemanagerid}`
       );
 
-      let favorites;
-
       if (response.data && Array.isArray(response.data.favorite_keys)) {
-        favorites = {
-          favorite_keys: response.data.favorite_keys ?? [],
-          storemanagerid: response.data.storemanagerid ?? "",
-          store_id: store_id,
-        };
-
-        // Update cache with fresh API data
-        const db = await initStoreCache();
-        await db.put("favorites", favorites);
-
-        setSelectedKeys(response.data.favorite_keys ?? []);
-
+        setSelectedKeys(response.data.favorite_keys);
         console.log(
-          `✅ Cache updated with fresh favorites for store ${store_id}`
+          `✅ Fetched and updated favorite keys for store ${store_id}`
         );
       } else {
-        console.log(`❌ No valid data received from API for store ${store_id}`);
-        favorites = { favorite_keys: [], storemanagerid: "", store_id };
+        setSelectedKeys([]);
+        console.warn(
+          `⚠️ No valid data received from API for store ${store_id}`
+        );
       }
     } catch (error) {
       console.error(`🚨 Error force-fetching favorites from API:`, error);
-      return { favorite_keys: [], storemanagerid: "", store_id };
+      setSelectedKeys([]);
     } finally {
       setFetchingFavorites(false);
     }

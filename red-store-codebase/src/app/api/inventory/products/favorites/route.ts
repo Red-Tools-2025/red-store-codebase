@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma"; // Ensure correct path
+import { redis } from "@/lib/redis";
 
 // Interface for the request body
 interface AddFavoriteRequestBody {
@@ -42,6 +43,22 @@ export async function POST(req: Request) {
       },
     });
 
+    // Update Redis cache after successful database insert
+    const cache_key = `inv_favs:${storeid}`;
+    const formattedFavorite = {
+      favId: favorite.favid,
+      storeId: favorite.storeid,
+      storemanagerid: favorite.storemanagerid,
+      invId: favorite.invid,
+      invItem: favorite.invitem,
+      invItemBrand: favorite.invitembrand,
+      addedAt: favorite.addedat,
+    };
+
+    const favItemKey = `${cache_key}:${favorite.invid}`;
+    await redis.set(favItemKey, JSON.stringify(formattedFavorite));
+    await redis.sadd(cache_key, favorite.invid.toString());
+
     // Return success response
     return NextResponse.json(
       { message: `Item ${favorite.invitem} added to favorites`, favorite },
@@ -55,5 +72,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
-

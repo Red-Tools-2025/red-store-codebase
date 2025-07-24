@@ -42,6 +42,7 @@ const SetFavoritesDrawer: React.FC<SetFavoritesDrawerProps> = ({
     getFavoritesForStore,
     storeFavoriteKeyToCache,
     refreshFavoritesForStore,
+    removeFavoriteKeyFromCache,
     fetchingFavorites,
   } = useBrowserCache();
   const [search, setSearch] = useState("");
@@ -86,11 +87,33 @@ const SetFavoritesDrawer: React.FC<SetFavoritesDrawerProps> = ({
       JSON.stringify(selectedKeys) !== JSON.stringify(initialKeys);
 
     if (hasChanges) {
-      console.log("Detected changes in favorites. Posting only new items...");
+      console.log("Detected changes in favorites. Processing changes...");
 
-      // Handles both additions & deletions properly
       setIsUpdatingFavorites(true);
+
+      // Find removed favorites
+      const removedFavorites = initialKeys.filter(
+        (initial) =>
+          !selectedKeys.some((selected) => selected.invId === initial.invId)
+      );
+
+      // Handle individual removals first (for immediate DB cleanup)
+      for (const removedFav of removedFavorites) {
+        try {
+          await removeFavoriteKeyFromCache(
+            removedFav,
+            store_id,
+            storemanagerid
+          );
+          console.log(`🗑️ Removed ${removedFav.invItem} from favorites`);
+        } catch (error) {
+          console.error(`Failed to remove ${removedFav.invItem}:`, error);
+        }
+      }
+
+      // Then handle the full sync (for additions and ensuring consistency)
       await storeFavoriteKeyToCache(selectedKeys, store_id, storemanagerid);
+
       setIsUpdatingFavorites(false);
     } else {
       console.log("No changes detected, avoiding API call...");
@@ -100,11 +123,9 @@ const SetFavoritesDrawer: React.FC<SetFavoritesDrawerProps> = ({
   };
 
   const handleRemoveProduct = (searchKey: InventoryKey) => {
-    setIsUpdatingFavorites(true);
     setSelectedKeys(
-      (prev) => prev.filter((key) => key.invId !== searchKey.invId) // ✅ Only update state
+      (prev) => prev.filter((key) => key.invId !== searchKey.invId) // Only update state, DB removal happens on close
     );
-    setIsUpdatingFavorites(false);
   };
 
   return (
