@@ -2,9 +2,12 @@
 import TestLoginForm from "@/components/testing/TestLogin";
 import TestRegisterForm from "@/components/testing/TestRegister";
 import { useState } from "react";
+import useInvStreamingService from "../hooks/inventory/ServerHooks/useInvStreamingService";
 
 const ComponentTestingPage = () => {
   const [authCompView, setAuthCompView] = useState<boolean>(false);
+  console.log("X");
+  useInvStreamingService("uu1", 5);
   return (
     <div className="p-5">
       <p className="text-bold">Run all components for testing here</p>
@@ -590,8 +593,6 @@ export default AddStoreForm;
 //     </div>
 //   );
 // }
-
-
 
 ////////////////////
 /* 
