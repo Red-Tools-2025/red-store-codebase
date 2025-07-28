@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma"; // Adjust the import path based on your project structure
+import { redis } from "@/lib/redis";
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -15,6 +16,50 @@ export async function GET(req: Request) {
 
     // Convert storeId to a number
     const storeId = parseInt(storeIdStr, 10);
+
+    // Define a cache_key for redis store
+    const cache_key = `inv_products:${storeId}`;
+    const fav_cache_key = `inv_favs:${storeId}`;
+
+    // Verify members in cache store before fetch
+    const cache_product_ids = await redis.smembers(cache_key);
+    const fav_product_ids = await redis.smembers(fav_cache_key);
+
+    // Both members of ids need to be present
+    if (cache_product_ids.length > 0 && fav_product_ids.length > 0) {
+      // Fetch product keys for those that are not in favs
+      const pipeline = redis.pipeline();
+      cache_product_ids
+        .filter((p_id) => !fav_product_ids.includes(p_id))
+        .forEach((p_id) => {
+          pipeline.get(`${cache_key}:${p_id}`);
+        });
+
+      // Execute pipeline on finishing accumilation
+      const results = await pipeline.exec();
+      if (results) {
+        const totalCountResult = results[results.length - 1];
+        const products = results
+          .map(([err, res]) =>
+            typeof res === "string" ? JSON.parse(res) : null
+          )
+          .filter(Boolean);
+
+        const totalCount =
+          typeof totalCountResult[1] === "string"
+            ? parseInt(totalCountResult[1], 10)
+            : products.length;
+        console.log("Data from cache was retrieved");
+        return NextResponse.json(
+          {
+            message: "Data retrieved successfully (from cache)",
+            inventoryItems: products,
+            total_count: totalCount,
+          },
+          { status: 200 }
+        );
+      }
+    }
 
     // Fetch all favorites
     const favoriteItems = await db.favorites.findMany({
