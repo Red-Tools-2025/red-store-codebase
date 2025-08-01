@@ -50,7 +50,7 @@ const useInvStreamingService = (user_id: string, store_id: number) => {
     if (!user_id) return;
 
     const eventSource = new EventSource(
-      `http://localhost:3000/inventory/consumer-event?user_id=${user_id}&store_id=${store_id}`
+      `http://localhost:3000/inventory/updates-stream?user_id=${user_id}&store_id=${store_id}`
     );
 
     eventSource.onopen = () => {
@@ -59,7 +59,16 @@ const useInvStreamingService = (user_id: string, store_id: number) => {
 
     eventSource.onmessage = (event) => {
       try {
-        const parsed: unknown = JSON.parse(event.data);
+        // Redis messages might be JSON strings inside JSON strings, so double parse
+        let parsed: unknown = event.data;
+
+        if (typeof parsed === "string") {
+          parsed = JSON.parse(parsed);
+        }
+
+        if (typeof parsed === "string") {
+          parsed = JSON.parse(parsed);
+        }
 
         if (isConnectionEvent(parsed)) {
           console.log("Connection message:", parsed.message);
@@ -72,7 +81,7 @@ const useInvStreamingService = (user_id: string, store_id: number) => {
           console.warn("Unknown event type received", parsed);
         }
       } catch (err) {
-        console.error("Failed to parse SSE data:", err);
+        console.error("Failed to parse SSE data:", err, event.data);
       }
     };
 

@@ -7,7 +7,7 @@ import useInvStreamingService from "../hooks/inventory/ServerHooks/useInvStreami
 const ComponentTestingPage = () => {
   const [authCompView, setAuthCompView] = useState<boolean>(false);
   console.log("X");
-  const { inventoryEvents } = useInvStreamingService("uu1", 5);
+  const { inventoryEvents } = useInvStreamingService("uu2", 5);
 
   useEffect(() => {
     console.log({ "Displaying on UI": inventoryEvents });
