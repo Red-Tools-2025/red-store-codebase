@@ -38,6 +38,7 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
     setSearchTerm,
     inventoryItems,
     favoriteProducts,
+    searchTerm, // Ensure searchTerm is destructured here
   } = usePos();
 
   // States for bucket modals
@@ -171,6 +172,7 @@ const ProductDisplayControl: React.FC<ProductDisplayControlProps> = ({
               <Input
                 className="border-gray-300 w-[300px] text-sm transition-all placeholder:text-gray-400"
                 placeholder="Search product..."
+                value={searchTerm} // Make it a controlled component
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                 }}

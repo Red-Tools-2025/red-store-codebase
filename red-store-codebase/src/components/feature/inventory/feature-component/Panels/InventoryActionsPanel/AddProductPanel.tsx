@@ -27,6 +27,7 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { AddProductFormValidation } from "@/lib/formik/formik";
 import { MdAddBusiness } from "react-icons/md";
+import { useBarcodeScanner } from "@/hooks/useBarcodeScanner";
 
 interface AddProductPanelProps {
   isOpen: boolean;
@@ -64,6 +65,14 @@ const AddProductPanel: React.FC<AddProductPanelProps> = ({
   const [dynamicFormValidation, setDynamicFormValidation] =
     useState<Yup.ObjectSchema<any> | null>(null);
   const { sessionData, selectedStore } = useInventory();
+
+  const { clearScannedData } = useBarcodeScanner({
+    onScan: (barcode) => {
+      formik.setFieldValue("invItemBarcode", barcode);
+      clearScannedData();
+    },
+    enabled: isOpen, // Only enable scanner when the drawer is open
+  });
 
   const customFields =
     (selectedStore?.customfields as unknown as StoreDefination[]) || [];

@@ -29,8 +29,9 @@ const useInventoryTableHook = ({ columns, data }: InventoryTableHookProps) => {
   ) => {
     const name = row.original.invItem?.toLowerCase() || "";
     const brand = row.original.invItemBrand?.toLowerCase() || "";
+    const barcode = row.original.invItemBarcode?.toLowerCase() || "";
     const search = filterValue.toLowerCase();
-    return name.includes(search) || brand.includes(search);
+    return name.includes(search) || brand.includes(search) || barcode.includes(search);
   };
 
   const [sorting] = useState<SortingState>([]);

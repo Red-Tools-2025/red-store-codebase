@@ -25,6 +25,10 @@ const ItemSelectionDisplay: React.FC<ItemSelectionDisplayProps> = ({
                 item.invItemBrand
                   ?.toString()
                   .toLowerCase()
+                  .includes(searchTerm.toLowerCase()) ||
+                item.invItemBarcode
+                  ?.toString()
+                  .toLowerCase()
                   .includes(searchTerm.toLowerCase())
             )
             .map((item) => (

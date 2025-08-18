@@ -277,6 +277,10 @@ const InventoryPage = () => {
         setIsRestockProdModalOpen={setIsRestockProdModalOpen}
         setIsTableViewModalOpen={setIsTableViewModalOpen}
         setIsFavortiesModalOpen={setIsFavortiesModalOpen}
+        isAddProdModalOpen={isAddProdModalOpen}
+        onRefresh={() => setGlobalFilter("")} // Clear global filter on refresh
+        globalFilter={table.getState().globalFilter} // Pass globalFilter to InventoryControlPanel
+        isFavortiesModalOpen={isFavortiesModalOpen} // Pass isFavortiesModalOpen to InventoryControlPanel
       />
 
       <InventoryFilterPanel

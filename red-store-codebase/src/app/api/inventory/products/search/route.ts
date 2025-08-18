@@ -26,6 +26,7 @@ export async function GET(req: Request) {
         invId: true,
         invItem: true,
         invItemBrand: true,
+        invItemBarcode: true,
       },
     });
 
