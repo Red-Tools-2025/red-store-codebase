@@ -15,6 +15,7 @@ import {
   CommandEmpty,
 } from "@/components/ui/command";
 import { useEffect, useState } from "react";
+import { useBarcodeScanner } from "@/hooks/useBarcodeScanner";
 import { InventoryKey } from "@/app/types/inventory/components";
 import { X } from "lucide-react";
 import useBrowserCache from "@/app/hooks/inventory/ServerHooks/useBrowserCache";
@@ -49,6 +50,26 @@ const SetFavoritesDrawer: React.FC<SetFavoritesDrawerProps> = ({
   const [initialKeys, setInitialKeys] = useState<InventoryKey[]>([]);
   const [isUpdatingFavorites, setIsUpdatingFavorites] =
     useState<boolean>(false);
+
+  const { clearScannedData } = useBarcodeScanner({
+    onScan: (barcode) => {
+      const scannedProduct = searchKeys.find(
+        (key) => key.invItemBarcode === barcode
+      );
+      if (scannedProduct) {
+        setSelectedKeys((prev) => {
+          const exists = prev.some((item) => item.invId === scannedProduct.invId);
+          if (!exists) {
+            setSearch(scannedProduct.invItem); // Set search input to product name
+            return [...prev, scannedProduct];
+          }
+          return prev;
+        });
+      }
+      clearScannedData();
+    },
+    enabled: isOpen && !fetchingFavorites, // Only enable scanner when the drawer is open and not fetching favorites
+  });
 
   // Load favorites from the cache when the drawer opens
   useEffect(() => {
@@ -184,7 +205,6 @@ const SetFavoritesDrawer: React.FC<SetFavoritesDrawerProps> = ({
                   placeholder="Enter product name..."
                   value={search}
                   onValueChange={setSearch}
-                  className="border-b border-gray-300 px-2 py-1 text-sm"
                 />
                 <CommandList className="max-h-60 overflow-y-auto bg-white border rounded-md shadow-sm">
                   <CommandEmpty className="p-2 text-sm text-gray-500">

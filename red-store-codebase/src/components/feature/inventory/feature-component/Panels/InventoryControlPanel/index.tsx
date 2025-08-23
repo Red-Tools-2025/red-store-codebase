@@ -20,6 +20,10 @@ interface InventoryControlPanelProps {
   handleOpenModal: (setModalType: Dispatch<SetStateAction<boolean>>) => void;
   handleRefresh: () => void;
   setGlobalFilter: Dispatch<SetStateAction<string>>;
+  isFavortiesModalOpen: boolean;
+  isAddProdModalOpen: boolean;
+  onRefresh: () => void;
+  globalFilter: string; // Add globalFilter to props
 }
 
 const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
@@ -33,6 +37,10 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
   setIsTableViewModalOpen,
   setIsFavortiesModalOpen,
   setGlobalFilter,
+  isFavortiesModalOpen, // This is the prop from parent
+  isAddProdModalOpen, // This is the prop from parent
+  onRefresh,
+  globalFilter,
 }) => {
   const { inventoryItems } = useInventory();
 
@@ -42,7 +50,12 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
   return (
     <div className="my-5 flex items-center justify-between">
       <div className="flex items-center space-x-4">
-        <InventroySearch setSearchFilter={setSearchFilter} />
+        <InventroySearch
+          setSearchFilter={setSearchFilter}
+          isFavoritesModalOpen={isFavortiesModalOpen}
+          isAddProdModalOpen={isAddProdModalOpen}
+          globalFilter={globalFilter} // Pass globalFilter to InventroySearch
+        />
         <div className="flex space-x-1">
           {/* Grid Icon */}
           <div
@@ -77,7 +90,7 @@ const InventoryControlPanel: React.FC<InventoryControlPanelProps> = ({
             />
           </div>
         </div>
-        <Button onClick={handleRefresh} variant={"secondary"}>
+        <Button onClick={() => { handleRefresh(); onRefresh(); }} variant={"secondary"}>
           <div className="flex items-center ">
             <RefreshCw className="mr-2 h-3 w-3" />
             <p>Refresh</p>
