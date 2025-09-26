@@ -4,7 +4,7 @@ A distributed, real-time Point of Sale and inventory management system built for
 These demo videos were recorded by my friend to **educate the store staff** on how to effectively use the barcode scanner with the overall software
 
 ### Demo 1
-[![Watch Demo 1](https://i.sstatic.net/Vp2cE.png)](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-1.mp4)
+[Watch Demo 1](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-1.mp4)
 
 ### Demo 2 (OTP system was in production already, so we force fed the OTP code through console for only development)
 [Watch Demo 2](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-2.mp4)
