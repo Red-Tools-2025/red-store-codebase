@@ -1,32 +1,16 @@
 # Red Store - Enterprise Point of Sale & Inventory Management System
 
 A distributed, real-time Point of Sale and inventory management system built for retail environments, featuring multi-device synchronization, event-driven architecture, and high-performance caching.
-These demo videos were recorded by my friend to **educate the store staff** on how to effectively use the barcode scanner with the overall software.
+These demo videos were recorded by my friend to **educate the store staff** on how to effectively use the barcode scanner with the overall software
 
 ### Demo 1 – Barcode Scanning Basics  
-<video width="640" height="360" controls>
-  <source src="https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-1.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>  
-[Download Demo 1](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-1.mp4)
-
----
+[Watch Demo 1](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-1.mp4)
 
 ### Demo 2 – Sales and Checkout Flow  
-<video width="640" height="360" controls>
-  <source src="https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-2.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>  
-[Download Demo 2](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-2.mp4)
-
----
+[Watch Demo 2](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-2.mp4)
 
 ### Demo 3 – Inventory and System Features  
-<video width="640" height="360" controls>
-  <source src="https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-3.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>  
-[Download Demo 3](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-3.mp4)
+[Watch Demo 3](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-3.mp4)
 
 ## System Architecture
 
