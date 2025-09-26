@@ -1,8 +1,34 @@
 # Red Store - Enterprise Point of Sale & Inventory Management System
 
 A distributed, real-time Point of Sale and inventory management system built for retail environments, featuring multi-device synchronization, event-driven architecture, and high-performance caching.
+These demo videos were recorded by my friend to **educate the store staff** on how to effectively use the barcode scanner with the overall software.
 
-## 🏗️ System Architecture
+### Demo 1 – Barcode Scanning Basics  
+<video width="640" height="360" controls>
+  <source src="https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-1.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>  
+[Download Demo 1](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-1.mp4)
+
+---
+
+### Demo 2 – Sales and Checkout Flow  
+<video width="640" height="360" controls>
+  <source src="https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-2.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>  
+[Download Demo 2](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-2.mp4)
+
+---
+
+### Demo 3 – Inventory and System Features  
+<video width="640" height="360" controls>
+  <source src="https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-3.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>  
+[Download Demo 3](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-3.mp4)
+
+## System Architecture
 
 Red Store is built as a microservices architecture with event-driven communication, designed to handle concurrent operations across multiple iPad terminals while maintaining data consistency and real-time synchronization.
 
@@ -13,7 +39,7 @@ Red Store is built as a microservices architecture with event-driven communicati
 - **Cache Layer** - Redis-based caching and pub/sub messaging
 - **Database Layer** - PostgreSQL with TimescaleDB for analytics
 
-## 🚀 Key Features
+## Key Features
 
 ### Real-Time Multi-Device Synchronization
 - Concurrent sales processing across multiple iPad terminals
@@ -35,7 +61,7 @@ Red Store is built as a microservices architecture with event-driven communicati
 - Real-time sales analytics and reporting
 - Historical transaction tracking
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Backend
 - **Runtime**: Node.js with TypeScript
@@ -51,7 +77,7 @@ Red Store is built as a microservices architecture with event-driven communicati
 - CQRS (Command Query Responsibility Segregation)
 - Publisher-Subscriber Pattern
 
-## 📱 Multi-Device Setup
+## Multi-Device Setup
 
 The system is designed for iPad terminals but supports any web-capable device:
 
@@ -60,14 +86,14 @@ The system is designed for iPad terminals but supports any web-capable device:
 3. Enable real-time SSE connections
 4. Configure Redis pub/sub channels
 
-## 🔐 Security Features
+## Security Features
 
 - Store-specific data isolation through partitioning
 - User-based topic segregation
 - Redis channel-based access control
 - Database row-level security policies
 
-## 📈 Scalability
+## Scalability
 
 The system architecture supports:
 - Horizontal scaling through Kafka partitioning
