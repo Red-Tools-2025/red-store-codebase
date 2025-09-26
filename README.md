@@ -12,6 +12,19 @@ These demo videos were recorded by my friend to **educate the store staff** on h
 ### Demo 3
 [Watch Demo 3](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Demo-3.mp4)
 
+These pictures show the **on-ground implementation** of the Red Store system at the store.  
+They capture how the system was setup to be used by the staff.
+
+---
+
+### Store Setup – Picture 1  
+![Store Implementation 1](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Pic1.jpg)
+
+---
+
+### Store Setup – Picture 2  
+![Store Implementation 2](https://pub-47e138e02b44477f9935d1b35c47d5a7.r2.dev/Pic2.jpg)
+
 ## System Architecture
 
 Red Store is built as a microservices architecture with event-driven communication, designed to handle concurrent operations across multiple iPad terminals while maintaining data consistency and real-time synchronization.
