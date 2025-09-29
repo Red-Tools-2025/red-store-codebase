@@ -58,7 +58,6 @@ Red Store is built as a microservices architecture with event-driven communicati
 ### Architecture Patterns
 - Microservices Architecture
 - Event-Driven Design
-- CQRS (Command Query Responsibility Segregation)
 - Publisher-Subscriber Pattern
 
 ## Multi-Device Setup
@@ -82,7 +81,6 @@ The system is designed for iPad terminals but supports any web-capable device:
 The system architecture supports:
 - Horizontal scaling through Kafka partitioning
 - Multiple consumer groups for load distribution
-- Redis clustering for cache scaling
 - Database sharding through store-based partitioning
 
 These pictures show the **on-ground implementation** of the Red Store system at the store.  
